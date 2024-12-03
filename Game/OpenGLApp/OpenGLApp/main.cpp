@@ -3,19 +3,20 @@
 #include "stb_image.h"
 #include "shader_s.h"
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
+#include <vector>
+
+#include "GameObject.h"
+#include "Player.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window);
+void processInput(GLFWwindow* window, Player& player);
+unsigned int LoadTexture(const char* path);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
-// stores how much we're seeing of either texture
-float mixValue = 0.2f;
 
 int main()
 {
@@ -32,7 +33,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Exercise_4-3", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Demo - H&G", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -50,209 +51,42 @@ int main()
         return -1;
     }
 
-
     // build and compile our shader zprogram
     // ------------------------------------
     Shader ourShader("shader.vs", "shader.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
-    float vertices1[] = {
-        // positions          // colors           // texture coords
-         1.0f,  0.2f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-         1.0f, -0.2f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-        -1.0f, -0.2f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-        -1.0f,  0.2f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
-    };
-    unsigned int indices1[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
-    };
-    unsigned int VBO1, VAO1, EBO1;
-    glGenVertexArrays(1, &VAO1);
-    glGenBuffers(1, &VBO1);
-    glGenBuffers(1, &EBO1);
+   
+    std::vector<GameObject> platforms;
 
-    glBindVertexArray(VAO1);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO1);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO1);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices1), indices1, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    // texture coord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    float vertices2[] = {
-        // positions (x,y,z)    // colors           // texture coords
-        -0.2f,  -0.4f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-        -0.2f,  -0.6f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-        -1.0f,  -0.6f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-        -1.0f,  -0.4f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
-    };
-    unsigned int indices2[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
+    glm::vec2 positions[] = {
+        {0.0f, -0.9f}, 
+        {-0.6f, -0.5f}, {0.6f, -0.5f},
+        {-0.85f, -0.1f}, {0.85f, -0.1f}, 
+        {0.0f, 0.0f},
+        {-0.6f, 0.5f}, {0.6f, 0.5f}
     };
 
-    unsigned int VBO2, VAO2, EBO2;
-    glGenVertexArrays(1, &VAO2);
-    glGenBuffers(1, &VBO2);
-    glGenBuffers(1, &EBO2);
-
-    glBindVertexArray(VAO2);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO2);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices2), indices2, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    // texture coord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    float vertices3[] = {
-        // positions          // colors           // texture coords
-         0.5f,  0.1f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-         0.5f, -0.1f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-        -0.5f, -0.1f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-        -0.5f,  0.1f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
-    };
-    unsigned int indices3[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
-    };
-    unsigned int VBO3, VAO3, EBO3;
-    glGenVertexArrays(1, &VAO3);
-    glGenBuffers(1, &VBO3);
-    glGenBuffers(1, &EBO3);
-
-    glBindVertexArray(VAO3);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO3);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices3), vertices3, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO3);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices3), indices3, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    // texture coord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-    float vertices4[] = {
-        // positions (x,y,z)    // colors           // texture coords
-        -0.2f,  0.4f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-        -0.2f,  0.6f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-        -1.0f,  0.6f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-        -1.0f,  0.4f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
-    };
-    unsigned int indices4[] = {
-        0, 1, 3, // first triangle
-        1, 2, 3  // second triangle
+    glm::vec2 sizes[] = {
+        {2.0f, 0.2f}, 
+        {0.8f, 0.2f}, {0.8f, 0.2f},
+        {0.3f, 0.2f}, {0.3f, 0.2f}, 
+        {1.0f, 0.2f}, 
+        {0.8f, 0.2f}, {0.8f, 0.2f}
     };
 
-    unsigned int VBO4, VAO4, EBO4;
-    glGenVertexArrays(1, &VAO4);
-    glGenBuffers(1, &VBO4);
-    glGenBuffers(1, &EBO4);
+    unsigned int textureID = LoadTexture("textures/container.jpg");
 
-    glBindVertexArray(VAO4);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO4);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices4), vertices4, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO4);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices4), indices4, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    // texture coord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-
-    // load and create a texture 
-    // -------------------------
-    unsigned int texture1, texture2;
-    // texture 1
-    // ---------
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load image, create texture and generate mipmaps
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
-    // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-    unsigned char* data = stbi_load("textures/container.jpg", &width, &height, &nrChannels, 0);
-    if (data)
+    for (int i = 0; i < 8; ++i) 
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
+        platforms.emplace_back(positions[i], sizes[i], textureID);
     }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-    // texture 2
-    // ---------
-    glGenTextures(1, &texture2);
-    glBindTexture(GL_TEXTURE_2D, texture2);
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load image, create texture and generate mipmaps
-    data = stbi_load("textures/awesomeface.png", &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        // note that the awesomeface.png has transparency and thus an alpha channel, so make sure to tell OpenGL the data type is of GL_RGBA
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
 
-    // tell opengl for each sampler to which texture unit it belongs to (only has to be done once)
-    // -------------------------------------------------------------------------------------------
-    ourShader.use();
-    ourShader.setInt("texture1", 0);
-    ourShader.setInt("texture2", 1);
+    Player myPlayer(glm::vec2(-0.5f, -0.75f), glm::vec2(0.1f, 0.1f), textureID);
+
+    float lastFrame = 0.0f;
+    float deltatime = 0.0f;
 
 
     // render loop
@@ -261,184 +95,35 @@ int main()
     {
         // input
         // -----
-        processInput(window);
+
+        float currentFrame = static_cast<float>(glfwGetTime());
+
+        deltatime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        processInput(window, myPlayer);
+        myPlayer.Move(deltatime);
+        myPlayer.CheckCollisions(platforms);
+
 
         // render
         // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+   
+        for(const GameObject& object : platforms)
+        {
+            object.Render(ourShader);
+        }
 
-        // bind textures on corresponding texture units
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, texture2);
-
-        // set the texture mix value in the shader
-        ourShader.setFloat("mixValue", mixValue);
-
-        glm::mat4 trans = glm::mat4(1.0f); //matrice identità
-        //trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-        //trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
-        float rectHeight = 0.1f;
-        trans = glm::translate(trans, glm::vec3(0.0f, -1.0f + rectHeight / 2, 0.0f));
-
-        // get matrix's uniform location and set matrix
-        ourShader.use();
-        unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-        //se nascondi le trasformazioni non appaiono le immagini perché transform è un valore di shader.vs, senza quello transform = 0
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-
-        // render container
-        ourShader.use();
-        glBindVertexArray(VAO1);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-
-
-        //RETTANGOLI IN BASSO
-
-
-        trans = glm::mat4(1.0f); //matrice identità
-        //trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-        //trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
-
-        // get matrix's uniform location and set matrix
-        ourShader.use();
-        transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-        //se nascondi le trasformazioni non appaiono le immagini perché transform è un valore di shader.vs, senza quello transform = 0
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-
-        // Disegna il primo rettangolo
-        ourShader.use();
-        ourShader.setMat4("transform", trans);
-        glBindVertexArray(VAO2);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-        trans = glm::mat4(1.0f); //matrice identità
-        trans = glm::scale(trans, glm::vec3(-1.0, 1.0, 1.0));
-
-        // get matrix's uniform location and set matrix
-        ourShader.use();
-        transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-        //se nascondi le trasformazioni non appaiono le immagini perché transform è un valore di shader.vs, senza quello transform = 0
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-
-        // Disegna il secondo rettangolo
-        ourShader.setMat4("transform", trans);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-
-
-
-        //RETTANGOLI IN MEZZO
-
-        trans = glm::mat4(1.0f); //matrice identità
-
-        trans = glm::mat4(1.0f); //matrice identità
-        //trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-        //trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
-
-        // get matrix's uniform location and set matrix
-        ourShader.use();
-        transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-        //se nascondi le trasformazioni non appaiono le immagini perché transform è un valore di shader.vs, senza quello transform = 0
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-
-        //primo rettangolo
-        ourShader.use();
-        ourShader.setMat4("transform", trans);
-        glBindVertexArray(VAO3);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-        //secondo rettangolo
-        trans = glm::mat4(1.0f); //matrice identità
-        //trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-        trans = glm::translate(trans, glm::vec3(1.3, -0.1, 1.0));
-
-        // get matrix's uniform location and set matrix
-        ourShader.use();
-        transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-        //se nascondi le trasformazioni non appaiono le immagini perché transform è un valore di shader.vs, senza quello transform = 0
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-
-        ourShader.use();
-        ourShader.setMat4("transform", trans);
-        glBindVertexArray(VAO3);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-        //terzo rettangolo
-        trans = glm::mat4(1.0f); //matrice identità
-        //trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-        trans = glm::translate(trans, glm::vec3(-1.3, -0.1, 1.0));
-
-        // get matrix's uniform location and set matrix
-        ourShader.use();
-        transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-        //se nascondi le trasformazioni non appaiono le immagini perché transform è un valore di shader.vs, senza quello transform = 0
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-
-        ourShader.use();
-        ourShader.setMat4("transform", trans);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-
-
-
-        //RETTANGOLI IN ALTO
-
-
-        trans = glm::mat4(1.0f); //matrice identità
-        //trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
-        //trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
-
-        // get matrix's uniform location and set matrix
-        ourShader.use();
-        transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-        //se nascondi le trasformazioni non appaiono le immagini perché transform è un valore di shader.vs, senza quello transform = 0
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-
-        // Disegna il primo rettangolo
-        ourShader.use();
-        ourShader.setMat4("transform", trans);
-        glBindVertexArray(VAO4);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-        trans = glm::mat4(1.0f); //matrice identità
-        trans = glm::scale(trans, glm::vec3(-1.0, 1.0, 1.0));
-
-        // get matrix's uniform location and set matrix
-        ourShader.use();
-        transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-        //se nascondi le trasformazioni non appaiono le immagini perché transform è un valore di shader.vs, senza quello transform = 0
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-
-        // Disegna il secondo rettangolo
-        ourShader.setMat4("transform", trans);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-
+        myPlayer.Render(ourShader);
+       
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
-    // optional: de-allocate all resources once they've outlived their purpose:
-    // ------------------------------------------------------------------------
-    glDeleteVertexArrays(1, &VAO1);
-    glDeleteBuffers(1, &VBO1);
-    glDeleteBuffers(1, &EBO1);
-    glDeleteVertexArrays(1, &VAO2);
-    glDeleteBuffers(1, &VBO2);
-    glDeleteBuffers(1, &EBO2);
-    glDeleteVertexArrays(1, &VAO3);
-    glDeleteBuffers(1, &VBO3);
-    glDeleteBuffers(1, &EBO3);
-    glDeleteVertexArrays(1, &VAO4);
-    glDeleteBuffers(1, &VBO4);
-    glDeleteBuffers(1, &EBO4);
-
+    
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();
@@ -447,22 +132,37 @@ int main()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window)
+void processInput(GLFWwindow* window, Player& player)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
+    //movimento orizzontale
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) 
+    {
+        player.Velocity.x -= 0.01f;
+    }   
+    else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+    {
+        player.Velocity.x += 0.01f;
+    }
+    else
+    {
+        player.Velocity.x = 0.0f;
+    }
+
+    //movimento verticale
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
     {
-        mixValue += 0.001f; // change this value accordingly (might be too slow or too fast based on system hardware)
-        if (mixValue >= 1.0f)
-            mixValue = 1.0f;
+        player.Velocity.y += 0.01f;
     }
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+    else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
     {
-        mixValue -= 0.001f; // change this value accordingly (might be too slow or too fast based on system hardware)
-        if (mixValue <= 0.0f)
-            mixValue = 0.0f;
+        player.Velocity.y -= 0.01f;
+    }
+    else
+    {
+        player.Velocity.y = 0.0f;
     }
 }
 
@@ -473,4 +173,36 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+}
+
+//da spostare in una classe utility
+unsigned int LoadTexture(const char* path)
+{
+    unsigned int textureID;
+    
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    // set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // load image, create texture and generate mipmaps
+    int width, height, nrChannels;
+    stbi_set_flip_vertically_on_load(true);
+
+    unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
+    return textureID;
 }
