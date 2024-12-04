@@ -2,20 +2,28 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-GameObject::GameObject(glm::vec2 position, glm::vec2 size, TextureObj texture)
+GameObject::GameObject(glm::vec2 position, glm::vec2 size, TextureObj texture, bool repeatWidth)
     : Position(position), Size(size), Rotation(0.0f), Texture(texture)
 {
-    this->initRenderData();
+    //flag specifica se si voglia scalare la texture (consigliato=1 per piattaforme)
+    this->initRenderData(repeatWidth);
 }
 
 // Inizializzo i dati nei buffer
-void GameObject::initRenderData() {
+void GameObject::initRenderData(bool repeatWidth) {
+    float scalex=1.0f;
+
+    if (repeatWidth) {
+        //float width = this->Size.x * SCR_WIDTH / 2.0f;//NDC to screen coo
+        //scalex = width / Texture.Width;
+        scalex = this->Size.x * 4;
+    }
 
     float vertices[] = {
         // Posizioni              // Colore                 // Coordinate texture
         -0.5f, 0.5f, 0.0f,        0.0f, 1.0f, 0.0f,         0.0f, 1.0f, // Vertice in alto a sinistra
-        0.5f, 0.5f, 0.0f,         0.0f, 1.0f, 0.0f,         1.0f, 1.0f, // Vertice in alto a destra
-        0.5f, -0.5f, 0.0f,        0.0f, 1.0f, 0.0f,         1.0f, 0.0f, // Vertice in basso a destra
+        0.5f, 0.5f, 0.0f,         0.0f, 1.0f, 0.0f,         scalex, 1.0f, // Vertice in alto a destra
+        0.5f, -0.5f, 0.0f,        0.0f, 1.0f, 0.0f,         scalex, 0.0f, // Vertice in basso a destra
         -0.5f, -0.5f, 0.0f,       0.0f, 1.0f, 0.0f,         0.0f, 0.0f  // Vertice in basso a sinistra
     };
 

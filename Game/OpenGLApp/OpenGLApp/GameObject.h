@@ -10,6 +10,7 @@
 
 #include <string>
 #include "TextureObj.h"
+#include "constants.h"
 
 struct Hitbox {
     glm::vec2 Min; // Punto in basso a sinistra
@@ -24,7 +25,7 @@ public:
 
     TextureObj Texture;
 
-    GameObject(glm::vec2 position, glm::vec2 size, TextureObj texture);
+    GameObject(glm::vec2 position, glm::vec2 size, TextureObj texture, bool repeatWidth);
 
     void Render(const Shader& shader) const;
 
@@ -35,6 +36,6 @@ public:
 private:
     unsigned int VAO;
 
-    void initRenderData();
+    void initRenderData(bool repeatWidth);
 
 };
