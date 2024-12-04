@@ -2,8 +2,8 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-GameObject::GameObject(glm::vec2 position, glm::vec2 size, unsigned int textureID)
-    : Position(position), Size(size), Rotation(0.0f), TextureID(textureID)
+GameObject::GameObject(glm::vec2 position, glm::vec2 size, TextureObj texture)
+    : Position(position), Size(size), Rotation(0.0f), Texture(texture)
 {
     this->initRenderData();
 }
@@ -64,7 +64,7 @@ void GameObject::Render(const Shader& shader) const {
     shader.setMat4("model", model);
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, this->TextureID);
+    glBindTexture(GL_TEXTURE_2D, this->Texture.TextureID);
 
     glBindVertexArray(this->VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

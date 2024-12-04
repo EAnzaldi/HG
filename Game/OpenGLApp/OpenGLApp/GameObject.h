@@ -9,6 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <string>
+#include "TextureObj.h"
 
 struct Hitbox {
     glm::vec2 Min; // Punto in basso a sinistra
@@ -21,9 +22,9 @@ public:
     glm::vec2 Size;
     float Rotation;
 
-    unsigned int TextureID;
+    TextureObj Texture;
 
-    GameObject(glm::vec2 position, glm::vec2 size, unsigned int textureID);
+    GameObject(glm::vec2 position, glm::vec2 size, TextureObj texture);
 
     void Render(const Shader& shader) const;
 
