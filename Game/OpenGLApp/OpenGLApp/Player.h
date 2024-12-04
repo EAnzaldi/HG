@@ -6,8 +6,8 @@ class Player : public GameObject {
 public:
     glm::vec2 Velocity;
 
-    Player(glm::vec2 position, glm::vec2 size, unsigned int textureID)
-        : GameObject(position, size, textureID), Velocity(0.0f, 0.0f) {
+    Player(glm::vec2 position, glm::vec2 size, TextureObj texture)
+        : GameObject(position, size, texture), Velocity(0.0f, 0.0f) {
     }
 
     void Move(float deltaTime) {

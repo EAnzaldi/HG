@@ -9,10 +9,10 @@
 
 #include "GameObject.h"
 #include "Player.h"
+#include "TextureObj.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window, Player& player);
-unsigned int LoadTexture(const char* path);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -33,7 +33,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Demo - H&G", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "H+G", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -76,14 +76,15 @@ int main()
         {0.8f, 0.2f}, {0.8f, 0.2f}
     };
 
-    unsigned int textureID = LoadTexture("textures/container.jpg");
+    TextureObj texPlatforms("textures/donut_block.jpg");
+    TextureObj texPlayer("textures/ice_cream_block.jpg");
 
     for (int i = 0; i < 8; ++i) 
     {
-        platforms.emplace_back(positions[i], sizes[i], textureID);
+        platforms.emplace_back(positions[i], sizes[i], texPlatforms);
     }
 
-    Player myPlayer(glm::vec2(-0.5f, -0.75f), glm::vec2(0.1f, 0.1f), textureID);
+    Player myPlayer(glm::vec2(-0.5f, -0.75f), glm::vec2(0.1f, 0.1f), texPlayer);
 
     float lastFrame = 0.0f;
     float deltatime = 0.0f;
@@ -173,36 +174,4 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
-}
-
-//da spostare in una classe utility
-unsigned int LoadTexture(const char* path)
-{
-    unsigned int textureID;
-    
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // load image, create texture and generate mipmaps
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true);
-
-    unsigned char* data = stbi_load(path, &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
-    return textureID;
 }
