@@ -10,13 +10,10 @@
 #include "GameObject.h"
 #include "Player.h"
 #include "TextureObj.h"
+#include "constants.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window, Player& player);
-
-// settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
 
 int main()
 {
@@ -81,10 +78,10 @@ int main()
 
     for (int i = 0; i < 8; ++i) 
     {
-        platforms.emplace_back(positions[i], sizes[i], texPlatforms);
+        platforms.emplace_back(positions[i], sizes[i], texPlatforms, 1);
     }
 
-    Player myPlayer(glm::vec2(-0.5f, -0.75f), glm::vec2(0.1f, 0.1f), texPlayer);
+    Player myPlayer(glm::vec2(-0.5f, -0.75f), glm::vec2(0.1f, 0.1f), texPlayer, 0);
 
     float lastFrame = 0.0f;
     float deltatime = 0.0f;
