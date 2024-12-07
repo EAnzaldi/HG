@@ -30,6 +30,12 @@
     <ClCompile Include="TextureObj.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader_s.h">
@@ -51,6 +57,9 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="constants.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="Enemy.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

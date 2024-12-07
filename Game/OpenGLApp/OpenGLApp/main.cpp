@@ -9,6 +9,7 @@
 
 #include "GameObject.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "TextureObj.h"
 #include "constants.h"
 
@@ -75,6 +76,7 @@ int main()
 
     TextureObj texPlatforms("textures/donut_block.jpg");
     TextureObj texPlayer("textures/ice_cream_block.jpg");
+    TextureObj texEnemy("textures/awesomeface.png");
 
     for (int i = 0; i < 8; ++i) 
     {
@@ -82,6 +84,8 @@ int main()
     }
 
     Player myPlayer(glm::vec2(-0.5f, -0.75f), glm::vec2(0.1f, 0.1f), texPlayer, 0);
+    Enemy myEnemy(glm::vec2(0.0f, 0.15f), glm::vec2(0.1f, 0.1f), texEnemy, 0);
+
 
     float lastFrame = 0.0f;
     float deltatime = 0.0f;
@@ -101,8 +105,11 @@ int main()
 
         processInput(window, myPlayer);
         myPlayer.Move(deltatime);
-        myPlayer.CheckCollisions(platforms);
-
+        myPlayer.CheckCollision(platforms);
+        if (myPlayer.CheckCollision(myEnemy)) {
+            //se il giocatore muore chiude il gioco
+            glfwSetWindowShouldClose(window, true);
+        }
 
         // render
         // ------
@@ -115,6 +122,7 @@ int main()
         }
 
         myPlayer.Render(ourShader);
+        myEnemy.Render(ourShader);
        
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
