@@ -8,7 +8,6 @@ public:
 
     Enemy(glm::vec2 position, glm::vec2 size, TextureObj texture, bool repeatWidth);
 
-
     void Move(float deltaTime);
 
 private:

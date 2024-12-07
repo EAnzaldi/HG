@@ -77,4 +77,21 @@
       <Filter>File di origine</Filter>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\awesomeface.png">
+      <Filter>File di risorse</Filter>
+    </Image>
+    <Image Include="textures\container.jpg">
+      <Filter>File di risorse</Filter>
+    </Image>
+    <Image Include="textures\donut_block.jpg">
+      <Filter>File di risorse</Filter>
+    </Image>
+    <Image Include="textures\gummy_bear.jpg">
+      <Filter>File di risorse</Filter>
+    </Image>
+    <Image Include="textures\ice_cream_block.jpg">
+      <Filter>File di risorse</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

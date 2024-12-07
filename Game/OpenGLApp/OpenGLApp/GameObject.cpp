@@ -16,7 +16,7 @@ void GameObject::initRenderData(bool repeatWidth) {
     if (repeatWidth) {
         //float width = this->Size.x * SCR_WIDTH / 2.0f;//NDC to screen coo
         //scalex = width / Texture.Width;
-        scalex = this->Size.x * 4;
+        scalex = this->Size.x * 5;
     }
 
     float vertices[] = {
@@ -57,7 +57,8 @@ void GameObject::initRenderData(bool repeatWidth) {
     glBindVertexArray(0);
 }
 
-void GameObject::Render(const Shader& shader) const {
+void GameObject::Render(const Shader& shader) const 
+{
     shader.use();
 
     // Modifico model altrimenti disegnerei un quadrato in posizione 0,0
@@ -79,11 +80,10 @@ void GameObject::Render(const Shader& shader) const {
     glBindVertexArray(0);
 }
 
-Hitbox GameObject::GetHitbox() const {
+Hitbox GameObject::GetHitbox() const 
+{
     return Hitbox{
         this->Position - this->Size / 2.0f, // Min (basso a sinistra)
         this->Position + this->Size / 2.0f  // Max (alto a destra)
     };
 }
-
-

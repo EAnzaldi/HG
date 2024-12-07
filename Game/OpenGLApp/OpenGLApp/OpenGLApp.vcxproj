@@ -163,6 +163,13 @@
     <None Include="shader_light.fs" />
     <None Include="shader_light.vs" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="textures\awesomeface.png" />
+    <Image Include="textures\container.jpg" />
+    <Image Include="textures\donut_block.jpg" />
+    <Image Include="textures\gummy_bear.jpg" />
+    <Image Include="textures\ice_cream_block.jpg" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

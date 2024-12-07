@@ -14,7 +14,7 @@
 #include "constants.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window, Player& player);
+void processInput(GLFWwindow* window, Player& player, float deltatime);
 
 int main()
 {
@@ -31,7 +31,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "H+G", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "H&G", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -50,12 +50,11 @@ int main()
     }
 
     // build and compile our shader zprogram
-    // ------------------------------------
+    // -------------------------------------
     Shader ourShader("shader.vs", "shader.fs");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
-   
     std::vector<GameObject> platforms;
 
     glm::vec2 positions[] = {
@@ -86,28 +85,24 @@ int main()
     Player myPlayer(glm::vec2(-0.5f, -0.75f), glm::vec2(0.1f, 0.1f), texPlayer, 0);
     Enemy myEnemy(glm::vec2(0.0f, 0.15f), glm::vec2(0.1f, 0.1f), texEnemy, 0);
 
-
     float lastFrame = 0.0f;
     float deltatime = 0.0f;
-
 
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
-        // input
-        // -----
-
         float currentFrame = static_cast<float>(glfwGetTime());
-
         deltatime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        processInput(window, myPlayer);
+        processInput(window, myPlayer, deltatime);
+
         myPlayer.Move(deltatime);
         myPlayer.CheckCollision(platforms);
+
         if (myPlayer.CheckCollision(myEnemy)) {
-            //se il giocatore muore chiude il gioco
+            // se il giocatore muore chiude il gioco
             glfwSetWindowShouldClose(window, true);
         }
 
@@ -138,37 +133,50 @@ int main()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window, Player& player)
+void processInput(GLFWwindow* window, Player& player, float deltatime)
 {
+    // debug
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) 
+    {
+        std::cout << ((player.isMidAir == true) ? "In aria" : "A terra") << std::endl;
+        std::cout << "Velocity: " << player.Velocity.x << ", " << player.Velocity.y << std::endl;
+        std::cout << "Bottom-Left: " << player.Position.x - (player.Size.x/2) << ", " << player.Position.y - (player.Size.y / 2) << std::endl;
+    }
+ 
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 
-    //movimento orizzontale
+    // movimento orizzontale
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) 
     {
-        player.Velocity.x -= 0.01f;
+        if (player.Velocity.x > -player.MaxVelocity.x)
+        {
+            player.Velocity.x -= 0.01f;
+        }
     }   
     else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
     {
-        player.Velocity.x += 0.01f;
+        if (player.Velocity.x < player.MaxVelocity.x)
+        {
+            player.Velocity.x += 0.01f;
+        }
     }
     else
     {
         player.Velocity.x = 0.0f;
     }
 
-    //movimento verticale
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+    // salto
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
-        player.Velocity.y += 0.01f;
-    }
-    else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-    {
-        player.Velocity.y -= 0.01f;
+        player.HandleJump(deltatime);
     }
     else
     {
-        player.Velocity.y = 0.0f;
+        if (player.isMidAir) 
+        {
+            player.isPastJumpPeak = true; // Se il tasto non è premuto, non si può più aumentare il salto
+        }
     }
 }
 
