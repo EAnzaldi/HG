@@ -13,12 +13,14 @@
 #include "constants.h"
 #include <vector>
 
-struct Hitbox {
+struct Hitbox 
+{
     glm::vec2 Min; // Punto in basso a sinistra
     glm::vec2 Max; // Punto in alto a destra
 };
 
-class GameObject {
+class GameObject 
+{
 public:
     glm::vec2 Position;
     glm::vec2 Size;

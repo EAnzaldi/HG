@@ -10,7 +10,8 @@
 
 #include <string>
 
-class TextureObj {
+class TextureObj 
+{
 public:
     const char* Path;
     unsigned int TextureID;

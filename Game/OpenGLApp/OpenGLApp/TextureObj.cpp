@@ -20,10 +20,19 @@ void TextureObj::LoadTexture(const char* path)
     // load image, create texture and generate mipmaps
     stbi_set_flip_vertically_on_load(true);
 
+    std::string extension = std::string(path).substr(std::string(path).find_last_of('.') + 1);
+
     unsigned char* data = stbi_load(path, &this->Width, &this->Height, &nrChannels, 0);
     if (data)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->Width, this->Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        if (extension == "jpg")
+        {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->Width, this->Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        }
+        else if (extension == "png")
+        {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->Width, this->Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        }
         glGenerateMipmap(GL_TEXTURE_2D);
     }
     else
