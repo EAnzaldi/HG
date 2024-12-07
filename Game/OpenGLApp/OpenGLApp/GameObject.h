@@ -11,6 +11,7 @@
 #include <string>
 #include "TextureObj.h"
 #include "constants.h"
+#include <vector>
 
 struct Hitbox {
     glm::vec2 Min; // Punto in basso a sinistra
@@ -28,8 +29,6 @@ public:
     GameObject(glm::vec2 position, glm::vec2 size, TextureObj texture, bool repeatWidth);
 
     void Render(const Shader& shader) const;
-
-    bool CheckCollision(const GameObject& other) const;
 
     Hitbox GetHitbox() const;
 

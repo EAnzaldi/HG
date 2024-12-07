@@ -86,9 +86,4 @@ Hitbox GameObject::GetHitbox() const {
     };
 }
 
-bool GameObject::CheckCollision(const GameObject& other) const {
-    Hitbox bounds1 = this->GetHitbox();
-    Hitbox bounds2 = other.GetHitbox();
-    return (bounds1.Min.x < bounds2.Max.x && bounds1.Max.x > bounds2.Min.x &&
-        bounds1.Min.y < bounds2.Max.y && bounds1.Max.y > bounds2.Min.y);
-}
+
