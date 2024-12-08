@@ -10,7 +10,7 @@
 #include "GameObject.h"
 #include "Player.h"
 #include "Enemy.h"
-#include "TextureObj.h"
+#include "TextureObject.h"
 #include "constants.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -73,9 +73,9 @@ int main()
         {0.8f, 0.2f}, {0.8f, 0.2f}
     };
 
-    TextureObj texPlatforms("textures/donut_block.jpg");
-    TextureObj texPlayer("textures/ice_cream_block.jpg");
-    TextureObj texEnemy("textures/awesomeface.png");
+    TextureObject texPlatforms("textures/donut_block.jpg");
+    TextureObject texPlayer("textures/ice_cream_block.jpg");
+    TextureObject texEnemy("textures/awesomeface.png");
 
     for (int i = 0; i < 8; ++i) 
     {

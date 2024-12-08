@@ -9,7 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <string>
-#include "TextureObj.h"
+#include "TextureObject.h"
 #include "constants.h"
 #include <vector>
 
@@ -26,9 +26,9 @@ public:
     glm::vec2 Size;
     float Rotation;
 
-    TextureObj Texture;
+    TextureObject Texture;
 
-    GameObject(glm::vec2 position, glm::vec2 size, TextureObj texture, bool repeatWidth);
+    GameObject(glm::vec2 position, glm::vec2 size, TextureObject texture, bool repeatWidth);
 
     void Render(const Shader& shader) const;
 
