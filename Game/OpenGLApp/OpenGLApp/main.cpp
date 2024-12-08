@@ -136,7 +136,7 @@ int main()
 void processInput(GLFWwindow* window, Player& player, float deltatime)
 {
     // debug
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) 
+    if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) 
     {
         std::cout << ((player.isMidAir == true) ? "In aria" : "A terra") << std::endl;
         std::cout << "Velocity: " << player.Velocity.x << ", " << player.Velocity.y << std::endl;
@@ -147,14 +147,14 @@ void processInput(GLFWwindow* window, Player& player, float deltatime)
         glfwSetWindowShouldClose(window, true);
 
     // movimento orizzontale
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) 
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) 
     {
         if (player.Velocity.x > -player.MaxVelocity.x)
         {
             player.Velocity.x -= 0.01f;
         }
     }   
-    else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
         if (player.Velocity.x < player.MaxVelocity.x)
         {
@@ -167,7 +167,7 @@ void processInput(GLFWwindow* window, Player& player, float deltatime)
     }
 
     // salto
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
         player.HandleJump(deltatime);
     }
