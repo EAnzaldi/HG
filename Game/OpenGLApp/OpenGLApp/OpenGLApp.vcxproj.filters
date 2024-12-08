@@ -70,12 +70,6 @@
     <None Include="shader.fs">
       <Filter>File di origine</Filter>
     </None>
-    <None Include="shader_light.fs">
-      <Filter>File di origine</Filter>
-    </None>
-    <None Include="shader_light.vs">
-      <Filter>File di origine</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\awesomeface.png">
