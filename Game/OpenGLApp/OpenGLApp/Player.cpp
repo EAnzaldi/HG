@@ -12,6 +12,14 @@ void Player::Move(float deltaTime)
     }
 
     this->Position += this->Velocity * deltaTime;
+
+    if (this->Position.x > 1.0f - this->Size.x / 2) {
+        this->Position.x = 1.0f - this->Size.x / 2;
+    }
+
+    if (this->Position.x < -1.0f + this->Size.x / 2) {
+        this->Position.x = -1.0f + this->Size.x / 2;
+    }
 }
 
 void Player::HandleJump(float deltaTime)
