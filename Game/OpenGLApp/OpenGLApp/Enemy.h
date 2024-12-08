@@ -6,7 +6,7 @@ class Enemy : public GameObject {
 public:
     glm::vec2 Velocity;
 
-    Enemy(glm::vec2 position, glm::vec2 size, TextureObj texture, bool repeatWidth);
+    Enemy(glm::vec2 position, glm::vec2 size, TextureObject texture, bool repeatWidth);
 
     void Move(float deltaTime);
 

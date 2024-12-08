@@ -22,7 +22,7 @@ class Player : public GameObject
 
         glm::vec2 MaxVelocity = glm::vec2(1.5f, 2.5f);
 
-        Player(glm::vec2 position, glm::vec2 size, TextureObj texture, bool repeatWidth);
+        Player(glm::vec2 position, glm::vec2 size, TextureObject texture, bool repeatWidth);
 
         void Move(float deltaTime);
 

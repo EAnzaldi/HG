@@ -10,7 +10,7 @@
 
 #include <string>
 
-class TextureObj 
+class TextureObject 
 {
 public:
     const char* Path;
@@ -18,7 +18,7 @@ public:
     int Width;
     int Height;
 
-    TextureObj(const char* path);
+    TextureObject(const char* path);
 
 private:
     void LoadTexture(const char* path);

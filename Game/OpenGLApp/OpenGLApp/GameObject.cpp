@@ -2,7 +2,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-GameObject::GameObject(glm::vec2 position, glm::vec2 size, TextureObj texture, bool repeatWidth)
+GameObject::GameObject(glm::vec2 position, glm::vec2 size, TextureObject texture, bool repeatWidth)
     : Position(position), Size(size), Rotation(0.0f), Texture(texture)
 {
     //flag specifica se si voglia scalare la texture (consigliato=1 per piattaforme)

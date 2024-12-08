@@ -1,11 +1,11 @@
-#include "TextureObj.h"
+#include "TextureObject.h"
 
-TextureObj::TextureObj(const char* path) : Path(path)
+TextureObject::TextureObject(const char* path) : Path(path)
 {
     this->LoadTexture(path);
 }
 
-void TextureObj::LoadTexture(const char* path)
+void TextureObject::LoadTexture(const char* path)
 {
     int nrChannels;
 

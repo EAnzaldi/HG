@@ -1,6 +1,6 @@
 #include "Player.h"
 
-Player::Player(glm::vec2 position, glm::vec2 size, TextureObj texture, bool repeatWidth)
+Player::Player(glm::vec2 position, glm::vec2 size, TextureObject texture, bool repeatWidth)
     : GameObject(position, size, texture, repeatWidth), Velocity(0.0f, 0.0f) {
 }
 
