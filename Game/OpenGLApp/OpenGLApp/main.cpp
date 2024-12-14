@@ -6,6 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <vector>
+#include <irrKlang.h>
 
 #include "GameObject.h"
 #include "Player.h"
@@ -14,7 +15,7 @@
 #include "constants.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow* window, Player& player, float deltatime);
+void processInput(GLFWwindow* window, Player& player, float deltatime, irrklang::ISoundEngine* engine);
 
 int main()
 {
@@ -52,6 +53,12 @@ int main()
     // build and compile our shader zprogram
     // -------------------------------------
     Shader ourShader("shader.vs", "shader.fs");
+
+    // inizializzo l'engine per i suoni
+    // --------------------------------
+    irrklang::ISoundEngine* engine = irrklang::createIrrKlangDevice();
+    if (!engine)
+        return 0; // error starting up the engine
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -96,7 +103,7 @@ int main()
         deltatime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        processInput(window, myPlayer, deltatime);
+        processInput(window, myPlayer, deltatime, engine);
 
         myPlayer.Move(deltatime);
         myPlayer.CheckCollision(platforms);
@@ -133,7 +140,7 @@ int main()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow* window, Player& player, float deltatime)
+void processInput(GLFWwindow* window, Player& player, float deltatime, irrklang::ISoundEngine* engine)
 {
     // debug
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) 
@@ -169,7 +176,7 @@ void processInput(GLFWwindow* window, Player& player, float deltatime)
     // salto
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
-        player.HandleJump(deltatime);
+        player.HandleJump(deltatime, engine);
     }
     else
     {
