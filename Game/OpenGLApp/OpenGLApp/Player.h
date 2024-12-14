@@ -3,6 +3,8 @@
 #include "GameObject.h"
 #include "Enemy.h"
 
+#include <irrKlang.h>
+
 class Player : public GameObject 
 {
     public:
@@ -26,7 +28,7 @@ class Player : public GameObject
 
         void Move(float deltaTime);
 
-        void HandleJump(float deltaTime);
+        void HandleJump(float deltaTime, irrklang::ISoundEngine* engine);
 
         bool CheckCollision(const Enemy& enemy);
 
