@@ -1,7 +1,8 @@
 #include "Player.h"
 
 Player::Player(glm::vec2 position, glm::vec2 size, TextureObject texture, bool repeatWidth)
-    : GameObject(position, size, texture, repeatWidth), Velocity(0.0f, 0.0f) {
+    : GameObject(position, size, texture, repeatWidth), Velocity(0.0f, 0.0f), 
+    invincibilityDuration(1.0f), invincibilityTimer(0.0f), isInvincible(false) {
 }
 
 void Player::Move(float deltaTime) 
@@ -69,10 +70,19 @@ void Player::CheckCollision(const std::vector<GameObject>& solidObjects)
 
 bool Player::CheckCollision(const Enemy& enemy)
 {
-    if (HasCollided(enemy))
+    if (!isInvincible && HasCollided(enemy))
     {
-        std::cout << "GAME OVER" << std::endl;
-        isDead = true;  // Player muore
+        if (lives > 1)
+        {
+            lives--; // Perde una vita
+            std::cout << "Lives left: " << lives << std::endl;
+            StartInvincibility(); // Inizia l'invincibilità
+        }
+        else
+        {
+            std::cout << "GAME OVER" << std::endl;
+            isDead = true;
+        }
     }
     return isDead;
 }
@@ -122,4 +132,27 @@ void Player::HandleCollision(const GameObject& solid)
         }
         this->Velocity.y = 0;
     }
+}
+
+void Player::Update(float deltaTime)
+{
+    // Aggiorna il timer di invincibilità
+    if (isInvincible)
+    {
+        invincibilityTimer += deltaTime;
+        if (invincibilityTimer >= invincibilityDuration)
+        {
+            isInvincible = false;  // Fine invincibilità
+            invincibilityTimer = 0.0f;
+            std::cout << "Invincibility ended" << std::endl;
+        }
+    }
+
+    // Altri aggiornamenti del giocatore
+}
+
+void Player::StartInvincibility()
+{
+    isInvincible = true;
+    invincibilityTimer = 0.0f; // Resetta il timer
 }

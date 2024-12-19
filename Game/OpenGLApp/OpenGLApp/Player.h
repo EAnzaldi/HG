@@ -8,7 +8,12 @@
 class Player : public GameObject 
 {
     public:
+        float invincibilityDuration; // Durata dell'invincibilità (in secondi)
+        float invincibilityTimer;    // Timer corrente per l'invincibilità
+        bool isInvincible;           // Flag per indicare se il giocatore è invincibile
+
         bool isDead = false;    //Player inizia vivo
+        int lives = 3;          //Player inizia con 3 vite
 
         bool isOnGround = false;
         bool isMidAir = false;
@@ -37,6 +42,10 @@ class Player : public GameObject
         bool HasCollided(const GameObject& other) const;
 
         void HandleCollision(const GameObject& solid);
+
+        void Update(float deltaTime); // Aggiorna lo stato del giocatore
+        
+        void StartInvincibility();    // Avvia l'invincibilità
 
     private:
 };

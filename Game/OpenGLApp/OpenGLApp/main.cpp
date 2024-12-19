@@ -90,7 +90,9 @@ int main()
     }
 
     Player myPlayer(glm::vec2(-0.5f, -0.75f), glm::vec2(0.1f, 0.1f), texPlayer, 0);
-    Enemy myEnemy(glm::vec2(0.0f, 0.15f), glm::vec2(0.1f, 0.1f), texEnemy, 0);
+    
+    Enemy myEnemy(glm::vec2(0.8f, 0.95f), glm::vec2(0.1f, 0.1f), texEnemy, 0);
+    myEnemy.SetDestination(glm::vec2(-0.8f, 0.0f));  // Imposta la destinazione a (-x, 0)
 
     float lastFrame = 0.0f;
     float deltatime = 0.0f;
@@ -108,10 +110,15 @@ int main()
         myPlayer.Move(deltatime);
         myPlayer.CheckCollision(platforms);
 
+        myPlayer.Update(deltatime); // Aggiorna lo stato del giocatore
+
         if (myPlayer.CheckCollision(myEnemy)) {
             // se il giocatore muore chiude il gioco
             glfwSetWindowShouldClose(window, true);
         }
+
+        myEnemy.Move(deltatime);  // Aggiorna la posizione del nemico con controllo delle collisioni
+        myEnemy.CheckCollision(platforms);
 
         // render
         // ------
