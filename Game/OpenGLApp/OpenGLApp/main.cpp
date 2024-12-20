@@ -77,6 +77,8 @@ int main()
     // ------------------------------------------------------------------
     std::vector<GameObject> platforms;
 
+    std::vector<Enemy> enemies;
+
     glm::vec2 positions[] = {
         {0.0f, -0.9f}, 
         {-0.6f, -0.5f}, {0.6f, -0.5f},
@@ -99,6 +101,8 @@ int main()
 
     TextObject text(ft, "resources/fonts/8-bit-operator/8bitOperatorPlus8-Regular.ttf");
 
+    Model ourModel("resources/myCube/cubetto.obj");
+
     for (int i = 0; i < 8; ++i) 
     {
         platforms.emplace_back(positions[i], sizes[i], texPlatforms, 1);
@@ -106,14 +110,12 @@ int main()
 
     Player myPlayer(glm::vec2(-0.5f, -0.75f), glm::vec2(0.1f, 0.1f), texPlayer, 0);
     
-    Enemy myEnemy(glm::vec2(0.8f, 0.95f), glm::vec2(0.1f, 0.1f), texEnemy, 0);
-    myEnemy.SetDestination(glm::vec2(-0.8f, 0.0f));  // Imposta la destinazione a (-x, 0)
+    Enemy myEnemy(glm::vec2(0.8f, 0.85f), glm::vec2(0.1f, 0.1f), texEnemy, 0, glm::vec2(-0.8f, 0.0f));
 
     float lastFrame = 0.0f;
     float deltatime = 0.0f;
 
     double start = glfwGetTime();
-    Model ourModel("resources/myCube/cubetto.obj");
 
     // render loop
     // -----------
@@ -121,28 +123,36 @@ int main()
     {
         float currentFrame = static_cast<float>(glfwGetTime());
         deltatime = currentFrame - lastFrame;
+
+        if (deltatime > 0.1f) { // Ignora delta troppo grandi
+            deltatime = 0.0f;
+        }
+
         lastFrame = currentFrame;
 
         processInput(window, myPlayer, deltatime, engine);
 
         myPlayer.Move(deltatime);
-        myPlayer.CheckCollision(platforms);
+        myPlayer.CheckCollisionWithSolids(platforms);
 
         myPlayer.Update(deltatime); // Aggiorna lo stato del giocatore
 
-        if (myPlayer.CheckCollision(myEnemy)) {
+        if (myPlayer.CheckEnemyCollision(myEnemy)) {
             // se il giocatore muore chiude il gioco
             glfwSetWindowShouldClose(window, true);
         }
 
         myEnemy.Move(deltatime);  // Aggiorna la posizione del nemico con controllo delle collisioni
-        myEnemy.CheckCollision(platforms);
+        myEnemy.CheckCollisionWithSolids(platforms);
 
         // render
         // ------
         glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
    
+        // render testo per ultimo per essere davanti a tutto
+        // --------------------------------------------------
+
         for(const GameObject& object : platforms)
         {
             object.Render(ourShader);
@@ -151,8 +161,6 @@ int main()
         myPlayer.Render(ourShader);
         myEnemy.Render(ourShader);
 
-        // render testo per ultimo per essere davanti a tutto
-        // --------------------------------------------------
         int t = static_cast<int>(glfwGetTime()) - static_cast<int>(start);
         std::string time = "TIME: " + std::to_string(t);
         text.Render(textShader, time, 200.0f, 550.0f, 0.5f, glm::vec3(255.0, 255.0, 255.0));
@@ -166,7 +174,7 @@ int main()
         model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));	// it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         ourModel.Draw(ourShader);
-       
+
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
@@ -189,8 +197,8 @@ void processInput(GLFWwindow* window, Player& player, float deltatime, irrklang:
     // debug
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) 
     {
-        std::cout << ((player.isMidAir == true) ? "In aria" : "A terra") << std::endl;
-        std::cout << "Velocity: " << player.Velocity.x << ", " << player.Velocity.y << std::endl;
+        std::cout << ((player.isOnGround == true) ? "A terra" : "In aria") << std::endl;
+        std::cout << "Velocity: " << player.velocity.x << ", " << player.velocity.y << std::endl;
         std::cout << "Bottom-Left: " << player.Position.x - (player.Size.x/2) << ", " << player.Position.y - (player.Size.y / 2) << std::endl;
     }
  
@@ -200,21 +208,21 @@ void processInput(GLFWwindow* window, Player& player, float deltatime, irrklang:
     // movimento orizzontale
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) 
     {
-        if (player.Velocity.x > -player.MaxVelocity.x)
+        if (player.velocity.x > -player.maxVelocity.x)
         {
-            player.Velocity.x -= 0.01f;
+            player.velocity.x -= 0.01f;
         }
     }   
     else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
-        if (player.Velocity.x < player.MaxVelocity.x)
+        if (player.velocity.x < player.maxVelocity.x)
         {
-            player.Velocity.x += 0.01f;
+            player.velocity.x += 0.01f;
         }
     }
     else
     {
-        player.Velocity.x = 0.0f;
+        player.velocity.x = 0.0f;
     }
 
     // salto
@@ -224,7 +232,7 @@ void processInput(GLFWwindow* window, Player& player, float deltatime, irrklang:
     }
     else
     {
-        if (player.isMidAir) 
+        if (!player.isOnGround) 
         {
             player.isPastJumpPeak = true; // Se il tasto non è premuto, non si può più aumentare il salto
         }

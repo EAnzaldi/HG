@@ -143,6 +143,7 @@
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MovingObject.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="TextObject.cpp" />
@@ -155,6 +156,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="MovingObject.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="shader_s.h" />
     <ClInclude Include="stb_image.h" />
@@ -162,6 +164,10 @@
     <ClInclude Include="TextureObject.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="enlighted_object_shader.fs" />
+    <None Include="enlighted_object_shader.vs" />
+    <None Include="light_shader.fs" />
+    <None Include="light_shader.vs" />
     <None Include="shader.fs" />
     <None Include="shader.vs" />
     <None Include="shader_text.fs" />
