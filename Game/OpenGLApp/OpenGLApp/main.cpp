@@ -114,6 +114,7 @@ int main()
 
     float lastFrame = 0.0f;
     float deltatime = 0.0f;
+    float rotationAngle = 0.0f; // Angolo di rotazione del modello
 
     double start = glfwGetTime();
 
@@ -129,6 +130,11 @@ int main()
         }
 
         lastFrame = currentFrame;
+
+        rotationAngle += deltatime * 50.0f; // Incrementa l'angolo di rotazione
+        if (rotationAngle > 360.0f) {
+            rotationAngle -= 360.0f;
+        }
 
         processInput(window, myPlayer, deltatime, engine);
 
@@ -149,7 +155,7 @@ int main()
         // ------
         glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-   
+
         // render testo per ultimo per essere davanti a tutto
         // --------------------------------------------------
 
@@ -157,7 +163,15 @@ int main()
         {
             object.Render(ourShader);
         }
-
+        
+        // render the loaded model (se lo si mette dietro a platforms perde la texture)
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::rotate(model, glm::radians(rotationAngle), glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", model);
+        ourModel.Draw(ourShader);
+        
         myPlayer.Render(ourShader);
         myEnemy.Render(ourShader);
 
@@ -167,13 +181,6 @@ int main()
 
         std::string lives = "LIVES: " + std::to_string(myPlayer.lives);
         text.Render(textShader, lives, 500.0f, 550.0f, 0.5f, glm::vec3(255.0, 255.0, 255.0));
-
-        // render the loaded model
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-        model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));	// it's a bit too big for our scene, so scale it down
-        ourShader.setMat4("model", model);
-        ourModel.Draw(ourShader);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
