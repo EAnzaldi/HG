@@ -18,6 +18,7 @@
 #include "TextureObject.h"
 #include "TextObject.h"
 #include "constants.h"
+#include "model.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window, Player& player, float deltatime, irrklang::ISoundEngine* engine);
@@ -112,6 +113,7 @@ int main()
     float deltatime = 0.0f;
 
     double start = glfwGetTime();
+    Model ourModel("resources/myCube/cubetto.obj");
 
     // render loop
     // -----------
@@ -157,6 +159,13 @@ int main()
 
         std::string lives = "LIVES: " + std::to_string(myPlayer.lives);
         text.Render(textShader, lives, 500.0f, 550.0f, 0.5f, glm::vec3(255.0, 255.0, 255.0));
+
+        // render the loaded model
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));	// it's a bit too big for our scene, so scale it down
+        ourShader.setMat4("model", model);
+        ourModel.Draw(ourShader);
        
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
