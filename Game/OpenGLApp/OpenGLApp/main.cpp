@@ -4,14 +4,19 @@
 #include "shader_s.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
 #include <iostream>
 #include <vector>
+#include <string>
+#include <chrono>
+
 #include <irrKlang.h>
 
 #include "GameObject.h"
 #include "Player.h"
 #include "Enemy.h"
 #include "TextureObject.h"
+#include "TextObject.h"
 #include "constants.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -32,7 +37,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "H&G", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "H+G", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -53,12 +58,19 @@ int main()
     // build and compile our shader zprogram
     // -------------------------------------
     Shader ourShader("shader.vs", "shader.fs");
+    Shader textShader("shader_text.vs", "shader_text.fs");
 
     // inizializzo l'engine per i suoni
     // --------------------------------
     irrklang::ISoundEngine* engine = irrklang::createIrrKlangDevice();
     if (!engine)
         return 0; // error starting up the engine
+
+    // Initializza FreeType
+    FT_Library ft;
+    if (FT_Init_FreeType(&ft)) {
+        std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+    }
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -80,9 +92,11 @@ int main()
         {0.8f, 0.2f}, {0.8f, 0.2f}
     };
 
-    TextureObject texPlatforms("textures/donut_block.jpg");
-    TextureObject texPlayer("textures/ice_cream_block.jpg");
-    TextureObject texEnemy("textures/awesomeface.png");
+    TextureObject texPlatforms("resources/textures/donut_block.jpg");
+    TextureObject texPlayer("resources/textures/ice_cream_block.jpg");
+    TextureObject texEnemy("resources/textures/awesomeface.png");
+
+    TextObject text(ft, "resources/fonts/8-bit-operator/8bitOperatorPlus8-Regular.ttf");
 
     for (int i = 0; i < 8; ++i) 
     {
@@ -96,6 +110,8 @@ int main()
 
     float lastFrame = 0.0f;
     float deltatime = 0.0f;
+
+    double start = glfwGetTime();
 
     // render loop
     // -----------
@@ -132,6 +148,15 @@ int main()
 
         myPlayer.Render(ourShader);
         myEnemy.Render(ourShader);
+
+        // render testo per ultimo per essere davanti a tutto
+        // --------------------------------------------------
+        int t = static_cast<int>(glfwGetTime()) - static_cast<int>(start);
+        std::string time = "TIME: " + std::to_string(t);
+        text.Render(textShader, time, 200.0f, 550.0f, 0.5f, glm::vec3(255.0, 255.0, 255.0));
+
+        std::string lives = "LIVES: " + std::to_string(myPlayer.lives);
+        text.Render(textShader, lives, 500.0f, 550.0f, 0.5f, glm::vec3(255.0, 255.0, 255.0));
        
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -139,6 +164,9 @@ int main()
         glfwPollEvents();
     }
     
+    //Distrugge FreeType
+    FT_Done_FreeType(ft);
+
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();
