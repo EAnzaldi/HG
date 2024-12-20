@@ -1,34 +1,16 @@
 #include "Player.h"
 
 Player::Player(glm::vec2 position, glm::vec2 size, TextureObject texture, bool repeatWidth)
-    : GameObject(position, size, texture, repeatWidth), Velocity(0.0f, 0.0f), 
+    : MovingObject(position, size, texture, repeatWidth, velocity = glm::vec2(0.0f, 0.0f)),
     invincibilityDuration(1.0f), invincibilityTimer(0.0f), isInvincible(false) {
-}
-
-void Player::Move(float deltaTime) 
-{
-    if (isMidAir) 
-    {
-        this->Velocity.y += gravityForce * deltaTime;
-    }
-
-    this->Position += this->Velocity * deltaTime;
-
-    if (this->Position.x > 1.0f - this->Size.x / 2) {
-        this->Position.x = 1.0f - this->Size.x / 2;
-    }
-
-    if (this->Position.x < -1.0f + this->Size.x / 2) {
-        this->Position.x = -1.0f + this->Size.x / 2;
-    }
 }
 
 void Player::HandleJump(float deltaTime, irrklang::ISoundEngine* engine)
 {
-    if (!this->isMidAir)
+    if (this->isOnGround)
     {
-        this->isMidAir = true;
-        this->Velocity.y = this->baseJumpForce;
+        this->isOnGround = false;
+        this->velocity.y = this->baseJumpForce;
         this->currentJumpTime = 0.0f;
         engine->play2D("resources/sounds/jump.wav");
     }
@@ -37,7 +19,7 @@ void Player::HandleJump(float deltaTime, irrklang::ISoundEngine* engine)
         this->currentJumpTime += deltaTime;
         if (this->currentJumpTime < this->maxJumpTime)
         {
-            this->Velocity.y += this->addedJumpForce * deltaTime;
+            this->velocity.y += this->addedJumpForce * deltaTime;
         }
         else
         {
@@ -46,31 +28,9 @@ void Player::HandleJump(float deltaTime, irrklang::ISoundEngine* engine)
     }
 }
 
-void Player::CheckCollision(const std::vector<GameObject>& solidObjects)
+bool Player::CheckEnemyCollision(const Enemy& enemy)
 {
-    isOnGround = false;
-
-    for (const GameObject& solid : solidObjects)
-    {
-        if (HasCollided(solid))
-        {
-            HandleCollision(solid);
-        }
-    }
-
-    if (!isOnGround)
-    {
-        this->isMidAir = true;
-    }
-    else
-    {
-        this->isMidAir = false;
-    }
-}
-
-bool Player::CheckCollision(const Enemy& enemy)
-{
-    if (!isInvincible && HasCollided(enemy))
+    if (!isInvincible && CheckCollision(enemy))
     {
         if (lives > 1)
         {
@@ -87,28 +47,18 @@ bool Player::CheckCollision(const Enemy& enemy)
     return isDead;
 }
 
-bool Player::HasCollided(const GameObject& other) const {
-    Hitbox bounds1 = this->GetHitbox();
-    Hitbox bounds2 = other.GetHitbox();
-    return (bounds1.Min.x <= bounds2.Max.x && bounds1.Max.x >= bounds2.Min.x &&
-        bounds1.Min.y <= bounds2.Max.y && bounds1.Max.y >= bounds2.Min.y);
-}
-
-void Player::HandleCollision(const GameObject& solid)
+void Player::HandleCollisionWithSolid(GameObject solidObject)
 {
-    this->isOnGround = false;
-
     Hitbox playerHitbox = this->GetHitbox();
-    Hitbox solidHitbox = solid.GetHitbox();
+    Hitbox solidHitbox = solidObject.GetHitbox();
 
-    // Calcolo la compenetrazione per ogni asse
     float overlapX = std::min(playerHitbox.Max.x, solidHitbox.Max.x) - std::max(playerHitbox.Min.x, solidHitbox.Min.x);
     float overlapY = std::min(playerHitbox.Max.y, solidHitbox.Max.y) - std::max(playerHitbox.Min.y, solidHitbox.Min.y);
 
     // Correggo l'overlap minore
     if (overlapX < overlapY) // Correggo sull'asse X
     {
-        if (this->Position.x < solid.Position.x) // Collisione a destra del player
+        if (this->Position.x < solidObject.Position.x) // Collisione a destra del player
         {
             this->Position.x -= overlapX;
         }
@@ -116,21 +66,21 @@ void Player::HandleCollision(const GameObject& solid)
         {
             this->Position.x += overlapX; // Sposta il player verso destra
         }
-        this->Velocity.x = 0;
+        this->velocity.x = 0;
     }
     else // Correggi sull'asse Y
     {
-        if (this->Position.y < solid.Position.y) // Collisione sopra il player
+        if (this->Position.y < solidObject.Position.y) // Collisione sopra il player
         {
             this->Position.y -= overlapY;
         }
         else // Collisione sotto il player
         {
-            this->Position.y += overlapY; 
+            this->Position.y += overlapY;
             this->isOnGround = true;
             this->isPastJumpPeak = false;
         }
-        this->Velocity.y = 0;
+        this->velocity.y = 0;
     }
 }
 

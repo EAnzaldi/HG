@@ -39,6 +39,9 @@
     <ClCompile Include="TextObject.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="MovingObject.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader_s.h">
@@ -74,6 +77,9 @@
     <ClInclude Include="TextObject.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="MovingObject.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.vs">
@@ -84,6 +90,10 @@
     </None>
     <None Include="shader_text.fs" />
     <None Include="shader_text.vs" />
+    <None Include="light_shader.vs" />
+    <None Include="light_shader.fs" />
+    <None Include="enlighted_object_shader.fs" />
+    <None Include="enlighted_object_shader.vs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="textures\awesomeface.png">

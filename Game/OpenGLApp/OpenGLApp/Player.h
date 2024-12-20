@@ -1,47 +1,36 @@
 #pragma once
 
-#include "GameObject.h"
+#include "MovingObject.h"
 #include "Enemy.h"
 
 #include <irrKlang.h>
 
-class Player : public GameObject 
+class Player : public MovingObject
 {
     public:
+        bool isInvincible;           // Flag per indicare se il giocatore è invincibile
         float invincibilityDuration; // Durata dell'invincibilità (in secondi)
         float invincibilityTimer;    // Timer corrente per l'invincibilità
-        bool isInvincible;           // Flag per indicare se il giocatore è invincibile
 
         bool isDead = false;    //Player inizia vivo
         int lives = 3;          //Player inizia con 3 vite
 
-        bool isOnGround = false;
-        bool isMidAir = false;
-        bool isPastJumpPeak = false;
-
-        float gravityForce = -3.0f;         // Forza di gravità
         float baseJumpForce = 1.5f;         // Forza iniziale del salto
+
+        bool isPastJumpPeak = false;
         float addedJumpForce = 2.5f;        // Forza aggiuntiva durante il salto (tenendo premuto il tasto)
         float maxJumpTime = 0.3f;           // Durata massima del salto (tenendo premuto il tasto)
         float currentJumpTime = 0.0f;       // Tempo trascorso dall'inizio del salto
 
-        glm::vec2 Velocity;
-
-        glm::vec2 MaxVelocity = glm::vec2(1.5f, 2.5f);
+        glm::vec2 maxVelocity = glm::vec2(1.5f, 2.5f);
 
         Player(glm::vec2 position, glm::vec2 size, TextureObject texture, bool repeatWidth);
 
-        void Move(float deltaTime);
-
         void HandleJump(float deltaTime, irrklang::ISoundEngine* engine);
 
-        bool CheckCollision(const Enemy& enemy);
+        void HandleCollisionWithSolid(GameObject solidObject) override;
 
-        void CheckCollision(const std::vector<GameObject>& solidObjects);
-
-        bool HasCollided(const GameObject& other) const;
-
-        void HandleCollision(const GameObject& solid);
+        bool CheckEnemyCollision(const Enemy& enemy);
 
         void Update(float deltaTime); // Aggiorna lo stato del giocatore
         

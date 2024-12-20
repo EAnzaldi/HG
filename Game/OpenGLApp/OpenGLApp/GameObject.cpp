@@ -80,7 +80,7 @@ void GameObject::Render(const Shader& shader) const
     glBindVertexArray(0);
 }
 
-Hitbox GameObject::GetHitbox() const 
+Hitbox GameObject::GetHitbox() const
 {
     return Hitbox{
         this->Position - this->Size / 2.0f, // Min (basso a sinistra)
