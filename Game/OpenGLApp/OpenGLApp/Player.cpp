@@ -30,7 +30,7 @@ void Player::HandleJump(float deltaTime, irrklang::ISoundEngine* engine)
         this->isMidAir = true;
         this->Velocity.y = this->baseJumpForce;
         this->currentJumpTime = 0.0f;
-        engine->play2D("sounds/jump.wav");
+        engine->play2D("resources/sounds/jump.wav");
     }
     else if (!this->isPastJumpPeak)
     {
