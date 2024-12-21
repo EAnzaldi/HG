@@ -2,8 +2,10 @@
 #include <GLFW/glfw3.h>
 #include "stb_image.h"
 #include "shader_s.h"
+#include "camera.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
 #include <vector>
@@ -56,10 +58,15 @@ int main()
         return -1;
     }
 
+    glEnable(GL_DEPTH_TEST);
+
+    Camera camera(glm::vec3(0.0f, 0.0f, 1.0f));
+
     // build and compile our shader zprogram
     // -------------------------------------
     Shader ourShader("shader.vs", "shader.fs");
     Shader textShader("shader_text.vs", "shader_text.fs");
+    Shader enlightenedShader("enlighted_object_shader.vs", "enlightened_object_shader.fs");
 
     // inizializzo l'engine per i suoni
     // --------------------------------
@@ -87,12 +94,12 @@ int main()
         {-0.6f, 0.5f}, {0.6f, 0.5f}
     };
 
-    glm::vec2 sizes[] = {
-        {2.0f, 0.2f}, 
-        {0.8f, 0.2f}, {0.8f, 0.2f},
-        {0.3f, 0.2f}, {0.3f, 0.2f}, 
-        {1.0f, 0.2f}, 
-        {0.8f, 0.2f}, {0.8f, 0.2f}
+    glm::vec3 sizes[] = {
+        {1.0f, 0.1f, 0.1f},
+        {0.4f, 0.1f, 0.1f}, {0.4f, 0.1f, 0.1f},
+        {0.15f, 0.1f, 0.1f}, {0.15f, 0.1f, 0.1f},
+        {0.5f, 0.1f, 0.1f},
+        {0.4f, 0.1f, 0.1f}, {0.4f, 0.1f, 0.1f}
     };
 
     TextureObject texPlatforms("resources/textures/donut_block.jpg");
@@ -101,22 +108,32 @@ int main()
 
     TextObject text(ft, "resources/fonts/8-bit-operator/8bitOperatorPlus8-Regular.ttf");
 
-    Model ourModel("resources/myCube/cubetto.obj");
+    Model cubeModel("resources/models/cubetto.obj");
 
     for (int i = 0; i < 8; ++i) 
     {
-        platforms.emplace_back(positions[i], sizes[i], texPlatforms, 1);
+        platforms.emplace_back(positions[i], sizes[i], cubeModel, texPlatforms, 1);
     }
 
-    Player myPlayer(glm::vec2(-0.5f, -0.75f), glm::vec2(0.1f, 0.1f), texPlayer, 0);
+    Player myPlayer(glm::vec2(-0.5f, -0.75f), glm::vec3(0.05f, 0.05f, 0.05f), cubeModel, texPlayer, 0);
     
-    Enemy myEnemy(glm::vec2(0.8f, 0.85f), glm::vec2(0.1f, 0.1f), texEnemy, 0, glm::vec2(-0.8f, 0.0f));
+    Enemy myEnemy(glm::vec2(0.8f, 0.85f), glm::vec3(0.05f, 0.05f, 0.05f), cubeModel, texEnemy, 0, glm::vec2(-0.8f, 0.0f));
 
     float lastFrame = 0.0f;
     float deltatime = 0.0f;
     float rotationAngle = 0.0f; // Angolo di rotazione del modello
 
     double start = glfwGetTime();
+
+    float left = -1.0f;   // Puoi modificare questi valori per adattarli alla tua scena
+    float right = 1.0f;
+    float bottom = -1.0f;
+    float top = 1.0f;
+    float nearPlane = 0.1f;
+    float farPlane = 100.0f;
+
+    glm::mat4 projection = glm::ortho(left, right, bottom, top);
+    glm::mat4 view = camera.GetViewMatrix();
 
     // render loop
     // -----------
@@ -154,33 +171,37 @@ int main()
         // render
         // ------
         glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // render testo per ultimo per essere davanti a tutto
         // --------------------------------------------------
+
+        ourShader.use();
+        ourShader.setMat4("projection", projection);
+        ourShader.setMat4("view", view);
 
         for(const GameObject& object : platforms)
         {
             object.Render(ourShader);
         }
         
-        // render the loaded model (se lo si mette dietro a platforms perde la texture)
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-        model = glm::rotate(model, glm::radians(rotationAngle), glm::vec3(0.0f, 0.0f, 1.0f));
-        model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
-        ourShader.setMat4("model", model);
-        ourModel.Draw(ourShader);
+        //// render the loaded model (se lo si mette dietro a platforms perde la texture)
+        //glm::mat4 model = glm::mat4(1.0f);
+        //model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+        //model = glm::rotate(model, glm::radians(rotationAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+        //model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
+        //ourShader.setMat4("model", model);
+        //cubeModel.Draw(ourShader);
         
         myPlayer.Render(ourShader);
         myEnemy.Render(ourShader);
 
         int t = static_cast<int>(glfwGetTime()) - static_cast<int>(start);
         std::string time = "TIME: " + std::to_string(t);
-        text.Render(textShader, time, 200.0f, 550.0f, 0.5f, glm::vec3(255.0, 255.0, 255.0));
+        text.Render(textShader, time, 200.0f, 1100.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
 
         std::string lives = "LIVES: " + std::to_string(myPlayer.lives);
-        text.Render(textShader, lives, 500.0f, 550.0f, 0.5f, glm::vec3(255.0, 255.0, 255.0));
+        text.Render(textShader, lives, 1200.0f, 1100.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -207,6 +228,8 @@ void processInput(GLFWwindow* window, Player& player, float deltatime, irrklang:
         std::cout << ((player.isOnGround == true) ? "A terra" : "In aria") << std::endl;
         std::cout << "Velocity: " << player.velocity.x << ", " << player.velocity.y << std::endl;
         std::cout << "Bottom-Left: " << player.Position.x - (player.Size.x/2) << ", " << player.Position.y - (player.Size.y / 2) << std::endl;
+        std::cout << "HB-Bottom-Left: " << player.GetHitbox().Min.x << ", " << player.GetHitbox().Min.y << std::endl;
+        std::cout << "HB-Top-Right: " << player.GetHitbox().Max.x << ", " << player.GetHitbox().Max.y << std::endl;
     }
  
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)

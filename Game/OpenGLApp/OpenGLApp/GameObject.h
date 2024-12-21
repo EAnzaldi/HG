@@ -10,6 +10,7 @@
 
 #include <string>
 #include "TextureObject.h"
+#include "model.h"
 #include "constants.h"
 #include <vector>
 
@@ -23,12 +24,14 @@ class GameObject
 {
 public:
     glm::vec2 Position;
-    glm::vec2 Size;
+    glm::vec3 Size;
     float Rotation;
+
+    Model model;
 
     TextureObject Texture;
 
-    GameObject(glm::vec2 position, glm::vec2 size, TextureObject texture, bool repeatWidth);
+    GameObject(glm::vec2 position, glm::vec3 size, Model model, TextureObject texture, bool repeatWidth);
 
     void Render(const Shader& shader) const;
 
@@ -36,7 +39,5 @@ public:
 
 private:
     unsigned int VAO;
-
-    void initRenderData(bool repeatWidth);
 
 };

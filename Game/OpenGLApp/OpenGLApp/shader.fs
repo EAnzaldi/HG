@@ -6,9 +6,11 @@ in vec3 ourColor;
 in vec2 ourTexCoord;
 
 uniform sampler2D ourTexture;
+uniform vec2 textureRepetition;
 
 void main()
 {
+
     vec4 texColor = texture(ourTexture, ourTexCoord);
 
     vec4 mixedColor = mix(texColor, vec4(ourColor, 1.0f), 1.0);
