@@ -1,6 +1,6 @@
 #include "MovingObject.h"
 
-MovingObject::MovingObject(glm::vec2 position, glm::vec3 size, Model model, TextureObject texture, bool repeatWidth, glm::vec2 velocity)
+MovingObject::MovingObject(glm::vec2 position, glm::vec3 size, Model model, TextureObject* texture, bool repeatWidth, glm::vec2 velocity)
     : GameObject(position, size, model, texture, repeatWidth), velocity(velocity) {
 }
 

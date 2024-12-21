@@ -1,8 +1,9 @@
-D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\Enemy.cpp;D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\x64\Release\Enemy.obj
-D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\GameObject.cpp;D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\x64\Release\GameObject.obj
-D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\glad.c;D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\x64\Release\glad.obj
-D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\Main.cpp;D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\x64\Release\Main.obj
-D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\Player.cpp;D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\x64\Release\Player.obj
-D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\stb_image.cpp;D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\x64\Release\stb_image.obj
-D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\TextObject.cpp;D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\x64\Release\TextObject.obj
-D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\TextureObject.cpp;D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\x64\Release\TextureObject.obj
+C:\Users\casad\Desktop\HG\Game\OpenGLApp\OpenGLApp\Enemy.cpp;C:\Users\casad\Desktop\HG\Game\OpenGLApp\OpenGLApp\x64\Release\Enemy.obj
+C:\Users\casad\Desktop\HG\Game\OpenGLApp\OpenGLApp\GameObject.cpp;C:\Users\casad\Desktop\HG\Game\OpenGLApp\OpenGLApp\x64\Release\GameObject.obj
+C:\Users\casad\Desktop\HG\Game\OpenGLApp\OpenGLApp\glad.c;C:\Users\casad\Desktop\HG\Game\OpenGLApp\OpenGLApp\x64\Release\glad.obj
+C:\Users\casad\Desktop\HG\Game\OpenGLApp\OpenGLApp\Main.cpp;C:\Users\casad\Desktop\HG\Game\OpenGLApp\OpenGLApp\x64\Release\Main.obj
+C:\Users\casad\Desktop\HG\Game\OpenGLApp\OpenGLApp\MovingObject.cpp;C:\Users\casad\Desktop\HG\Game\OpenGLApp\OpenGLApp\x64\Release\MovingObject.obj
+C:\Users\casad\Desktop\HG\Game\OpenGLApp\OpenGLApp\Player.cpp;C:\Users\casad\Desktop\HG\Game\OpenGLApp\OpenGLApp\x64\Release\Player.obj
+C:\Users\casad\Desktop\HG\Game\OpenGLApp\OpenGLApp\stb_image.cpp;C:\Users\casad\Desktop\HG\Game\OpenGLApp\OpenGLApp\x64\Release\stb_image.obj
+C:\Users\casad\Desktop\HG\Game\OpenGLApp\OpenGLApp\TextObject.cpp;C:\Users\casad\Desktop\HG\Game\OpenGLApp\OpenGLApp\x64\Release\TextObject.obj
+C:\Users\casad\Desktop\HG\Game\OpenGLApp\OpenGLApp\TextureObject.cpp;C:\Users\casad\Desktop\HG\Game\OpenGLApp\OpenGLApp\x64\Release\TextureObject.obj

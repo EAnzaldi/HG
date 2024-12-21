@@ -2,7 +2,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-GameObject::GameObject(glm::vec2 position, glm::vec3 size, Model model, TextureObject texture, bool repeatWidth)
+GameObject::GameObject(glm::vec2 position, glm::vec3 size, Model model, TextureObject* texture, bool repeatWidth)
     : Position(position), Size(size), model(model), Rotation(0.0f), Texture(texture)
 {
     // flag specifica se si voglia scalare la texture (consigliato=1 per piattaforme)
@@ -12,8 +12,11 @@ void GameObject::Render(const Shader& shader) const
 {
     shader.use();
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, this->Texture.TextureID);
+    if (this->Texture) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, this->Texture->TextureID);
+        shader.setVec2("textureReps", glm::vec2(Size.x * 10.0f, Size.y * 10.0f));
+    }
 
     // Modifico model altrimenti disegnerei un quadrato in posizione 0,0
     glm::mat4 model_mat = glm::mat4(1.0f);
