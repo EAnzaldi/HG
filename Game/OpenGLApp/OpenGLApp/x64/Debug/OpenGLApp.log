@@ -3,6 +3,10 @@
   Main.cpp
   MovingObject.cpp
   Player.cpp
+  stb_image.cpp
+  TextObject.cpp
+  TextureObject.cpp
   Generazione del codice in corso...
+  glad.c
 LINK : warning LNK4098: la libreria predefinita 'MSVCRT' è in conflitto con l'utilizzo di altre librerie; usare /NODEFAULTLIB:libreria
-  OpenGLApp.vcxproj -> C:\Users\casad\Desktop\HG\Game\OpenGLApp\x64\Debug\OpenGLApp.exe
+  OpenGLApp.vcxproj -> C:\Users\Utente\HG\Game\OpenGLApp\x64\Debug\OpenGLApp.exe
