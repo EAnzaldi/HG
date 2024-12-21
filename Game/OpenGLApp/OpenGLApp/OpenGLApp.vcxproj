@@ -166,8 +166,6 @@
   <ItemGroup>
     <None Include="enlightened_object_shader.fs" />
     <None Include="enlightened_object_shader.vs" />
-    <None Include="light_shader.fs" />
-    <None Include="light_shader.vs" />
     <None Include="shader.fs" />
     <None Include="shader.vs" />
     <None Include="shader_text.fs" />

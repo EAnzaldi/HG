@@ -29,15 +29,12 @@ public:
 
     Model model;
 
-    TextureObject Texture;
+    TextureObject* Texture;
 
-    GameObject(glm::vec2 position, glm::vec3 size, Model model, TextureObject texture, bool repeatWidth);
+    GameObject(glm::vec2 position, glm::vec3 size, Model model, TextureObject* texture, bool repeatWidth);
 
     void Render(const Shader& shader) const;
 
     Hitbox GetHitbox() const;
-
-private:
-    unsigned int VAO;
 
 };
