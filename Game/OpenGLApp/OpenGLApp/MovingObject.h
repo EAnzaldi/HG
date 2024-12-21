@@ -11,7 +11,11 @@ public:
 
     glm::vec2 velocity;
 
-    MovingObject(glm::vec2 position, glm::vec2 size, TextureObject texture, bool repeatWidth, glm::vec2 velocity);
+    bool lastDirectionRight = true;  // Assume che inizialmente l'oggetto si muova a destra
+    float rotationSpeed = 720.0f;      // Velocità della rotazione
+    float targetRotation = 0.0f;    // Angolo di rotazione di destinazione
+
+    MovingObject(glm::vec2 position, glm::vec3 size, Model model, TextureObject texture, bool repeatWidth, glm::vec2 velocity);
 
     void Move(float deltaTime);
 

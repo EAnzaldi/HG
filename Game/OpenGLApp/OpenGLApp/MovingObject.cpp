@@ -1,7 +1,7 @@
 #include "MovingObject.h"
 
-MovingObject::MovingObject(glm::vec2 position, glm::vec2 size, TextureObject texture, bool repeatWidth, glm::vec2 velocity)
-    : GameObject(position, size, texture, repeatWidth), velocity(velocity) {
+MovingObject::MovingObject(glm::vec2 position, glm::vec3 size, Model model, TextureObject texture, bool repeatWidth, glm::vec2 velocity)
+    : GameObject(position, size, model, texture, repeatWidth), velocity(velocity) {
 }
 
 void MovingObject::Move(float deltaTime)
@@ -13,12 +13,36 @@ void MovingObject::Move(float deltaTime)
 
     this->Position += this->velocity * deltaTime;
 
-    if (this->Position.x > 1.0f - this->Size.x / 2) {
-        this->Position.x = 1.0f - this->Size.x / 2;
+    if (this->Position.x > 1.0f - this->Size.x) {
+        this->Position.x = 1.0f - this->Size.x;
     }
 
-    if (this->Position.x < -1.0f + this->Size.x / 2) {
-        this->Position.x = -1.0f + this->Size.x / 2;
+    if (this->Position.x < -1.0f + this->Size.x) {
+        this->Position.x = -1.0f + this->Size.x;
+    }
+
+    if (velocity.x > 0.0f && !lastDirectionRight) {
+        targetRotation = 0.0f;  // Direzione verso destra
+        lastDirectionRight = true;
+    }
+    else if (velocity.x < 0.0f && lastDirectionRight) {
+        targetRotation = 180.0f;  // Direzione verso sinistra
+        lastDirectionRight = false;
+    }
+
+    // Interpola la rotazione più velocemente
+    if (std::abs(targetRotation - Rotation) > 0.1f) {
+        float rotationStep = rotationSpeed * deltaTime;
+
+        // Maggiore velocità di rotazione
+        rotationStep = std::min(rotationStep, 180.0f);  // Limita a 180 gradi per evitare overshoot
+
+        if (std::abs(targetRotation - Rotation) < rotationStep) {
+            Rotation = targetRotation;  // Allinea la rotazione alla destinazione se la differenza è piccola
+        }
+        else {
+            Rotation += (targetRotation > Rotation ? rotationStep : -rotationStep);  // Ruota gradualmente
+        }
     }
 }
 
