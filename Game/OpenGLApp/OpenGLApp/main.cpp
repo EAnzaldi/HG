@@ -146,8 +146,6 @@ int main()
     enlightenedShader.setMat4("projection", projection);
     enlightenedShader.setMat4("view", view);
 
-    enlightenedShader.use();
-    enlightenedShader.setVec3("objectColor", glm::vec3(0.5f, 0.2f, 0.8f));
     enlightenedShader.setVec3("viewPos", camera.Position);
 
     // valori per materiale dorato
