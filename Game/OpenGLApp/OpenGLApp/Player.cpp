@@ -28,10 +28,11 @@ void Player::HandleJump(float deltaTime, irrklang::ISoundEngine* engine)
     }
 }
 
-bool Player::CheckEnemyCollision(const Enemy& enemy)
+bool Player::CheckEnemyCollision(const Enemy& enemy, irrklang::ISoundEngine* engine)
 {
     if (!isInvincible && CheckCollision(enemy))
     {
+        engine->play2D("resources/sounds/damage.wav");
         if (lives > 1)
         {
             lives--; // Perde una vita
