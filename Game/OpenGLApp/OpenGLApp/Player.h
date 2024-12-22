@@ -30,7 +30,7 @@ class Player : public MovingObject
 
         void HandleCollisionWithSolid(GameObject solidObject) override;
 
-        bool CheckEnemyCollision(const Enemy& enemy);
+        bool CheckEnemyCollision(const Enemy& enemy, irrklang::ISoundEngine* engine);
 
         void Update(float deltaTime); // Aggiorna lo stato del giocatore
         

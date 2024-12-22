@@ -13,13 +13,14 @@ void MovingObject::Move(float deltaTime)
 
     this->Position += this->velocity * deltaTime;
 
-    if (this->Position.x > 1.0f - this->Size.x) {
-        this->Position.x = 1.0f - this->Size.x;
+    if (this->Position.x > 1.0f - this->Size.x / 2) {
+        this->Position.x = 1.0f - this->Size.x / 2;
     }
 
-    if (this->Position.x < -1.0f + this->Size.x) {
-        this->Position.x = -1.0f + this->Size.x;
+    if (this->Position.x < -1.0f + this->Size.x / 2) {
+        this->Position.x = -1.0f + this->Size.x / 2;
     }
+
 
     if (velocity.x > 0.0f && !lastDirectionRight) {
         targetRotation = 0.0f;  // Direzione verso destra
@@ -30,18 +31,17 @@ void MovingObject::Move(float deltaTime)
         lastDirectionRight = false;
     }
 
-    // Interpola la rotazione più velocemente
+    // Se serve applico la rotazione del modello
     if (std::abs(targetRotation - Rotation) > 0.1f) {
         float rotationStep = rotationSpeed * deltaTime;
 
-        // Maggiore velocità di rotazione
-        rotationStep = std::min(rotationStep, 180.0f);  // Limita a 180 gradi per evitare overshoot
+        rotationStep = std::min(rotationStep, 180.0f);  // Limito a 180 gradi per evitare overshoot
 
         if (std::abs(targetRotation - Rotation) < rotationStep) {
-            Rotation = targetRotation;  // Allinea la rotazione alla destinazione se la differenza è piccola
+            Rotation = targetRotation;  // Allineo la rotazione alla destinazione se la differenza è piccola
         }
         else {
-            Rotation += (targetRotation > Rotation ? rotationStep : -rotationStep);  // Ruota gradualmente
+            Rotation += (targetRotation > Rotation ? rotationStep : -rotationStep);
         }
     }
 }

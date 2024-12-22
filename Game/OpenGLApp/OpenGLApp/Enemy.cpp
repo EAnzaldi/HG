@@ -34,18 +34,17 @@ void Enemy::Move(float deltaTime)
         lastDirectionRight = false;
     }
 
-    // Interpola la rotazione più velocemente
+    // Se serve applico la rotazione del modello
     if (std::abs(targetRotation - Rotation) > 0.1f) {
         float rotationStep = rotationSpeed * deltaTime;
 
-        // Maggiore velocità di rotazione
-        rotationStep = std::min(rotationStep, 180.0f);  // Limita a 180 gradi per evitare overshoot
+        rotationStep = std::min(rotationStep, 180.0f);  // Limito a 180 gradi per evitare overshoot
 
         if (std::abs(targetRotation - Rotation) < rotationStep) {
-            Rotation = targetRotation;  // Allinea la rotazione alla destinazione se la differenza è piccola
+            Rotation = targetRotation;  // Allineo la rotazione alla destinazione se la differenza è piccola
         }
         else {
-            Rotation += (targetRotation > Rotation ? rotationStep : -rotationStep);  // Ruota gradualmente
+            Rotation += (targetRotation > Rotation ? rotationStep : -rotationStep);
         }
     }
 }
