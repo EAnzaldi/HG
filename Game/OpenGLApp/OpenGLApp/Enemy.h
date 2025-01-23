@@ -6,7 +6,6 @@ class Enemy : public MovingObject {
 public:
   
     Enemy(glm::vec2 position, glm::vec3 size, Model model, TextureObject* texture, bool repeatWidth, glm::vec2 velocity);
-  
-    void Move(float deltaTime);
 
+    void HandleCollisionWithSolid(GameObject solidObject) override;
 };

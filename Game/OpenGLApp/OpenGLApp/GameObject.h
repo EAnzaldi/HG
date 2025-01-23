@@ -33,7 +33,7 @@ public:
 
     GameObject(glm::vec2 position, glm::vec3 size, Model model, TextureObject* texture, bool repeatWidth);
 
-    void Render(const Shader& shader) const;
+    virtual void Render(const Shader& shader) const;
 
     Hitbox GetHitbox() const;
 

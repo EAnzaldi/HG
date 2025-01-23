@@ -24,4 +24,6 @@ public:
     void CheckCollisionWithSolids(const std::vector<GameObject>& solidObjects);
 
     virtual void HandleCollisionWithSolid(GameObject solidObject);
+
+    void Render(const Shader& shader) const override;
 };

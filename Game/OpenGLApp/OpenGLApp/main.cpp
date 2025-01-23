@@ -118,7 +118,7 @@ int main()
         platforms.emplace_back(positions[i], sizes[i], cubeModel, &texPlatforms, 1);
     }
 
-    Player myPlayer(glm::vec2(-0.5f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), cubeModel, &texPlayer, 0);
+    Player myPlayer(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), cubeModel, &texPlayer, 0);
     
     Enemy myEnemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), cubeModel, &texEnemy, 0, glm::vec2(0.8f, 0.0f));
 
@@ -256,6 +256,7 @@ void processInput(GLFWwindow* window, Player& player, float deltatime, irrklang:
         std::cout << "Bottom-Left: " << player.Position.x - (player.Size.x/2) << ", " << player.Position.y - (player.Size.y / 2) << std::endl;
         std::cout << "HB-Bottom-Left: " << player.GetHitbox().Min.x << ", " << player.GetHitbox().Min.y << std::endl;
         std::cout << "HB-Top-Right: " << player.GetHitbox().Max.x << ", " << player.GetHitbox().Max.y << std::endl;
+        std::cout << "Position-X: " << player.Position.x << std::endl;
     }
  
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
