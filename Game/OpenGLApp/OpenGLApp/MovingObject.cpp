@@ -13,12 +13,12 @@ void MovingObject::Move(float deltaTime)
 
     this->Position += this->velocity * deltaTime;
 
-    if (this->Position.x > 1.0f - this->Size.x / 2) {
-        this->Position.x = 1.0f - this->Size.x / 2;
+    if (this->Position.x - this->Size.x / 2 >= 1.0f) {
+        this->Position.x = -1.0f + this->Size.x / 2;
     }
 
-    if (this->Position.x < -1.0f + this->Size.x / 2) {
-        this->Position.x = -1.0f + this->Size.x / 2;
+    if (this->Position.x + this->Size.x / 2 <= -1.0f) {
+        this->Position.x = 1.0f - this->Size.x / 2;
     }
 
 
@@ -69,11 +69,11 @@ void MovingObject::CheckCollisionWithSolids(const std::vector<GameObject>& solid
 
 void MovingObject::HandleCollisionWithSolid(GameObject solidObject)
 {
-    Hitbox playerHitbox = this->GetHitbox();
+    Hitbox thisHitbox = this->GetHitbox();
     Hitbox solidHitbox = solidObject.GetHitbox();
 
-    float overlapX = std::min(playerHitbox.Max.x, solidHitbox.Max.x) - std::max(playerHitbox.Min.x, solidHitbox.Min.x);
-    float overlapY = std::min(playerHitbox.Max.y, solidHitbox.Max.y) - std::max(playerHitbox.Min.y, solidHitbox.Min.y);
+    float overlapX = std::min(thisHitbox.Max.x, solidHitbox.Max.x) - std::max(thisHitbox.Min.x, solidHitbox.Min.x);
+    float overlapY = std::min(thisHitbox.Max.y, solidHitbox.Max.y) - std::max(thisHitbox.Min.y, solidHitbox.Min.y);
 
     // Correggo l'overlap minore
     if (overlapX < overlapY) // Correggo sull'asse X
@@ -99,5 +99,36 @@ void MovingObject::HandleCollisionWithSolid(GameObject solidObject)
             this->isOnGround = true;
         }
         this->velocity.y = 0;
+    }
+}
+
+void MovingObject::Render(const Shader& Shader) const
+{
+    GameObject::Render(Shader);
+
+    // Se l'oggetto si trova oltre il bordo a destra renderizzo la parte mancante a sinistra
+    if (this->Position.x >= 1.0f - this->Size.x / 2)
+    {
+        glm::mat4 model_mat = glm::mat4(1.0f);
+        model_mat = glm::translate(model_mat, glm::vec3((this->Position - glm::vec2(2.0f, 0.0f)), 0.0f));
+        model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), glm::vec3(0.0f, 1.0f, 0.0f)); // Ruota attorno all'asse Z
+        model_mat = glm::scale(model_mat, this->Size);
+
+        Shader.setMat4("model", model_mat);
+
+        model.Draw(Shader);
+    }
+
+    // Se l'oggetto si trova oltre il bordo a sinistra renderizzo la parte mancante a destra
+    if (this->Position.x <= -1.0f + this->Size.x / 2)
+    {
+        glm::mat4 model_mat = glm::mat4(1.0f);
+        model_mat = glm::translate(model_mat, glm::vec3((this->Position + glm::vec2(2.0f, 0.0f)), 0.0f));
+        model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), glm::vec3(0.0f, 1.0f, 0.0f)); // Ruota attorno all'asse Z
+        model_mat = glm::scale(model_mat, this->Size);
+
+        Shader.setMat4("model", model_mat);
+
+        model.Draw(Shader);
     }
 }

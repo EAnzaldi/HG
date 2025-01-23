@@ -5,46 +5,39 @@ Enemy::Enemy(glm::vec2 position, glm::vec3 size, Model model, TextureObject* tex
     : MovingObject(position, size, model, texture, repeatWidth, velocity) {
 }
 
-void Enemy::Move(float deltaTime)
+void Enemy::HandleCollisionWithSolid(GameObject solidObject)
 {
-    if (!isOnGround)
+    Hitbox thisHitbox = this->GetHitbox();
+    Hitbox solidHitbox = solidObject.GetHitbox();
+
+    float overlapX = std::min(thisHitbox.Max.x, solidHitbox.Max.x) - std::max(thisHitbox.Min.x, solidHitbox.Min.x);
+    float overlapY = std::min(thisHitbox.Max.y, solidHitbox.Max.y) - std::max(thisHitbox.Min.y, solidHitbox.Min.y);
+
+    // Correggo l'overlap minore
+    if (overlapX < overlapY) // Correggo sull'asse X
     {
-        this->velocity.y += gravityForce * deltaTime;
-    }
-
-    this->Position.x += (this->velocity.x * deltaTime)/4;   //in player viene usato solo this->Position mentre qui voglio che la sua x
-    this->Position.y += this->velocity.y * deltaTime;       //sia più lenta della y che deve rimanere fissa essendo la forza di gravità
-
-    // Limita il movimento orizzontale ai bordi dello schermo (opzionale)
-    if (this->Position.x > 1.0f - this->Size.x / 2) {
-        this->Position.x = 1.0f - this->Size.x / 2;
-        this->velocity.x = -std::abs(this->velocity.x); // Inverti direzione orizzontale
-    }
-    if (this->Position.x < -1.0f + this->Size.x / 2) {
-        this->Position.x = -1.0f + this->Size.x / 2;
-        this->velocity.x = std::abs(this->velocity.x); // Inverti direzione orizzontale
-    }
-
-    if (velocity.x > 0.0f && !lastDirectionRight) {
-        targetRotation = 0.0f;  // Direzione verso destra
-        lastDirectionRight = true;
-    }
-    else if (velocity.x < 0.0f && lastDirectionRight) {
-        targetRotation = 180.0f;  // Direzione verso sinistra
-        lastDirectionRight = false;
-    }
-
-    // Se serve applico la rotazione del modello
-    if (std::abs(targetRotation - Rotation) > 0.1f) {
-        float rotationStep = rotationSpeed * deltaTime;
-
-        rotationStep = std::min(rotationStep, 180.0f);  // Limito a 180 gradi per evitare overshoot
-
-        if (std::abs(targetRotation - Rotation) < rotationStep) {
-            Rotation = targetRotation;  // Allineo la rotazione alla destinazione se la differenza è piccola
+        if (this->Position.x < solidObject.Position.x) // Collisione a destra del MovingObject
+        {
+            this->Position.x -= overlapX;
+            this->velocity.x = -this->velocity.x;
         }
-        else {
-            Rotation += (targetRotation > Rotation ? rotationStep : -rotationStep);
+        else // Collisione a sinistra del MovingObject
+        {
+            this->Position.x += overlapX;
+            this->velocity.x = -this->velocity.x;
         }
+    }
+    else // Correggi sull'asse Y
+    {
+        if (this->Position.y < solidObject.Position.y) // Collisione sopra del MovingObject
+        {
+            this->Position.y -= overlapY;
+        }
+        else // Collisione sotto del MovingObject
+        {
+            this->Position.y += overlapY;
+            this->isOnGround = true;
+        }
+        this->velocity.y = 0;
     }
 }
