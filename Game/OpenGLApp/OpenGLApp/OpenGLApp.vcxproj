@@ -141,10 +141,12 @@
   <ItemGroup>
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameState.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MovingObject.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="StateManager.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="TextObject.cpp" />
     <ClCompile Include="TextureObject.cpp" />
@@ -154,11 +156,13 @@
     <ClInclude Include="constants.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameState.h" />
     <ClInclude Include="mesh.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="MovingObject.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="shader_s.h" />
+    <ClInclude Include="StateManager.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="TextObject.h" />
     <ClInclude Include="TextureObject.h" />
