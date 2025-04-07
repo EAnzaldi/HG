@@ -48,6 +48,9 @@
     <ClCompile Include="StateManager.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="PlayState.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader_s.h">
@@ -90,6 +93,9 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="StateManager.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayState.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

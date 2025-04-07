@@ -4,25 +4,15 @@ StateManager::StateManager() : ActiveState(nullptr)
 {
 }
 
+void StateManager::ProcessInput(GLFWwindow* window, float deltatime, irrklang::ISoundEngine* engine)
+{
+	if (ActiveState)
+		ActiveState->ProcessInput(window, deltatime, engine);
+}
+
 /*
 
-void StateManager::OnKeyDown(WPARAM wKey)
-{
-	if (ActiveState)
-		ActiveState->OnKeyDown(wKey);
-}
 
-void StateManager::OnKeyUp(WPARAM wKey)
-{
-	if (ActiveState)
-		ActiveState->OnKeyUp(wKey);
-}
-
-void StateManager::OnChar(WPARAM wChar)
-{
-	if (ActiveState)
-		ActiveState->OnChar(wChar);
-}
 
 void StateManager::Update(DWORD dwCurrentTime)
 {
