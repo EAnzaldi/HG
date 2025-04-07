@@ -42,6 +42,12 @@
     <ClCompile Include="MovingObject.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="StateManager.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader_s.h">
@@ -78,6 +84,12 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="MovingObject.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="StateManager.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
