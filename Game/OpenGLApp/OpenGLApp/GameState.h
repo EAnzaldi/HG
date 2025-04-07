@@ -1,7 +1,11 @@
 #ifndef GAMESTATE_H
 #define GAMESTATE_H
 
-//forward declaration per evitare inclusioni circolari
+#include <glad\glad.h>
+#include <GLFW/glfw3.h>
+#include <irrKlang.h>
+
+// forward declaration per evitare inclusioni circolari
 class StateManager; 
 
 // Base class for the different states of the game.
@@ -12,12 +16,9 @@ public:
 
 	// The different 'events' functions
 	// Child classes can implement the ones in which they are interested in
-	/*
-	virtual void OnKeyDown(WPARAM) { }
-	virtual void OnKeyUp(WPARAM) { }
-	virtual void OnChar(WPARAM) { }
-	virtual void Update(DWORD) { }
-	*/
+	
+	virtual void ProcessInput(GLFWwindow* window, float deltatime, irrklang::ISoundEngine* engine) { }
+	virtual void UpdateTime() { }
 	virtual void Draw() { }
 
 	// Functions called when the state is entered or left

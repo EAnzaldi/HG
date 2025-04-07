@@ -22,9 +22,7 @@ public:
 	GameState* GetActiveState() { return ActiveState; }
 
 	// 'Events' function are redirected to the active state
-	//void OnKeyDown(WPARAM wKey);
-	//void OnKeyUp(WPARAM wKey);
-	//void OnChar(WPARAM wChar);
+	void ProcessInput(GLFWwindow* window, float deltatime, irrklang::ISoundEngine* engine);
 	//void Update(DWORD dwCurrentTime);
 	void Draw();
 

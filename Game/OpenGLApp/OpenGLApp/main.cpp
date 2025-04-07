@@ -21,6 +21,8 @@
 #include "TextObject.h"
 #include "constants.h"
 #include "model.h"
+#include "StateManager.h"
+#include "PlayState.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window, Player& player, float deltatime, irrklang::ISoundEngine* engine);
@@ -169,6 +171,11 @@ int main()
     // tempo massimo per livello
     double start = 99.0f;
 
+    // Inizializzo lo StateManager che si occupa di gestire gli stati di gioco
+    StateManager mySManager;
+    PlayState myPState(&mySManager, &myPlayer);
+    mySManager.ChangeState(&myPState);
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -182,7 +189,14 @@ int main()
 
         lastFrame = currentFrame;
 
-        processInput(window, myPlayer, deltatime, engine);
+        //processInput(window, myPlayer, deltatime, engine);
+
+        //il processamento dell'input avviene sempre tramite il manager che conosce il "contesto" dei tasti
+        mySManager.ProcessInput(window, deltatime, engine);
+
+
+        //la parte seguente dovrà essere incorporata in PlayState (gioco non in pausa)
+        //non vogliamo muovere il player con il menù aperto, giusto? ;)
 
         myPlayer.Move(deltatime);
         myPlayer.CheckCollisionWithSolids(platforms);
