@@ -3,25 +3,30 @@
 #include "StateManager.h"
 
 
-MenuState::MenuState(StateManager* manager) : GameState(manager), Font(NULL), CurrentSelection(0),
-	CurrentGame(NULL)
+MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
+	: GameState(manager, window, engine), Font(NULL), CurrentSelection(0), CurrentGame(NULL)
 {
 	
 }
 
-void MenuState::ProcessInput(GLFWwindow* window, float deltatime, irrklang::ISoundEngine* engine)
+MenuState::~MenuState() {
+	//Distrugge FreeType
+	FT_Done_FreeType(ft);
+}
+
+void MenuState::ProcessInput()
 {
 
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	if (glfwGetKey(Window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		SelectionDown();
-	else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	else if (glfwGetKey(Window, GLFW_KEY_UP) == GLFW_PRESS)
 		SelectionUp();
-	else if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
+	else if (glfwGetKey(Window, GLFW_KEY_ENTER) == GLFW_PRESS)
 		SelectionChosen();
 }
 
 
-void MenuState::Draw()
+void MenuState::Render()
 {
 
 }

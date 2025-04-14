@@ -22,9 +22,9 @@ public:
 	GameState* GetActiveState() { return ActiveState; }
 
 	// 'Events' function are redirected to the active state
-	void ProcessInput(GLFWwindow* window, float deltatime, irrklang::ISoundEngine* engine);
+	void ProcessInput();
 	//void Update(DWORD dwCurrentTime);
-	void Draw();
+	void Render();
 
 private: 
 	// Active State of the game (intro, play, ...)

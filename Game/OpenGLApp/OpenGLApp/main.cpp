@@ -24,6 +24,9 @@
 #include "StateManager.h"
 #include "PlayState.h"
 
+#define PREC 0
+#define NEW !PREC
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window, Player& player, float deltatime, irrklang::ISoundEngine* engine);
 
@@ -62,6 +65,8 @@ int main()
 
     glEnable(GL_DEPTH_TEST);
 
+    #if PREC
+
     Camera camera(glm::vec3(0.0f, 0.0f, 0.0f));
 
     // build and compile our shader zprogram
@@ -70,11 +75,18 @@ int main()
     Shader textShader("shader_text.vs", "shader_text.fs");
     Shader enlightenedShader("enlightened_object_shader.vs", "enlightened_object_shader.fs");
 
+    #endif // PREC
+
+
     // inizializzo l'engine per i suoni
     // --------------------------------
     irrklang::ISoundEngine* engine = irrklang::createIrrKlangDevice();
-    if (!engine)
-        return 0; // error starting up the engine
+    if (!engine) {
+        std::cout << "ERROR::IRRKLANG: Could not init irrKlang Engine" << std::endl; // error starting up the engine
+        return 0;
+    }
+
+    #if PREC
 
     // Initializza FreeType
     FT_Library ft;
@@ -128,9 +140,6 @@ int main()
     GameObject cauldron_right(glm::vec2(0.90f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), cauldronModel, nullptr, 0);
     GameObject cauldron_left(glm::vec2(-0.90f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), cauldronModel, nullptr, 0);
 
-    float lastFrame = 0.0f;
-    float deltatime = 0.0f;
-
     float left = -1.0f;   // Puoi modificare questi valori per adattarli alla tua scena
     float right = 1.0f;
     float bottom = -1.0f;
@@ -167,19 +176,29 @@ int main()
 
     // musica di sottofondo
     engine->play2D("resources/sounds/ost.wav", true);
+    
 
     // tempo massimo per livello
     double start = 99.0f;
 
+    float lastFrame = 0.0f;
+    float deltatime = 0.0f;
+
+    #endif
+
+    #if NEW
     // Inizializzo lo StateManager che si occupa di gestire gli stati di gioco
     StateManager mySManager;
-    PlayState myPState(&mySManager, &myPlayer);
+    PlayState myPState(&mySManager, window, engine);
     mySManager.ChangeState(&myPState);
+    #endif
 
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        #if PREC
+
         float currentFrame = static_cast<float>(glfwGetTime());
         deltatime = currentFrame - lastFrame;
 
@@ -189,14 +208,17 @@ int main()
 
         lastFrame = currentFrame;
 
-        //processInput(window, myPlayer, deltatime, engine);
+        #endif
 
+        #if NEW
         //il processamento dell'input avviene sempre tramite il manager che conosce il "contesto" dei tasti
-        mySManager.ProcessInput(window, deltatime, engine);
+        mySManager.ProcessInput();
+        mySManager.Render();
+        #endif // PREC
 
+        #if PREC
 
-        //la parte seguente dovrà essere incorporata in PlayState (gioco non in pausa)
-        //non vogliamo muovere il player con il menù aperto, giusto? ;)
+        processInput(window, myPlayer, deltatime, engine);
 
         myPlayer.Move(deltatime);
         myPlayer.CheckCollisionWithSolids(platforms);
@@ -243,20 +265,20 @@ int main()
         std::string lives = "LIVES: " + std::to_string(myPlayer.lives);
         text.Render(textShader, lives, 1200.0f, 1100.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
 
+        #endif
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-    
-    //Distrugge FreeType
-    FT_Done_FreeType(ft);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
 }
+
+// Obsoleto, incorporato nella gestione degli stati:
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
