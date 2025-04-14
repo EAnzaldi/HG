@@ -12,14 +12,16 @@ class StateManager;
 class GameState
 {
 public:
-	GameState(StateManager* Manager);
+	GameState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
+
+	~GameState();
 
 	// The different 'events' functions
 	// Child classes can implement the ones in which they are interested in
 	
-	virtual void ProcessInput(GLFWwindow* window, float deltatime, irrklang::ISoundEngine* engine) { }
+	virtual void ProcessInput() { }
 	virtual void UpdateTime() { }
-	virtual void Draw() { }
+	virtual void Render() { }
 
 	// Functions called when the state is entered or left
 	// (transition from/to another state)
@@ -32,6 +34,8 @@ protected:
 
 	// The state manager
 	StateManager* Manager;
+	GLFWwindow* Window;
+	irrklang::ISoundEngine* Engine;
 };
 
 #endif

@@ -4,10 +4,10 @@ StateManager::StateManager() : ActiveState(nullptr)
 {
 }
 
-void StateManager::ProcessInput(GLFWwindow* window, float deltatime, irrklang::ISoundEngine* engine)
+void StateManager::ProcessInput()
 {
 	if (ActiveState)
-		ActiveState->ProcessInput(window, deltatime, engine);
+		ActiveState->ProcessInput();
 }
 
 /*
@@ -22,8 +22,8 @@ void StateManager::Update(DWORD dwCurrentTime)
 
 */
 
-void StateManager::Draw()
+void StateManager::Render()
 {
 	if (ActiveState)
-		ActiveState->Draw();
+		ActiveState->Render();
 }

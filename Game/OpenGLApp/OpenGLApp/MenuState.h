@@ -2,9 +2,9 @@
 #define MENUSTATE_H
 
 #include "GameState.h"
+#include "PlayState.h"
 #include "TextObject.h"
 #include "TextureObject.h"
-#include "PlayState.h"
 
 // Specialization of the GameState class for the menu state
 // This displays a menu in which the player can
@@ -15,10 +15,12 @@
 class MenuState : public GameState
 {
 public:
-	MenuState(StateManager* manager);
+	MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
 
-	void ProcessInput(GLFWwindow* window, float deltatime, irrklang::ISoundEngine* engine);
-	void Draw();
+	~MenuState();
+
+	void ProcessInput();
+	void Render();
 	void EnterState();
 
 private:
@@ -43,11 +45,13 @@ private:
 	TextureObject* ItemBckgndNormal;
 	TextureObject* ItemBckgndSelected;
 
+	FT_Library ft;
+
 	// The text controls of the different entries.
-	TextObject* m_pNewGameText;
-	TextObject* m_pResumeGameText;
-	TextObject* m_pScoresText;
-	TextObject* m_pExitText;
+	TextObject* NewGameText;
+	TextObject* ResumeGameText;
+	TextObject* ScoresText;
+	TextObject* ExitText;
 };
 
 #endif  // _MENUSTATE_H_
