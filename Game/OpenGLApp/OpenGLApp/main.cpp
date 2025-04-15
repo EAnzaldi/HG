@@ -23,6 +23,7 @@
 #include "model.h"
 #include "StateManager.h"
 #include "PlayState.h"
+#include "MenuState.h"
 
 #define PREC 0
 #define NEW !PREC
@@ -189,7 +190,8 @@ int main()
     #if NEW
     // Inizializzo lo StateManager che si occupa di gestire gli stati di gioco
     StateManager mySManager;
-    PlayState myPState(&mySManager, window, engine);
+    //PlayState myPState(&mySManager, window, engine);
+    MenuState myPState(&mySManager, window, engine);
     mySManager.ChangeState(&myPState);
     #endif
 

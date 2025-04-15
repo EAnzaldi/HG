@@ -134,4 +134,7 @@
       <Filter>File di risorse</Filter>
     </Image>
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="resources\fonts\bleeding-cowboys\Bleeding_Cowboys.ttf" />
+  </ItemGroup>
 </Project>

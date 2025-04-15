@@ -186,6 +186,9 @@
     <Image Include="textures\gummy_bear.jpg" />
     <Image Include="textures\ice_cream_block.jpg" />
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="resources\fonts\bleeding-cowboys\Bleeding_Cowboys.ttf" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
