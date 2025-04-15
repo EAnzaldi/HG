@@ -36,6 +36,7 @@ protected:
 	StateManager* Manager;
 	GLFWwindow* Window;
 	irrklang::ISoundEngine* Engine;
+
 };
 
 #endif

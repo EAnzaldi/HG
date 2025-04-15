@@ -30,28 +30,23 @@ private:
 	// The player validated the current selection
 	void SelectionChosen();
 
-	TextObject* Font;
 	// Index of the current selected menu item
 	int CurrentSelection;
 
 	// A pointer to the current active game (if any).
 	PlayState* CurrentGame;
 
-	// The background and title images
-	TextureObject* BackgroundImg;
-	TextureObject* TitleImg;
+	Shader* pShader;
+	Shader* pTextShader;
 
-	// The images of the menu items (normal and selected).
-	TextureObject* ItemBckgndNormal;
-	TextureObject* ItemBckgndSelected;
+	// The background image
+	TextureObject* BackgroundImg;
 
 	FT_Library ft;
 
 	// The text controls of the different entries.
-	TextObject* NewGameText;
-	TextObject* ResumeGameText;
-	TextObject* ScoresText;
-	TextObject* ExitText;
+	TextObject* pTextNormal;
+	TextObject* pTitle;
 };
 
 #endif  // _MENUSTATE_H_

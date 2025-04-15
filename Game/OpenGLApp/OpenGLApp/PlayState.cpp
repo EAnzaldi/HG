@@ -1,5 +1,6 @@
 #include "PlayState.h"
 #include "Player.h"
+#include "MenuState.h"
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
     : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f)
@@ -146,9 +147,10 @@ void PlayState::ProcessInput()
         std::cout << "Position-X: " << pPlayer->Position.x << std::endl;
     }
 
-    if (glfwGetKey(Window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(Window, true);
-
+    if (glfwGetKey(Window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        MenuState* Menu = new MenuState(Manager, Window, Engine);
+        ChangeState(Menu);
+    }
     // movimento orizzontale
     if (glfwGetKey(Window, GLFW_KEY_A) == GLFW_PRESS)
     {
