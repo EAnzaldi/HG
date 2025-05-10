@@ -1,6 +1,7 @@
 #include "PlayState.h"
 #include "Player.h"
 #include "MenuState.h"
+#include "GameOverState.h"
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
     : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f)
@@ -190,12 +191,15 @@ void PlayState::ProcessInput()
     pPlayer->Update(deltaTime); // Aggiorna lo stato del giocatore
 
     if (pPlayer->CheckEnemyCollision(*pEnemy, Engine)) {
-        // se il giocatore muore chiude il gioco
-        glfwSetWindowShouldClose(Window, true);
+        GameOver = true;
     }
 
     pEnemy->Move(deltaTime);  // Aggiorna la posizione del nemico con controllo delle collisioni
     pEnemy->CheckCollisionWithSolids(platforms);
+    if (GameOver) {
+        GameState* gameOver = new GameOverState(Manager, Window, Engine);
+        ChangeState(gameOver);
+    }
 }
 
 void PlayState::UpdateTime(long currentTime)
@@ -233,7 +237,7 @@ void PlayState::Render()
     // se scade il tempo perdo e chiudo il gioco
     if (t <= 0)
     {
-        glfwSetWindowShouldClose(Window, true);
+        GameOver = true;
     }
 
     std::string time = "TIME: " + std::to_string(t);
