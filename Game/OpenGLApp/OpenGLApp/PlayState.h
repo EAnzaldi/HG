@@ -13,9 +13,6 @@
 class PlayState : public GameState
 {
 public:
-
-	PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
-
 	~PlayState();
 
 	// Implementation of specific events
@@ -27,6 +24,13 @@ public:
 	bool IsGameOver() { return GameOver; }
 
 	const double start = 99.0f;// tempo massimo per livello
+
+	// Returns the single instance (-> singleton)
+	static PlayState* GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
+
+protected:
+	PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
+
 
 private:
 	// The blocks matrix class

@@ -13,19 +13,23 @@
 class GameOverState : public GameState
 {
 public:
-    GameOverState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
     ~GameOverState();
 
-    void ProcessInput() override;
-    void Render() override;
-    void EnterState() override;
+    void ProcessInput();
+    void Render();
+    void EnterState();
+
+    // Returns the single instance (-> singleton)
+    static GameOverState* GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
+
+
+protected:
+    GameOverState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
+
 
 private:
     FT_Library ft;
-    GLFWwindow* pWindow;
-    
-    StateManager* pStateManager;
-    irrklang::ISoundEngine* pSoundEngine;
+ 
     TextObject* pTextRenderer;
     TextObject* pTextNormal;
 

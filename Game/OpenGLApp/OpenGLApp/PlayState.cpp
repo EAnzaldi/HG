@@ -119,6 +119,12 @@ PlayState::~PlayState() {
     FT_Done_FreeType(ft);
 }
 
+PlayState* PlayState::GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
+{
+    static PlayState Instance(manager, window, engine);
+    return &Instance;
+}
+
 void PlayState::Reset()
 {
 	CurrentLevel = 0;
@@ -128,6 +134,7 @@ void PlayState::Reset()
 
 void PlayState::ProcessInput()
 {
+  
     float currentFrame = static_cast<float>(glfwGetTime());
     deltaTime = currentFrame - lastFrame;
 
@@ -149,8 +156,7 @@ void PlayState::ProcessInput()
     }
 
     if (glfwGetKey(Window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        MenuState* Menu = new MenuState(Manager, Window, Engine);
-        ChangeState(Menu);
+        ChangeState(MenuState::GetInstance(Manager, Window, Engine));
     }
     // movimento orizzontale
     if (glfwGetKey(Window, GLFW_KEY_A) == GLFW_PRESS)
@@ -197,8 +203,7 @@ void PlayState::ProcessInput()
     pEnemy->Move(deltaTime);  // Aggiorna la posizione del nemico con controllo delle collisioni
     pEnemy->CheckCollisionWithSolids(platforms);
     if (GameOver) {
-        GameState* gameOver = new GameOverState(Manager, Window, Engine);
-        ChangeState(gameOver);
+        ChangeState(GameOverState::GetInstance(Manager, Window, Engine));
     }
 }
 

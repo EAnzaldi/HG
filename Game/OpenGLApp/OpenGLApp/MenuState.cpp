@@ -34,6 +34,12 @@ MenuState::~MenuState() {
 
 }
 
+MenuState* MenuState::GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
+{
+	static MenuState Instance(manager, window, engine);
+	return &Instance;
+}
+
 void MenuState::ProcessInput()
 {
 
@@ -97,7 +103,7 @@ void MenuState::SelectionChosen()
 	{
 	case NEW:
 		if (!CurrentGame) {
-			CurrentGame = new PlayState(Manager, Window, Engine);
+			CurrentGame = PlayState::GetInstance(Manager, Window, Engine);
 		}	
 		CurrentGame->Reset();
 		ChangeState(CurrentGame);

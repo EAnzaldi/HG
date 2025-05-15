@@ -190,9 +190,9 @@ int main()
     #if NEW
     // Inizializzo lo StateManager che si occupa di gestire gli stati di gioco
     StateManager mySManager;
-    //PlayState myPState(&mySManager, window, engine);
-    MenuState myPState(&mySManager, window, engine);
-    mySManager.ChangeState(&myPState);
+    //MenuState myPState(&mySManager, window, engine);
+    //mySManager.ChangeState(&myPState);
+    mySManager.ChangeState(MenuState::GetInstance(&mySManager, window, engine));
     #endif
 
     // render loop

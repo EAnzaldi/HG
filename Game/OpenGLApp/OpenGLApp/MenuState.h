@@ -15,13 +15,17 @@
 class MenuState : public GameState
 {
 public:
-	MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
-
 	~MenuState();
 
 	void ProcessInput();
 	void Render();
 	void EnterState();
+
+	// Returns the single instance (-> singleton)
+	static MenuState* GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
+
+protected:
+	MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
 
 private:
 	// The player went up or down in the menu

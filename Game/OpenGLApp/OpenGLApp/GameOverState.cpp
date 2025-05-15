@@ -7,9 +7,7 @@
 #define RESTART 0
 
 GameOverState::GameOverState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
-    : GameState(manager, window, engine),
-    pWindow(window), pStateManager(manager), pSoundEngine(engine), 
-    CurrentSelection(RESTART)
+    : GameState(manager, window, engine), CurrentSelection(RESTART)
 {
 
     if (FT_Init_FreeType(&ft)) {
@@ -27,6 +25,12 @@ GameOverState::~GameOverState()
     delete pTextRenderer;
     delete pTextShader;
     FT_Done_FreeType(ft);
+}
+
+GameOverState* GameOverState::GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
+{
+    static GameOverState Instance(manager, window, engine);
+    return &Instance;
 }
 
 void GameOverState::EnterState()
@@ -64,6 +68,7 @@ void GameOverState::Render()
 
 void GameOverState::SelectionRestart()
 {
-    Manager->ChangeState(new MenuState(Manager, Window, Engine));
+   // Manager->ChangeState(new MenuState(Manager, Window, Engine));
+    ChangeState(MenuState::GetInstance(Manager, Window, Engine));
 }
 

@@ -32,10 +32,9 @@ protected:
 	// Helper function to switch to a new active state
 	void ChangeState(GameState* newState);
 
-	// The state manager
-	StateManager* Manager;
-	GLFWwindow* Window;
-	irrklang::ISoundEngine* Engine;
+	StateManager* Manager;// The state manager
+	GLFWwindow* Window;	// The window manager
+	irrklang::ISoundEngine* Engine;	// The sound manager
 
 };
 
