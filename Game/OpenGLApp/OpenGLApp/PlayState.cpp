@@ -217,6 +217,8 @@ void PlayState::UpdateTime(long currentTime)
 
 void PlayState::Render()
 {
+    std::cout << "Rendering PlayState" << std::endl;
+
     //Aggiunte le seguenti due righe per gestire correttamente la trasparenza
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

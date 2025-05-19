@@ -34,6 +34,7 @@ private:
     TextObject* pTextNormal;
 
     Shader* pTextShader;
+    Shader* pShader;
 
     int CurrentSelection;
 

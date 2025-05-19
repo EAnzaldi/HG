@@ -83,6 +83,7 @@ void MenuState::EnterState()
 {
 	// Checks whether there is a current game active
 	CurrentSelection = 0;
+
 }
 
 void MenuState::SelectionUp()
@@ -115,6 +116,7 @@ void MenuState::SelectionChosen()
 		break;
 
 	case EXIT:
+		Engine->drop();
 		glfwSetWindowShouldClose(Window, true);//quit
 		break;
 	}

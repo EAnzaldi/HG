@@ -14,5 +14,6 @@ GameState::~GameState() {
 
 void GameState::ChangeState(GameState* newState)
 {
+	Engine->stopAllSounds();
 	Manager->ChangeState(newState);
 }

@@ -16,7 +16,10 @@ GameOverState::GameOverState(StateManager* manager, GLFWwindow* window, irrklang
 
     pTextNormal = new TextObject(ft, "resources/fonts/8-bit-operator/8bitOperatorPlus8-Regular.ttf");
 
+    pShader = new Shader("shader.vs", "shader.fs");
     pTextShader = new Shader("shader_text.vs", "shader_text.fs");
+
+    pShader->use();
 }
 
 
@@ -53,7 +56,8 @@ void GameOverState::Render()
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     // Pulisce lo schermo
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    //glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glm::vec3 WhiteColor = { 255.0f, 255.0f, 255.0f };
 
@@ -63,7 +67,7 @@ void GameOverState::Render()
     // "Premi INVIO per ricominciare" centrato sotto
     pTextNormal->Render(*pTextShader, "Premi INVIO per ricominciare", SCR_WIDTH / 2, SCR_HEIGHT / 2 - 50.0f, 1.2f, WhiteColor);
 
-    glfwSwapBuffers(Window);
+    //glfwSwapBuffers(Window);
 }
 
 void GameOverState::SelectionRestart()
