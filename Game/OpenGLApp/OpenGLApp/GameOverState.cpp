@@ -44,8 +44,9 @@ void GameOverState::EnterState()
 
 void GameOverState::ProcessInput()
 {
-    if (glfwGetKey(Window, GLFW_KEY_ENTER) == GLFW_PRESS)
-        SelectionRestart();
+    if (glfwGetKey(Window, GLFW_KEY_ENTER) == GLFW_PRESS) {
+        ChangeState(MenuState::GetInstance(Manager, Window, Engine));
+    }
 }
 
 void GameOverState::Render()
@@ -67,12 +68,5 @@ void GameOverState::Render()
     // "Premi INVIO per ricominciare" centrato sotto
     pTextNormal->Render(*pTextShader, "Premi INVIO per ricominciare", SCR_WIDTH / 2, SCR_HEIGHT / 2 - 50.0f, 1.2f, WhiteColor);
 
-    //glfwSwapBuffers(Window);
-}
-
-void GameOverState::SelectionRestart()
-{
-   // Manager->ChangeState(new MenuState(Manager, Window, Engine));
-    ChangeState(MenuState::GetInstance(Manager, Window, Engine));
 }
 

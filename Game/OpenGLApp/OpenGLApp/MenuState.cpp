@@ -24,10 +24,6 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
     // setup delle uniform delle shader che non cambieranno nel ciclo di rendering
     pShader->use();
-
-
-    // musica di sottofondo
-    engine->play2D("resources/sounds/ost.wav", true);
 }
 
 MenuState::~MenuState() {
@@ -40,6 +36,9 @@ MenuState* MenuState::GetInstance(StateManager* manager, GLFWwindow* window, irr
 	return &Instance;
 }
 
+//DEBOUNCE: avoids that pressing ENTER in other states is considered in this state
+bool canPressEnter = true;
+
 void MenuState::ProcessInput()
 {
 
@@ -47,8 +46,11 @@ void MenuState::ProcessInput()
 		SelectionDown();
 	else if (glfwGetKey(Window, GLFW_KEY_UP) == GLFW_PRESS)
 		SelectionUp();
-	else if (glfwGetKey(Window, GLFW_KEY_ENTER) == GLFW_PRESS)
+	else if (glfwGetKey(Window, GLFW_KEY_ENTER) == GLFW_PRESS && canPressEnter)
 		SelectionChosen();
+	else if (glfwGetKey(Window, GLFW_KEY_ENTER) == GLFW_RELEASE)
+		canPressEnter = true;
+
 }
 
 
@@ -65,13 +67,16 @@ void MenuState::Render()
 
 	pTitle->Render(*pTextShader, "Hansel + Gretel", SCR_WIDTH / 8, 1000.0f, 3.0f, TitleColor);
 
-
 	glm::vec3 NonSelectedColor = { 255.0, 255.0, 255.0 };
 	glm::vec3 SelectedColor = { 0.0, 255.0, 0.0 };
+	glm::vec3 NonAvailableColor = { 192.0, 115.0, 128.0 };
 
 	std::vector <glm::vec3> colors = { NonSelectedColor , NonSelectedColor , NonSelectedColor } ;
 
 	colors[CurrentSelection] = SelectedColor;
+
+	if (!CurrentGame || CurrentGame->IsGameOver())
+		colors[RESUME] = NonAvailableColor;
 
 	pTextNormal->Render(*pTextShader, "New Game", SCR_WIDTH/2, SCR_HEIGHT/2 + 200.0f, 1.2f, colors[0]);
 	pTextNormal->Render(*pTextShader, "Resume Game", SCR_WIDTH / 2, SCR_HEIGHT / 2, 1.2f, colors[1]);
@@ -83,7 +88,10 @@ void MenuState::EnterState()
 {
 	// Checks whether there is a current game active
 	CurrentSelection = 0;
+	canPressEnter = false;
 
+	// musica di sottofondo
+	Engine->play2D("resources/sounds/ost.wav", true);
 }
 
 void MenuState::SelectionUp()
