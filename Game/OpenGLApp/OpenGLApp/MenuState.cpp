@@ -35,19 +35,32 @@ MenuState* MenuState::GetInstance(StateManager* manager, GLFWwindow* window, irr
 	static MenuState Instance(manager, window, engine);
 	return &Instance;
 }
-
-//DEBOUNCE: avoids that pressing ENTER in other states is considered in this state
+//DEBOUNCE: avoids that pressing key in other frames (or states) is considered in this frame (or state)
+bool canPressUp = true;
+bool canPressDown = true;
 bool canPressEnter = true;
 
 void MenuState::ProcessInput()
 {
 
-	if (glfwGetKey(Window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	if (glfwGetKey(Window, GLFW_KEY_DOWN) == GLFW_PRESS && canPressDown) {
 		SelectionDown();
-	else if (glfwGetKey(Window, GLFW_KEY_UP) == GLFW_PRESS)
+		canPressDown = false;
+	}
+	else if (glfwGetKey(Window, GLFW_KEY_DOWN) == GLFW_RELEASE)
+		canPressDown = true;
+
+	if (glfwGetKey(Window, GLFW_KEY_UP) == GLFW_PRESS && canPressUp) {
 		SelectionUp();
-	else if (glfwGetKey(Window, GLFW_KEY_ENTER) == GLFW_PRESS && canPressEnter)
+		canPressUp = false;
+	}
+	else if (glfwGetKey(Window, GLFW_KEY_UP) == GLFW_RELEASE)
+		canPressUp = true;
+
+	if (glfwGetKey(Window, GLFW_KEY_ENTER) == GLFW_PRESS && canPressEnter) {
 		SelectionChosen();
+		canPressEnter = false;
+	}
 	else if (glfwGetKey(Window, GLFW_KEY_ENTER) == GLFW_RELEASE)
 		canPressEnter = true;
 
@@ -69,14 +82,21 @@ void MenuState::Render()
 
 	glm::vec3 NonSelectedColor = { 255.0, 255.0, 255.0 };
 	glm::vec3 SelectedColor = { 0.0, 255.0, 0.0 };
-	glm::vec3 NonAvailableColor = { 192.0, 115.0, 128.0 };
+	glm::vec3 NonAvailableColor = { 0.0, 0.0, 0.0 };
 
 	std::vector <glm::vec3> colors = { NonSelectedColor , NonSelectedColor , NonSelectedColor } ;
 
+
 	colors[CurrentSelection] = SelectedColor;
 
-	if (!CurrentGame || CurrentGame->IsGameOver())
-		colors[RESUME] = NonAvailableColor;
+	if (!CurrentGame)
+		colors[1] = NonAvailableColor;
+
+	printf("Colors: ");
+	for (int i = 0; i < 3; i++) {
+		printf("{%f %f %f} ", colors[i].x, colors[i].y, colors[i].z);
+	}
+	printf("\n");
 
 	pTextNormal->Render(*pTextShader, "New Game", SCR_WIDTH/2, SCR_HEIGHT/2 + 200.0f, 1.2f, colors[0]);
 	pTextNormal->Render(*pTextShader, "Resume Game", SCR_WIDTH / 2, SCR_HEIGHT / 2, 1.2f, colors[1]);
@@ -87,7 +107,7 @@ void MenuState::Render()
 void MenuState::EnterState()
 {
 	// Checks whether there is a current game active
-	CurrentSelection = 0;
+	CurrentSelection = NEW;
 	canPressEnter = false;
 
 	// musica di sottofondo
