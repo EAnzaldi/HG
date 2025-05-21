@@ -19,11 +19,14 @@ public:
 	void ProcessInput();
 	void UpdateTime(long currentTime);
 	void Render();
+	void EnterState();
+	void LeaveState();
 
 	void Reset();
 	bool IsGameOver() { return GameOver; }
+	bool IsPaused() { return Paused; }
 
-	const double start = 99.0f;// tempo massimo per livello
+	const double start = 99;// tempo massimo per livello
 
 	// Returns the single instance (-> singleton)
 	static PlayState* GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
@@ -47,6 +50,11 @@ private:
 	//CTextControl* m_pLevelControl;
 	//CTextControl* m_pLinesControl;
 
+	//Store time when game pauses
+	int currentTime;
+	double startTime;
+	double totalPauseTime;
+	double startPauseTime;
 
 	std::vector<GameObject> platforms;
 	//std::vector<Enemy> enemies;
@@ -70,6 +78,7 @@ private:
 	long CurrentScore;
 
 	bool GameOver;
+	bool Paused;
 
 	Camera* pCamera;
 

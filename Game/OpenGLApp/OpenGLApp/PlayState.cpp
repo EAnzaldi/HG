@@ -4,7 +4,7 @@
 #include "GameOverState.h"
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
-    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f)
+    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), GameOver(false), Paused(false)
 {
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -95,7 +95,9 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
     // musica di sottofondo
     engine->play2D("resources/sounds/ost.wav", true);
-    
+
+    // cattura il tempo iniziale di gioco
+    startTime = glfwGetTime();
 }
 
 PlayState::~PlayState() {
@@ -127,9 +129,25 @@ PlayState* PlayState::GetInstance(StateManager* manager, GLFWwindow* window, irr
 
 void PlayState::Reset()
 {
-	CurrentLevel = 0;
+    CurrentLevel = 0;
     CurrentScore = 0;
 	GameOver = false;
+
+    delete pPlayer;
+    delete pEnemy;
+
+    pPlayer = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), *pCubeModel, pTexPlayer, 0);
+    pEnemy = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), *pCubeModel, pTexEnemy, 0, glm::vec2(0.8f, 0.0f));
+
+    // musica di sottofondo
+    Engine->play2D("resources/sounds/ost.wav", true);
+
+    if (!IsPaused()) {
+        currentTime = 0;
+        totalPauseTime = 0.0f;
+        startPauseTime = 0.0f;
+        startTime = glfwGetTime();
+    }
 }
 
 void PlayState::ProcessInput()
@@ -238,18 +256,38 @@ void PlayState::Render()
     pCauldron_left->Render(*pEnlightenedShader);
 
     // render testo per ultimo per essere davanti a tutto
-        // --------------------------------------------------
-    int t = static_cast<int>(start) - static_cast<int>(glfwGetTime());
+    // --------------------------------------------------
+
+    currentTime = start - static_cast<int>((glfwGetTime() - startTime) - totalPauseTime);
 
     // se scade il tempo perdo e chiudo il gioco
-    if (t <= 0)
+    if (currentTime <= 0)
     {
         GameOver = true;
     }
 
-    std::string time = "TIME: " + std::to_string(t);
+    std::string time = "TIME: " + std::to_string(currentTime);
     pText->Render(*pTextShader, time, 200.0f, 1100.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
 
     std::string lives = "LIVES: " + std::to_string(pPlayer->lives);
     pText->Render(*pTextShader, lives, 1200.0f, 1100.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
+}
+
+void PlayState::EnterState()
+{
+    // musica di sottofondo
+    Engine->play2D("resources/sounds/ost.wav", true);
+
+    if(IsPaused())//salta prima chiamata
+        totalPauseTime += glfwGetTime() - startPauseTime;
+
+    Paused = false;
+}
+
+void PlayState::LeaveState() {
+
+    startPauseTime = glfwGetTime();
+
+    if(!GameOver)
+        Paused = true;
 }

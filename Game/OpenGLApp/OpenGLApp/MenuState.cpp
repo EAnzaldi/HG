@@ -98,9 +98,23 @@ void MenuState::Render()
 	}
 	printf("\n");
 
-	pTextNormal->Render(*pTextShader, "New Game", SCR_WIDTH/2, SCR_HEIGHT/2 + 200.0f, 1.2f, colors[0]);
-	pTextNormal->Render(*pTextShader, "Resume Game", SCR_WIDTH / 2, SCR_HEIGHT / 2, 1.2f, colors[1]);
-	pTextNormal->Render(*pTextShader, "Exit", SCR_WIDTH/2, SCR_HEIGHT/2 - 200.0f, 1.2f, colors[2]);
+	switch (CurrentSelection) {
+		case NEW:
+			pTextNormal->Render(*pTextShader, "New Game <", SCR_WIDTH / 2, SCR_HEIGHT / 2 + 200.0f, 1.2f, colors[0]);
+			pTextNormal->Render(*pTextShader, "Resume Game", SCR_WIDTH / 2, SCR_HEIGHT / 2, 1.2f, colors[1]);
+			pTextNormal->Render(*pTextShader, "Exit", SCR_WIDTH / 2, SCR_HEIGHT / 2 - 200.0f, 1.2f, colors[2]);
+			break;
+		case RESUME:
+			pTextNormal->Render(*pTextShader, "New Game", SCR_WIDTH / 2, SCR_HEIGHT / 2 + 200.0f, 1.2f, colors[0]);
+			pTextNormal->Render(*pTextShader, "Resume Game <", SCR_WIDTH / 2, SCR_HEIGHT / 2, 1.2f, colors[1]);
+			pTextNormal->Render(*pTextShader, "Exit", SCR_WIDTH / 2, SCR_HEIGHT / 2 - 200.0f, 1.2f, colors[2]);
+			break;
+		case EXIT:
+			pTextNormal->Render(*pTextShader, "New Game", SCR_WIDTH / 2, SCR_HEIGHT / 2 + 200.0f, 1.2f, colors[0]);
+			pTextNormal->Render(*pTextShader, "Resume Game", SCR_WIDTH / 2, SCR_HEIGHT / 2, 1.2f, colors[1]);
+			pTextNormal->Render(*pTextShader, "Exit <", SCR_WIDTH / 2, SCR_HEIGHT / 2 - 200.0f, 1.2f, colors[2]);
+			break;
+	}
 
 }
 
@@ -134,8 +148,8 @@ void MenuState::SelectionChosen()
 		if (!CurrentGame) {
 			CurrentGame = PlayState::GetInstance(Manager, Window, Engine);
 		}	
-		CurrentGame->Reset();
 		ChangeState(CurrentGame);
+		CurrentGame->Reset();
 		break;
 
 	case RESUME:
