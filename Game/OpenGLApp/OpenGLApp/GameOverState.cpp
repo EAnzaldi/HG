@@ -4,10 +4,8 @@
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
 
-#define RESTART 0
-
 GameOverState::GameOverState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
-    : GameState(manager, window, engine), CurrentSelection(RESTART)
+    : GameState(manager, window, engine)
 {
 
     if (FT_Init_FreeType(&ft)) {
@@ -38,8 +36,7 @@ GameOverState* GameOverState::GetInstance(StateManager* manager, GLFWwindow* win
 
 void GameOverState::EnterState()
 {
-    // Checks whether there is a current game active
-    CurrentSelection = 0;
+
 }
 
 void GameOverState::ProcessInput()
@@ -51,7 +48,7 @@ void GameOverState::ProcessInput()
 
 void GameOverState::Render()
 {
-    std::cout << "Rendering GameOverState" << std::endl;
+    //std::cout << "Rendering GameOverState" << std::endl;
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

@@ -10,6 +10,8 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
+#define TOTENEM 1
+
 class PlayState : public GameState
 {
 public:
@@ -36,6 +38,8 @@ protected:
 
 
 private:
+	void RenderStats();
+
 	// The blocks matrix class
 	//CBlocksMatrix* m_pMatrix;
 	// The font used to draw text
@@ -57,7 +61,9 @@ private:
 	double startPauseTime;
 
 	std::vector<GameObject> platforms;
-	//std::vector<Enemy> enemies;
+	std::vector<Enemy> enemies;
+
+	bool nAliveEnemies;
 
 	Model* pCubeModel;
 	Model* pCauldronModel;

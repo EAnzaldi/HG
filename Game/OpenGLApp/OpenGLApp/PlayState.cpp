@@ -4,7 +4,7 @@
 #include "GameOverState.h"
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
-    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), GameOver(false), Paused(false)
+    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), GameOver(false), Paused(false), nAliveEnemies(TOTENEM)
 {
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -54,6 +54,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     
     pPlayer = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), *pCubeModel, pTexPlayer, 0);
     pEnemy = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), *pCubeModel, pTexEnemy, 0, glm::vec2(0.8f, 0.0f));
+
 
     // passo nullptr come texture per ora
     pCauldron_right = new GameObject(glm::vec2(0.90f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), *pCauldronModel, nullptr, 0);
@@ -214,12 +215,16 @@ void PlayState::ProcessInput()
 
     pPlayer->Update(deltaTime); // Aggiorna lo stato del giocatore
 
-    if (pPlayer->CheckEnemyCollision(*pEnemy, Engine)) {
-        GameOver = true;
+    if (pEnemy->IsDead() == false) {
+
+        if (pPlayer->CheckEnemyCollision(pEnemy, Engine)) {
+            GameOver = true;
+        }
+
+        pEnemy->Move(deltaTime);  // Aggiorna la posizione del nemico con controllo delle collisioni
+        pEnemy->CheckCollisionWithSolids(platforms);
     }
 
-    pEnemy->Move(deltaTime);  // Aggiorna la posizione del nemico con controllo delle collisioni
-    pEnemy->CheckCollisionWithSolids(platforms);
     if (GameOver) {
         ChangeState(GameOverState::GetInstance(Manager, Window, Engine));
     }
@@ -235,7 +240,7 @@ void PlayState::UpdateTime(long currentTime)
 
 void PlayState::Render()
 {
-    std::cout << "Rendering PlayState" << std::endl;
+    //std::cout << "Rendering PlayState" << std::endl;
 
     //Aggiunte le seguenti due righe per gestire correttamente la trasparenza
     glEnable(GL_BLEND);
@@ -250,7 +255,9 @@ void PlayState::Render()
     }
 
     pPlayer->Render(*pShader);
-    pEnemy->Render(*pShader);
+
+    if(pEnemy->IsDead() == false)
+        pEnemy->Render(*pShader);
 
     pCauldron_right->Render(*pEnlightenedShader);
     pCauldron_left->Render(*pEnlightenedShader);
@@ -290,4 +297,8 @@ void PlayState::LeaveState() {
 
     if(!GameOver)
         Paused = true;
+}
+
+void PlayState::RenderStats() {
+
 }

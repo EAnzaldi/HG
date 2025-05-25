@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>  // Per il calcolo dei vettori
 
 Enemy::Enemy(glm::vec2 position, glm::vec3 size, Model model, TextureObject* texture, bool repeatWidth, glm::vec2 velocity)
-    : MovingObject(position, size, model, texture, repeatWidth, velocity) {
+    : MovingObject(position, size, model, texture, repeatWidth, velocity), Dead(false) {
 }
 
 void Enemy::HandleCollisionWithSolid(GameObject solidObject)

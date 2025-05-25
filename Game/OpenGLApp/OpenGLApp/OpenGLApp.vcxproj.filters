@@ -54,6 +54,9 @@
     <ClCompile Include="MenuState.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="GameOverState.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader_s.h">
@@ -102,6 +105,9 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="MenuState.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="GameOverState.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

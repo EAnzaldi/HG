@@ -28,21 +28,31 @@ void Player::HandleJump(float deltaTime, irrklang::ISoundEngine* engine)
     }
 }
 
-bool Player::CheckEnemyCollision(const Enemy& enemy, irrklang::ISoundEngine* engine)
+bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
 {
-    if (!isInvincible && CheckCollision(enemy))
+    if (!isInvincible)
     {
-        engine->play2D("resources/sounds/damage.wav");
-        if (lives > 1)
-        {
-            lives--; // Perde una vita
-            std::cout << "Lives left: " << lives << std::endl;
-            StartInvincibility(); // Inizia l'invincibilità
+        Collision collision = CheckCollision(*enemy);
+
+        if (collision == Collision::Other) {
+            engine->play2D("resources/sounds/damage.wav");
+            if (lives > 1)
+            {
+                lives--; // Perde una vita
+                std::cout << "Lives left: " << lives << std::endl;
+                StartInvincibility(); // Inizia l'invincibilità
+            }
+            else
+            {
+                std::cout << "GAME OVER" << std::endl;
+                isDead = true;
+            }
         }
-        else
-        {
-            std::cout << "GAME OVER" << std::endl;
-            isDead = true;
+        else if (collision == Collision::Top) {
+
+            std::cout << "Kill enemy" << std::endl;
+
+            enemy->kill();
         }
     }
     return isDead;

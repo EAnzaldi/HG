@@ -46,12 +46,31 @@ void MovingObject::Move(float deltaTime)
     }
 }
 
-bool MovingObject::CheckCollision(GameObject other)
+/*bool MovingObject::CheckCollision(GameObject other)
 {
     Hitbox bounds1 = this->GetHitbox();
     Hitbox bounds2 = other.GetHitbox();
     return (bounds1.Min.x <= bounds2.Max.x && bounds1.Max.x >= bounds2.Min.x &&
         bounds1.Min.y <= bounds2.Max.y && bounds1.Max.y >= bounds2.Min.y);
+}*/
+
+MovingObject::Collision MovingObject::CheckCollision(GameObject other)
+{
+    Hitbox bounds1 = this->GetHitbox();
+    Hitbox bounds2 = other.GetHitbox();
+
+    bool isColliding = (bounds1.Min.x <= bounds2.Max.x && bounds1.Max.x >= bounds2.Min.x &&
+        bounds1.Min.y <= bounds2.Max.y && bounds1.Max.y >= bounds2.Min.y);
+
+    if(!isColliding)
+        return Collision::None;
+
+    if (this->velocity.y < 0) {// se player sta cadendo su other
+        if (bounds1.Min.y <= bounds2.Max.y && bounds1.Min.y >= bounds2.Max.y - 5.0f)//se colpisce entro una finestra di 5.0f
+            return Collision::Top;
+    }
+
+    return Collision::Other;
 }
 
 void MovingObject::CheckCollisionWithSolids(const std::vector<GameObject>& solidObjects)
@@ -60,7 +79,7 @@ void MovingObject::CheckCollisionWithSolids(const std::vector<GameObject>& solid
 
     for (const GameObject& solid : solidObjects)
     {  
-        if (CheckCollision(solid))
+        if (CheckCollision(solid) != Collision::None)
         {
             HandleCollisionWithSolid(solid);
         }

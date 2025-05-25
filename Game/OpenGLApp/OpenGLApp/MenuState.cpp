@@ -92,11 +92,14 @@ void MenuState::Render()
 	if (!CurrentGame)
 		colors[1] = NonAvailableColor;
 
+	/*
 	printf("Colors: ");
 	for (int i = 0; i < 3; i++) {
 		printf("{%f %f %f} ", colors[i].x, colors[i].y, colors[i].z);
 	}
 	printf("\n");
+
+	*/
 
 	switch (CurrentSelection) {
 		case NEW:

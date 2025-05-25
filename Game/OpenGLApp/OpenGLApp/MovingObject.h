@@ -5,6 +5,9 @@
 class MovingObject : public GameObject
 {
 public:
+
+    enum class Collision { None, Top, Other };
+
     bool isOnGround = true;
 
     float gravityForce = -3.0f;
@@ -19,7 +22,9 @@ public:
 
     void Move(float deltaTime);
 
-    bool CheckCollision(const GameObject other);
+    //bool CheckCollision(GameObject other);
+
+    Collision CheckCollision(GameObject other);
 
     void CheckCollisionWithSolids(const std::vector<GameObject>& solidObjects);
 

@@ -36,11 +36,6 @@ private:
     Shader* pTextShader;
     Shader* pShader;
 
-    int CurrentSelection;
-
-    // The player validated the current selection
-    void SelectionRestart();
-
 };
 
 #endif  // GAMEOVERSTATE_H
