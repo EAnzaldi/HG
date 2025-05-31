@@ -18,6 +18,7 @@ public:
     void ProcessInput();
     void Render();
     void EnterState();
+    void LeaveState();
 
     // Returns the single instance (-> singleton)
     static GameOverState* GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);

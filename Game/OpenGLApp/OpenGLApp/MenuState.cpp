@@ -89,7 +89,7 @@ void MenuState::Render()
 
 	colors[CurrentSelection] = SelectedColor;
 
-	if (!CurrentGame)
+	if (!CurrentGame || CurrentGame->IsGameOver())
 		colors[1] = NonAvailableColor;
 
 	/*

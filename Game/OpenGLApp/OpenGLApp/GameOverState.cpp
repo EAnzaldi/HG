@@ -39,6 +39,12 @@ void GameOverState::EnterState()
 
 }
 
+void GameOverState::LeaveState()
+{
+
+}
+
+
 void GameOverState::ProcessInput()
 {
     if (glfwGetKey(Window, GLFW_KEY_ENTER) == GLFW_PRESS) {
@@ -60,10 +66,10 @@ void GameOverState::Render()
     glm::vec3 WhiteColor = { 255.0f, 255.0f, 255.0f };
 
     // "Game Over" centrato e in alto
-    pTextNormal->Render(*pTextShader, "Game Over", SCR_WIDTH / 2, SCR_HEIGHT / 2 + 100.0f, 2.0f, WhiteColor);
+    pTextNormal->Render(*pTextShader, "Game Over", SCR_WIDTH / 2 - 300.0f, SCR_HEIGHT / 2 + 100.0f, 2.0f, WhiteColor);
 
     // "Premi INVIO per ricominciare" centrato sotto
-    pTextNormal->Render(*pTextShader, "Premi INVIO per ricominciare", SCR_WIDTH / 2, SCR_HEIGHT / 2 - 50.0f, 1.2f, WhiteColor);
+    pTextNormal->Render(*pTextShader, "Premi INVIO per ricominciare", SCR_WIDTH / 2 - 300.0f, SCR_HEIGHT / 2 - 50.0f, 1.2f, WhiteColor);
 
 }
 

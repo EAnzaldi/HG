@@ -226,6 +226,7 @@ void PlayState::ProcessInput()
     }
 
     if (GameOver) {
+        //reset !
         ChangeState(GameOverState::GetInstance(Manager, Window, Engine));
     }
 }
