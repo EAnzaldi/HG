@@ -26,6 +26,7 @@ public:
 
 	void Reset();
 	bool IsGameOver() { return GameOver; }
+	bool IsVictory() { return Victory; }
 	bool IsPaused() { return Paused; }
 
 	const double start = 99;// tempo massimo per livello
@@ -63,7 +64,7 @@ private:
 	std::vector<GameObject> platforms;
 	std::vector<Enemy> enemies;
 
-	bool nAliveEnemies;
+	int nEnemies;
 
 	Model* pCubeModel;
 	Model* pCauldronModel;
@@ -84,6 +85,7 @@ private:
 	long CurrentScore;
 
 	bool GameOver;
+	bool Victory;
 	bool Paused;
 
 	Camera* pCamera;

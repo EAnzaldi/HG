@@ -4,7 +4,7 @@
 #include "EndState.h"
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
-    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), GameOver(false), Paused(false), nAliveEnemies(TOTENEM)
+    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), GameOver(false), Paused(false), nEnemies(TOTENEM)
 {
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -217,16 +217,28 @@ void PlayState::ProcessInput()
 
     if (pEnemy->IsDead() == false) {
 
-        if (pPlayer->CheckEnemyCollision(pEnemy, Engine)) {
+        if (pPlayer->CheckEnemyCollision(pEnemy, Engine)) {//Se player muore
             GameOver = true;
         }
-
-        pEnemy->Move(deltaTime);  // Aggiorna la posizione del nemico con controllo delle collisioni
-        pEnemy->CheckCollisionWithSolids(platforms);
+        else if (pEnemy->IsDead()) {//Se enemy muore
+            nEnemies--;
+            if (nEnemies <= 0) {
+                Victory = true;
+            }
+        }
+        else {
+            pEnemy->Move(deltaTime);  // Aggiorna la posizione del nemico con controllo delle collisioni
+            pEnemy->CheckCollisionWithSolids(platforms);
+        }     
     }
 
     if (GameOver) {
         //reset !
+        GameState::Status = GameStatus::GameOver;
+        ChangeState(EndState::GetInstance(Manager, Window, Engine));
+    } else if (Victory) {
+        //reset !
+        GameState::Status = GameStatus::Victory;
         ChangeState(EndState::GetInstance(Manager, Window, Engine));
     }
 }

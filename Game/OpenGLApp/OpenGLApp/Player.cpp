@@ -51,7 +51,6 @@ bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
         else if (collision == Collision::Top) {
 
             std::cout << "Kill enemy" << std::endl;
-
             enemy->kill();
         }
     }

@@ -89,7 +89,7 @@ void MenuState::Render()
 
 	colors[CurrentSelection] = SelectedColor;
 
-	if (!CurrentGame || CurrentGame->IsGameOver())
+	if (!CurrentGame || CurrentGame->IsGameOver() || CurrentGame->IsVictory())
 		colors[1] = NonAvailableColor;
 
 	/*
@@ -156,7 +156,7 @@ void MenuState::SelectionChosen()
 		break;
 
 	case RESUME:
-		if (CurrentGame && !CurrentGame->IsGameOver())
+		if (CurrentGame && !CurrentGame->IsGameOver() && !CurrentGame->IsVictory())
 			ChangeState(CurrentGame);
 		break;
 

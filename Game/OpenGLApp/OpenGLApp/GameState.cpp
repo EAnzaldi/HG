@@ -2,6 +2,7 @@
 #include "StateManager.h"
 #include <iostream>
 
+GameStatus GameState::Status = GameStatus::None;
 
 GameState::GameState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine) : Manager(manager), Window(window), Engine(engine)
 {

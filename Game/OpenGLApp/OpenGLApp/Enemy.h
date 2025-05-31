@@ -12,6 +12,8 @@ public:
 
     void HandleCollisionWithSolid(GameObject solidObject) override;
 
+bool Dead = false;
+
     private:
-        bool Dead = false;
+        
 };

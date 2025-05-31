@@ -6,7 +6,9 @@
 #include <irrKlang.h>
 
 // forward declaration per evitare inclusioni circolari
-class StateManager; 
+class StateManager;
+
+enum class GameStatus { None, Playing, Paused, GameOver, Victory };
 
 // Base class for the different states of the game.
 class GameState
@@ -15,6 +17,8 @@ public:
 	GameState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
 
 	~GameState();
+
+	static GameStatus Status;//visibile a tutti gli stati
 
 	// The different 'events' functions
 	// Child classes can implement the ones in which they are interested in
