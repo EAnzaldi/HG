@@ -41,7 +41,7 @@ void EndState::EnterState()
 
 void EndState::LeaveState()
 {
-
+    
 }
 
 
@@ -55,6 +55,7 @@ void EndState::ProcessInput()
 void EndState::Render()
 {
     //std::cout << "Rendering EndState" << std::endl;
+
     glm::vec3 TextColor;
 
     glEnable(GL_BLEND);

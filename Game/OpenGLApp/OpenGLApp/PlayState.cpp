@@ -4,7 +4,7 @@
 #include "EndState.h"
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
-    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), GameOver(false), Paused(false), nEnemies(TOTENEM)
+    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), nEnemies(TOTENEM)
 {
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -132,7 +132,8 @@ void PlayState::Reset()
 {
     CurrentLevel = 0;
     CurrentScore = 0;
-	GameOver = false;
+
+    Status = GameStatus::Playing;
 
     delete pPlayer;
     delete pEnemy;
@@ -143,7 +144,7 @@ void PlayState::Reset()
     // musica di sottofondo
     Engine->play2D("resources/sounds/ost.wav", true);
 
-    if (!IsPaused()) {
+    if (Status != GameStatus::Paused) {
         currentTime = 0;
         totalPauseTime = 0.0f;
         startPauseTime = 0.0f;
@@ -175,6 +176,7 @@ void PlayState::ProcessInput()
     }
 
     if (glfwGetKey(Window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        Status = GameStatus::Paused;
         ChangeState(MenuState::GetInstance(Manager, Window, Engine));
     }
     // movimento orizzontale
@@ -218,12 +220,12 @@ void PlayState::ProcessInput()
     if (pEnemy->IsDead() == false) {
 
         if (pPlayer->CheckEnemyCollision(pEnemy, Engine)) {//Se player muore
-            GameOver = true;
+            Status = GameStatus::GameOver;
         }
         else if (pEnemy->IsDead()) {//Se enemy muore
             nEnemies--;
             if (nEnemies <= 0) {
-                Victory = true;
+                Status = GameStatus::Victory;
             }
         }
         else {
@@ -232,23 +234,15 @@ void PlayState::ProcessInput()
         }     
     }
 
-    if (GameOver) {
+    if (Status == GameStatus::GameOver || Status == GameStatus::Victory) {
         //reset !
-        GameState::Status = GameStatus::GameOver;
-        ChangeState(EndState::GetInstance(Manager, Window, Engine));
-    } else if (Victory) {
-        //reset !
-        GameState::Status = GameStatus::Victory;
         ChangeState(EndState::GetInstance(Manager, Window, Engine));
     }
 }
 
 void PlayState::UpdateTime(long currentTime)
 {
-	if (!GameOver)
-	{
-
-	}
+	
 }
 
 void PlayState::Render()
@@ -283,7 +277,7 @@ void PlayState::Render()
     // se scade il tempo perdo e chiudo il gioco
     if (currentTime <= 0)
     {
-        GameOver = true;
+        Status = GameStatus::GameOver;
     }
 
     std::string time = "TIME: " + std::to_string(currentTime);
@@ -298,18 +292,14 @@ void PlayState::EnterState()
     // musica di sottofondo
     Engine->play2D("resources/sounds/ost.wav", true);
 
-    if(IsPaused())//salta prima chiamata
+    if(Status == GameStatus::Paused)//salta prima chiamata
         totalPauseTime += glfwGetTime() - startPauseTime;
 
-    Paused = false;
+    Status = GameStatus::Playing;
 }
 
 void PlayState::LeaveState() {
-
     startPauseTime = glfwGetTime();
-
-    if(!GameOver)
-        Paused = true;
 }
 
 void PlayState::RenderStats() {

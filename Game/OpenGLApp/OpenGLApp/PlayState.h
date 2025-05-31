@@ -25,9 +25,6 @@ public:
 	void LeaveState();
 
 	void Reset();
-	bool IsGameOver() { return GameOver; }
-	bool IsVictory() { return Victory; }
-	bool IsPaused() { return Paused; }
 
 	const double start = 99;// tempo massimo per livello
 
@@ -83,10 +80,6 @@ private:
 	int CurrentLevel;
 	// The current score
 	long CurrentScore;
-
-	bool GameOver;
-	bool Victory;
-	bool Paused;
 
 	Camera* pCamera;
 
