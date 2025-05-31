@@ -54,7 +54,7 @@
     <ClCompile Include="MenuState.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="GameOverState.cpp">
+    <ClCompile Include="EndState.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -107,7 +107,7 @@
     <ClInclude Include="MenuState.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="GameOverState.h">
+    <ClInclude Include="EndState.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

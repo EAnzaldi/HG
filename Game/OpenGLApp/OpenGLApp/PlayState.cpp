@@ -1,7 +1,7 @@
 #include "PlayState.h"
 #include "Player.h"
 #include "MenuState.h"
-#include "GameOverState.h"
+#include "EndState.h"
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
     : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), GameOver(false), Paused(false), nAliveEnemies(TOTENEM)
@@ -227,7 +227,7 @@ void PlayState::ProcessInput()
 
     if (GameOver) {
         //reset !
-        ChangeState(GameOverState::GetInstance(Manager, Window, Engine));
+        ChangeState(EndState::GetInstance(Manager, Window, Engine));
     }
 }
 
