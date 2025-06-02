@@ -65,6 +65,7 @@ private:
 
 	Model* pCubeModel;
 	Model* pCauldronModel;
+	Model* pSlimeModel;
 
 	GameObject* pCauldron_right;
 	GameObject* pCauldron_left;
@@ -95,6 +96,7 @@ private:
 	TextureObject* pTexPlatforms;
 	TextureObject* pTexPlayer;
 	TextureObject* pTexEnemy;
+	TextureObject* pTexSlime;
 
 	FT_Library ft;
 	TextObject* pText;

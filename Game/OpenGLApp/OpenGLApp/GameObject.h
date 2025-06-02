@@ -26,6 +26,7 @@ public:
     glm::vec2 Position;
     glm::vec3 Size;
     float Rotation;
+    float FlipX;
 
     Model model;
 

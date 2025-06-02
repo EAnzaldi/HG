@@ -27,6 +27,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pTexPlatforms = new TextureObject("resources/textures/donut_block.jpg");
     pTexPlayer = new TextureObject("resources/textures/ice_cream_block.jpg");
     pTexEnemy = new TextureObject("resources/textures/awesomeface.png");
+    pTexSlime = new TextureObject("resources/textures/slime2-mod.png");
 
     pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f));
 
@@ -46,19 +47,16 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     // caricamento modelli blender
     pCubeModel = new Model("resources/models/cubetto.obj");
     pCauldronModel = new Model("resources/models/cauldron.obj");
+    pSlimeModel = new Model("resources/models/slime2.obj");
 
     for (int i = 0; i < 8; ++i)
     {
         platforms.emplace_back(positions[i], sizes[i], *pCubeModel, pTexPlatforms, 1);
     }
-    
-    pPlayer = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), *pCubeModel, pTexPlayer, 0);
-    pEnemy = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), *pCubeModel, pTexEnemy, 0, glm::vec2(0.8f, 0.0f));
-
 
     // passo nullptr come texture per ora
-    pCauldron_right = new GameObject(glm::vec2(0.90f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), *pCauldronModel, nullptr, 0);
-    pCauldron_left = new GameObject(glm::vec2(-0.90f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), *pCauldronModel, nullptr, 0);
+    pCauldron_right = new GameObject(glm::vec2(0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), *pCauldronModel, nullptr, 0);
+    pCauldron_left = new GameObject(glm::vec2(-0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), *pCauldronModel, nullptr, 0);
 
     float left = -1.0f;   // Puoi modificare questi valori per adattarli alla tua scena
     float right = 1.0f;
@@ -139,7 +137,8 @@ void PlayState::Reset()
     delete pEnemy;
 
     pPlayer = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), *pCubeModel, pTexPlayer, 0);
-    pEnemy = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), *pCubeModel, pTexEnemy, 0, glm::vec2(0.8f, 0.0f));
+    //pEnemy = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), *pCubeModel, pTexEnemy, 0, glm::vec2(0.8f, 0.0f));
+    pEnemy = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), *pSlimeModel, pTexSlime, 0, glm::vec2(0.4f, 0.0f));
 
     // musica di sottofondo
     Engine->play2D("resources/sounds/ost.wav", true);

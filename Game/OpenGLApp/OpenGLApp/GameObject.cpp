@@ -3,7 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 GameObject::GameObject(glm::vec2 position, glm::vec3 size, Model model, TextureObject* texture, bool repeatWidth)
-    : Position(position), Size(size), model(model), Rotation(0.0f), Texture(texture)
+    : Position(position), Size(size), model(model), Rotation(0.0f), Texture(texture), FlipX(1.0f)
 {
     // flag specifica se si voglia scalare la texture (consigliato=1 per piattaforme)
 }
@@ -28,7 +28,9 @@ void GameObject::Render(const Shader& shader) const
     model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), glm::vec3(0.0f, 1.0f, 0.0f)); // Ruota attorno all'asse Z
 
     // Scala
-    model_mat = glm::scale(model_mat, this->Size);
+    //model_mat = glm::scale(model_mat, this->Size);
+    model_mat = glm::scale(model_mat, glm::vec3(FlipX * this->Size.x, this->Size.y, 1.0f));
+
 
     shader.setMat4("model", model_mat);
 

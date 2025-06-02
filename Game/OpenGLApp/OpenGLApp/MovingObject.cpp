@@ -32,6 +32,7 @@ void MovingObject::Move(float deltaTime)
     }
 
     // Se serve applico la rotazione del modello
+    /*
     if (std::abs(targetRotation - Rotation) > 0.1f) {
         float rotationStep = rotationSpeed * deltaTime;
 
@@ -43,7 +44,9 @@ void MovingObject::Move(float deltaTime)
         else {
             Rotation += (targetRotation > Rotation ? rotationStep : -rotationStep);
         }
-    }
+    }*/
+
+    FlipX = lastDirectionRight ? 1.0f : -1.0f;
 }
 
 /*bool MovingObject::CheckCollision(GameObject other)
@@ -131,7 +134,8 @@ void MovingObject::Render(const Shader& Shader) const
         glm::mat4 model_mat = glm::mat4(1.0f);
         model_mat = glm::translate(model_mat, glm::vec3((this->Position - glm::vec2(2.0f, 0.0f)), 0.0f));
         model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), glm::vec3(0.0f, 1.0f, 0.0f)); // Ruota attorno all'asse Z
-        model_mat = glm::scale(model_mat, this->Size);
+        //model_mat = glm::scale(model_mat, this->Size);
+        model_mat = glm::scale(model_mat, glm::vec3(FlipX * this->Size.x, this->Size.y, 1.0f));
 
         Shader.setMat4("model", model_mat);
 
@@ -144,7 +148,8 @@ void MovingObject::Render(const Shader& Shader) const
         glm::mat4 model_mat = glm::mat4(1.0f);
         model_mat = glm::translate(model_mat, glm::vec3((this->Position + glm::vec2(2.0f, 0.0f)), 0.0f));
         model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), glm::vec3(0.0f, 1.0f, 0.0f)); // Ruota attorno all'asse Z
-        model_mat = glm::scale(model_mat, this->Size);
+        //model_mat = glm::scale(model_mat, this->Size);
+        model_mat = glm::scale(model_mat, glm::vec3(FlipX * this->Size.x, this->Size.y, 1.0f));
 
         Shader.setMat4("model", model_mat);
 
