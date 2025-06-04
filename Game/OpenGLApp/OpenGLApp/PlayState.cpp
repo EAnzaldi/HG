@@ -3,6 +3,8 @@
 #include "MenuState.h"
 #include "EndState.h"
 
+#define SENEMY 0
+
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
     : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), nEnemies(TOTENEM)
 {
@@ -28,6 +30,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pTexPlayer = new TextureObject("resources/textures/ice_cream_block.jpg");
     pTexEnemy = new TextureObject("resources/textures/awesomeface.png");
     pTexSlime = new TextureObject("resources/textures/slime2-mod.png");
+    pTexBackground = new TextureObject("resources/textures/dark_wood_background2.png");
 
     pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f));
 
@@ -36,6 +39,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pShader = new Shader("shader.vs", "shader.fs");
     pTextShader = new Shader("shader_text.vs", "shader_text.fs");
     pEnlightenedShader = new Shader("enlightened_object_shader.vs", "enlightened_object_shader.fs");
+    //pEnlightenedTexturedShader = new Shader("enlightened_textured_shader.vs", "enlightened_textured_shader.fs");
 
     // Initializza FreeType
     if (FT_Init_FreeType(&ft)) {
@@ -48,12 +52,15 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pCubeModel = new Model("resources/models/cubetto.obj");
     pCauldronModel = new Model("resources/models/cauldron.obj");
     pSlimeModel = new Model("resources/models/slime2.obj");
+    pBackgroundModel = new Model("resources/models/background.obj");
 
     for (int i = 0; i < 8; ++i)
     {
         platforms.emplace_back(positions[i], sizes[i], *pCubeModel, pTexPlatforms, 1);
     }
 
+    pBackground = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.1f, 0.1f, 0.1f), *pBackgroundModel, pTexBackground, 0);
+    
     // passo nullptr come texture per ora
     pCauldron_right = new GameObject(glm::vec2(0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), *pCauldronModel, nullptr, 0);
     pCauldron_left = new GameObject(glm::vec2(-0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), *pCauldronModel, nullptr, 0);
@@ -67,10 +74,12 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     glm::mat4 view = pCamera->GetViewMatrix();
 
     // setup delle uniform delle shader che non cambieranno nel ciclo di rendering
+    // Shader base
     pShader->use();
     pShader->setMat4("projection", projection);
     pShader->setMat4("view", view);
 
+    //Shader per materiale metallico
     pEnlightenedShader->use();
     pEnlightenedShader->setMat4("projection", projection);
     pEnlightenedShader->setMat4("view", view);
@@ -92,6 +101,29 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pEnlightenedShader->setVec3("light.diffuse", lightColor * glm::vec3(0.6f));
     pEnlightenedShader->setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
+    //Shader per modelli blender generici
+    /*
+    pEnlightenedTexturedShader->use();
+    pEnlightenedTexturedShader->setMat4("projection", projection);
+    pEnlightenedTexturedShader->setMat4("view", view);
+
+    pEnlightenedTexturedShader->setVec3("viewPos", pCamera->Position);
+
+    // Materiale: solo ambient, specular, shininess (diffuse ora è texture)
+    //pEnlightenedTexturedShader->setVec3("material.ambient", glm::vec3(0.24725f, 0.1995f, 0.0745f));
+    //pEnlightenedTexturedShader->setVec3("material.specular", glm::vec3(0.628281f, 0.555802f, 0.366065f));
+    //pEnlightenedTexturedShader->setFloat("material.shininess", 128.0f * 0.4f);
+
+    //pEnlightenedTexturedShader->setInt("material.diffuse", 0);
+
+    // posizione fonte di luce
+    pEnlightenedTexturedShader->setVec3("light.position", glm::vec3(0.0f, -0.75f, 1.2f));
+
+    // parametri luce
+    pEnlightenedTexturedShader->setVec3("light.ambient", lightColor * glm::vec3(0.3f));
+    pEnlightenedTexturedShader->setVec3("light.diffuse", lightColor * glm::vec3(0.6f));
+    pEnlightenedTexturedShader->setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+    */
     // musica di sottofondo
     engine->play2D("resources/sounds/ost.wav", true);
 
@@ -112,7 +144,7 @@ PlayState::~PlayState() {
     delete pCubeModel;
     delete pCauldronModel;
     delete pPlayer;
-    delete pEnemy;
+    //delete pEnemy;
     delete pCauldron_right;
     delete pCauldron_left;
 
@@ -134,11 +166,32 @@ void PlayState::Reset()
     Status = GameStatus::Playing;
 
     delete pPlayer;
+
+    #if SENEMY
     delete pEnemy;
+    #endif
+
+    #if !SENEMY
+    if (nEnemies != 0) {
+        for (int i = 0; i < TOTENEM; ++i)
+        {
+            delete pEnemies[i];
+        }
+    }
+    #endif
 
     pPlayer = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), *pCubeModel, pTexPlayer, 0);
     //pEnemy = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), *pCubeModel, pTexEnemy, 0, glm::vec2(0.8f, 0.0f));
+
+    #if SENEMY
     pEnemy = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), *pSlimeModel, pTexSlime, 0, glm::vec2(0.4f, 0.0f));
+    #endif
+
+    #if !SENEMY
+    nEnemies = TOTENEM;
+    pEnemies[0] = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), *pSlimeModel, pTexSlime, 0, glm::vec2(0.3f, 0.0f), true);
+    pEnemies[1] = new Enemy(glm::vec2(0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), *pSlimeModel, pTexSlime, 0, glm::vec2(-0.3f, 0.0f), false);
+    #endif
 
     // musica di sottofondo
     Engine->play2D("resources/sounds/ost.wav", true);
@@ -216,6 +269,29 @@ void PlayState::ProcessInput()
 
     pPlayer->Update(deltaTime); // Aggiorna lo stato del giocatore
 
+    #if !SENEMY
+    for (int i = 0; i < TOTENEM; ++i)
+    {
+        if (pEnemies[i]->IsDead() == false) {
+
+            if (pPlayer->CheckEnemyCollision(pEnemies[i], Engine)) {//Se player muore
+                Status = GameStatus::GameOver;
+            }
+            else if (pEnemies[i]->IsDead()) {//Se enemy muore
+                nEnemies--;
+                if (nEnemies <= 0) {
+                    Status = GameStatus::Victory;
+                }
+            }
+            else {
+                pEnemies[i]->Move(deltaTime);  // Aggiorna la posizione del nemico con controllo delle collisioni
+                pEnemies[i]->CheckCollisionWithSolids(platforms);
+            }
+        }
+    }
+    #endif
+
+    #if SENEMY
     if (pEnemy->IsDead() == false) {
 
         if (pPlayer->CheckEnemyCollision(pEnemy, Engine)) {//Se player muore
@@ -232,6 +308,7 @@ void PlayState::ProcessInput()
             pEnemy->CheckCollisionWithSolids(platforms);
         }     
     }
+    #endif
 
     if (Status == GameStatus::GameOver || Status == GameStatus::Victory) {
         //reset !
@@ -255,6 +332,8 @@ void PlayState::Render()
     glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    pBackground->Render(*pEnlightenedShader);
+
     for (const GameObject& object : platforms)
     {
         object.Render(*pShader);
@@ -262,8 +341,20 @@ void PlayState::Render()
 
     pPlayer->Render(*pShader);
 
-    if(pEnemy->IsDead() == false)
+    #if SENEMY
+    if(!pEnemy->IsDead())
         pEnemy->Render(*pShader);
+    #endif
+
+    #if !SENEMY
+    for (int i = 0; i < TOTENEM; ++i) {
+        if (!pEnemies[i]->IsDead()) {
+            pEnemies[i]->Render(*pShader);
+            printf("Renderizzo nemico %d, morto? %d\n", i + 1, pEnemies[i]->IsDead());
+        }
+        
+    }
+    #endif
 
     pCauldron_right->Render(*pEnlightenedShader);
     pCauldron_left->Render(*pEnlightenedShader);

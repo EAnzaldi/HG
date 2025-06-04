@@ -10,7 +10,7 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
-#define TOTENEM 1
+#define TOTENEM 2
 
 class PlayState : public GameState
 {
@@ -59,16 +59,18 @@ private:
 	double startPauseTime;
 
 	std::vector<GameObject> platforms;
-	std::vector<Enemy> enemies;
+	std::vector<Enemy*> pEnemies = std::vector<Enemy*>(TOTENEM, nullptr);
 
 	int nEnemies;
 
 	Model* pCubeModel;
 	Model* pCauldronModel;
 	Model* pSlimeModel;
+	Model* pBackgroundModel;
 
 	GameObject* pCauldron_right;
 	GameObject* pCauldron_left;
+	GameObject* pBackground;
 
 	glm::vec2 positions[8];
 	glm::vec3 sizes[8];
@@ -89,6 +91,8 @@ private:
 	Shader* pShader;
 	Shader* pTextShader;
 	Shader* pEnlightenedShader;
+	Shader* pEnlightenedTexturedShader;
+
 
 	// The background image
 	//TImagePtr m_pBackgroundImg;
@@ -97,6 +101,7 @@ private:
 	TextureObject* pTexPlayer;
 	TextureObject* pTexEnemy;
 	TextureObject* pTexSlime;
+	TextureObject* pTexBackground;
 
 	FT_Library ft;
 	TextObject* pText;

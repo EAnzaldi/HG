@@ -1,7 +1,7 @@
 #include "Player.h"
 
 Player::Player(glm::vec2 position, glm::vec3 size, Model model, TextureObject* texture, bool repeatWidth)
-    : MovingObject(position, size, model, texture, repeatWidth, velocity = glm::vec2(0.0f, 0.0f)),
+    : MovingObject(position, size, model, texture, repeatWidth, velocity = glm::vec2(0.0f, 0.0f), true),
     invincibilityDuration(1.0f), invincibilityTimer(0.0f), isInvincible(false) {
 }
 
