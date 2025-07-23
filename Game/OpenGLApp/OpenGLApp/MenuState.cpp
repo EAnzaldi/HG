@@ -22,8 +22,27 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pTextNormal = new TextObject(ft, "resources/fonts/8-bit-operator/8bitOperatorPlus8-Regular.ttf");
 	pTitle = new TextObject(ft, "resources/fonts/bleeding-cowboys/Bleeding_Cowboys.ttf");
 
+	pTitleTex = new TextureObject("resources/textures/background.png");
+	pTitleModel = new Model("resources/models/background.obj");
+	pTitleObj = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), *pTitleModel, pTitleTex, 0);
+
     // setup delle uniform delle shader che non cambieranno nel ciclo di rendering
-    pShader->use();
+	float left = -1.0f;   // Puoi modificare questi valori per adattarli alla tua scena
+	float right = 1.0f;
+	float bottom = -1.0f;
+	float top = 1.0f;
+
+	pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f));
+	glm::mat4 projection = glm::ortho(left, right, bottom, top);
+	glm::mat4 view = pCamera->GetViewMatrix();
+
+	// setup delle uniform delle shader che non cambieranno nel ciclo di rendering
+	// Shader base
+	pShader->use();
+	pShader->setMat4("projection", projection);
+	pShader->setMat4("view", view);
+
+	pTextShader->use();
 }
 
 MenuState::~MenuState() {
@@ -73,12 +92,13 @@ void MenuState::Render()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glClearColor(192.0f / 255.0f, 121.0f / 255.0f, 0.5f / 255.0f, 205.0f);
+	glClearColor(192.0f / 255.0f, 121.0f / 255.0f, 0.5f / 255.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glm::vec3 TitleColor = { 0.0, 0.0, 0.0 };
 
 	pTitle->Render(*pTextShader, "Hansel + Gretel", SCR_WIDTH / 8, 1000.0f, 3.0f, TitleColor);
+	//pTitleObj->Render(*pShader);
 
 	glm::vec3 NonSelectedColor = { 255.0, 255.0, 255.0 };
 	glm::vec3 SelectedColor = { 0.0, 255.0, 0.0 };

@@ -28,6 +28,8 @@ public:
     float Rotation;
     float FlipX;
 
+    bool RepeatWidth;
+
     Model model;
 
     TextureObject* Texture;

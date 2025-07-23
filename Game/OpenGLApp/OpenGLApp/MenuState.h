@@ -44,13 +44,19 @@ private:
 	Shader* pTextShader;
 
 	// The background image
-	TextureObject* BackgroundImg;
+	Model* pBackgroundModel;
+
+	TextureObject* pTitleTex;
+	Model* pTitleModel;
+	GameObject* pTitleObj;
 
 	FT_Library ft;
 
 	// The text controls of the different entries.
 	TextObject* pTextNormal;
 	TextObject* pTitle;
+
+	Camera* pCamera;
 };
 
 #endif  // _MENUSTATE_H_

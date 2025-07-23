@@ -59,7 +59,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
         platforms.emplace_back(positions[i], sizes[i], *pCubeModel, pTexPlatforms, 1);
     }
 
-    pBackground = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.1f, 0.1f, 0.1f), *pBackgroundModel, pTexBackground, 0);
+    pBackground = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f), *pBackgroundModel, pTexBackground, 0);
     
     // passo nullptr come texture per ora
     pCauldron_right = new GameObject(glm::vec2(0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), *pCauldronModel, nullptr, 0);
@@ -269,6 +269,8 @@ void PlayState::ProcessInput()
 
     pPlayer->Update(deltaTime); // Aggiorna lo stato del giocatore
 
+    //pEnemies[0]->CheckCollisionWithSolids(pEnemies[1]);
+
     #if !SENEMY
     for (int i = 0; i < TOTENEM; ++i)
     {
@@ -332,14 +334,15 @@ void PlayState::Render()
     glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    pBackground->Render(*pEnlightenedShader);
+    //pBackground->Render(*pShader);
 
     for (const GameObject& object : platforms)
     {
         object.Render(*pShader);
     }
-
-    pPlayer->Render(*pShader);
+    
+    // disattiva depth buffer quando si disegnano oggetti trasparenti (interferisce con blending)
+    glDepthMask(GL_FALSE);
 
     #if SENEMY
     if(!pEnemy->IsDead())
@@ -355,6 +358,10 @@ void PlayState::Render()
         
     }
     #endif
+
+    pPlayer->Render(*pShader);
+
+    glDepthMask(GL_TRUE); // riattiva depth buffer
 
     pCauldron_right->Render(*pEnlightenedShader);
     pCauldron_left->Render(*pEnlightenedShader);
