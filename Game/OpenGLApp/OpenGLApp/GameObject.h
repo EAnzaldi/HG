@@ -11,6 +11,7 @@
 #include <string>
 #include "TextureObject.h"
 #include "model.h"
+#include "FlatMesh.h"
 #include "constants.h"
 #include <vector>
 
@@ -30,11 +31,16 @@ public:
 
     bool RepeatWidth;
 
-    Model model;
+    Model* model;
+
+    FlatMesh* fmesh;
 
     TextureObject* Texture;
 
-    GameObject(glm::vec2 position, glm::vec3 size, Model model, TextureObject* texture, bool repeatWidth);
+    //Costruttore 3d
+    GameObject(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth);
+    //Costruttore 2d
+    GameObject(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth);
 
     virtual void Render(const Shader& shader) const;
 

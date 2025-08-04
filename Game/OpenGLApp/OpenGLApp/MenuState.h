@@ -5,6 +5,7 @@
 #include "PlayState.h"
 #include "TextObject.h"
 #include "TextureObject.h"
+#include "FlatMesh.h"
 
 // Specialization of the GameState class for the menu state
 // This displays a menu in which the player can
@@ -55,6 +56,9 @@ private:
 	// The text controls of the different entries.
 	TextObject* pTextNormal;
 	TextObject* pTitle;
+
+	FlatMesh* pBackground;
+	GameObject* pBackgroundObj;
 
 	Camera* pCamera;
 };

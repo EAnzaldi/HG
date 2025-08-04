@@ -1,6 +1,6 @@
 #include "MovingObject.h"
 
-MovingObject::MovingObject(glm::vec2 position, glm::vec3 size, Model model, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight)
+MovingObject::MovingObject(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight)
     : GameObject(position, size, model, texture, repeatWidth), velocity(velocity), lastDirectionRight(moveRight) {
 }
 
@@ -139,7 +139,7 @@ void MovingObject::Render(const Shader& Shader) const
 
         Shader.setMat4("model", model_mat);
 
-        model.Draw(Shader);
+        model->Draw(Shader);
     }
 
     // Se l'oggetto si trova oltre il bordo a sinistra renderizzo la parte mancante a destra
@@ -153,6 +153,6 @@ void MovingObject::Render(const Shader& Shader) const
 
         Shader.setMat4("model", model_mat);
 
-        model.Draw(Shader);
+        model->Draw(Shader);
     }
 }

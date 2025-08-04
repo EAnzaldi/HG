@@ -56,14 +56,14 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
     for (int i = 0; i < 8; ++i)
     {
-        platforms.emplace_back(positions[i], sizes[i], *pCubeModel, pTexPlatforms, 1);
+        platforms.emplace_back(positions[i], sizes[i], pCubeModel, pTexPlatforms, 1);
     }
 
-    pBackground = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f), *pBackgroundModel, pTexBackground, 0);
+    pBackground = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f), pBackgroundModel, pTexBackground, 0);
     
     // passo nullptr come texture per ora
-    pCauldron_right = new GameObject(glm::vec2(0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), *pCauldronModel, nullptr, 0);
-    pCauldron_left = new GameObject(glm::vec2(-0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), *pCauldronModel, nullptr, 0);
+    pCauldron_right = new GameObject(glm::vec2(0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), pCauldronModel, nullptr, 0);
+    pCauldron_left = new GameObject(glm::vec2(-0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), pCauldronModel, nullptr, 0);
 
     float left = -1.0f;   // Puoi modificare questi valori per adattarli alla tua scena
     float right = 1.0f;
@@ -180,17 +180,17 @@ void PlayState::Reset()
     }
     #endif
 
-    pPlayer = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), *pCubeModel, pTexPlayer, 0);
-    //pEnemy = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), *pCubeModel, pTexEnemy, 0, glm::vec2(0.8f, 0.0f));
+    pPlayer = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexPlayer, 0);
+    //pEnemy = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexEnemy, 0, glm::vec2(0.8f, 0.0f));
 
     #if SENEMY
-    pEnemy = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), *pSlimeModel, pTexSlime, 0, glm::vec2(0.4f, 0.0f));
+    pEnemy = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, glm::vec2(0.4f, 0.0f));
     #endif
 
     #if !SENEMY
     nEnemies = TOTENEM;
-    pEnemies[0] = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), *pSlimeModel, pTexSlime, 0, glm::vec2(0.3f, 0.0f), true);
-    pEnemies[1] = new Enemy(glm::vec2(0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), *pSlimeModel, pTexSlime, 0, glm::vec2(-0.3f, 0.0f), false);
+    pEnemies[0] = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, glm::vec2(0.3f, 0.0f), true);
+    pEnemies[1] = new Enemy(glm::vec2(0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, glm::vec2(-0.3f, 0.0f), false);
     #endif
 
     // musica di sottofondo

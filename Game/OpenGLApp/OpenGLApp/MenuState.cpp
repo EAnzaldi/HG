@@ -24,7 +24,10 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
 	pTitleTex = new TextureObject("resources/textures/background.png");
 	pTitleModel = new Model("resources/models/background.obj");
-	pTitleObj = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), *pTitleModel, pTitleTex, 0);
+	pTitleObj = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), pTitleModel, pTitleTex, 0);
+
+	pBackground = new FlatMesh("resources/textures/background.obj");
+	pBackgroundObj = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), pBackground, 0);
 
     // setup delle uniform delle shader che non cambieranno nel ciclo di rendering
 	float left = -1.0f;   // Puoi modificare questi valori per adattarli alla tua scena

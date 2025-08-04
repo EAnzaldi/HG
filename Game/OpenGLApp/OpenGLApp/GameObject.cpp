@@ -2,8 +2,14 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
-GameObject::GameObject(glm::vec2 position, glm::vec3 size, Model model, TextureObject* texture, bool repeatWidth)
-    : Position(position), Size(size), model(model), Rotation(0.0f), Texture(texture), RepeatWidth(repeatWidth), FlipX(1.0f)
+GameObject::GameObject(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth)
+    : Position(position), Size(size), Rotation(0.0f), model(model), Texture(texture), fmesh(nullptr), RepeatWidth(repeatWidth), FlipX(1.0f)
+{
+    // flag specifica se si voglia scalare la texture (consigliato=1 per piattaforme)
+}
+
+GameObject::GameObject(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth)
+    : Position(position), Size(size), Rotation(0.0f), model(nullptr), Texture(nullptr), fmesh(fmesh), RepeatWidth(repeatWidth), FlipX(1.0f)
 {
     // flag specifica se si voglia scalare la texture (consigliato=1 per piattaforme)
 }
@@ -30,28 +36,19 @@ void GameObject::Render(const Shader& shader) const
     // Rotazione
     model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), glm::vec3(0.0f, 1.0f, 0.0f)); // Ruota attorno all'asse Z
 
-    // Scala
+    // Scalamento
     //model_mat = glm::scale(model_mat, this->Size);
     model_mat = glm::scale(model_mat, glm::vec3(FlipX * this->Size.x, this->Size.y, 1.0f));
 
 
     shader.setMat4("model", model_mat);
 
-    model.Draw(shader);
+    model->Draw(shader);
 }
 
 void GameObject::RenderFlat(const Shader& shader) const
 {
     shader.use();
-
-    if (this->Texture) {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, this->Texture->TextureID);
-        if (RepeatWidth)
-            shader.setVec2("textureReps", glm::vec2(Size.x * 10.0f, 1.0f));
-        else
-            shader.setVec2("textureReps", glm::vec2(1.0f, 1.0f));
-    }
 
     // Modifico model altrimenti disegnerei un quadrato in posizione 0,0
     glm::mat4 model_mat = glm::mat4(1.0f);
@@ -62,14 +59,13 @@ void GameObject::RenderFlat(const Shader& shader) const
     // Rotazione
     model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), glm::vec3(0.0f, 1.0f, 0.0f)); // Ruota attorno all'asse Z
 
-    // Scala
+    // Scalamento
     //model_mat = glm::scale(model_mat, this->Size);
     model_mat = glm::scale(model_mat, glm::vec3(FlipX * this->Size.x, this->Size.y, 1.0f));
 
-
     shader.setMat4("model", model_mat);
 
-    model.Draw(shader);
+    fmesh->Draw(shader);
 }
 
 Hitbox GameObject::GetHitbox() const
@@ -78,7 +74,7 @@ Hitbox GameObject::GetHitbox() const
     glm::vec3 max_point = glm::vec3(-FLT_MAX); // Inizializza a un valore molto piccolo
 
     // Itera su tutte le mesh del modello
-    for (const auto& mesh : model.meshes)
+    for (const auto& mesh : model->meshes)
     {
         // Itera su tutti i vertici della mesh
         for (const auto& vertex : mesh.vertices)

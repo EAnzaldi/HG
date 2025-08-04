@@ -57,6 +57,9 @@
     <ClCompile Include="EndState.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="FlatMesh.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader_s.h">
