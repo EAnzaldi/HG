@@ -110,6 +110,9 @@
     <ClInclude Include="EndState.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="FlatMesh.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.vs">

@@ -38,6 +38,8 @@ public:
 
     virtual void Render(const Shader& shader) const;
 
+    virtual void RenderFlat(const Shader& shader) const;
+
     Hitbox GetHitbox() const;
 
 };

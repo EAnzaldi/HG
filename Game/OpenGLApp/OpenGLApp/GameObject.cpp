@@ -40,6 +40,38 @@ void GameObject::Render(const Shader& shader) const
     model.Draw(shader);
 }
 
+void GameObject::RenderFlat(const Shader& shader) const
+{
+    shader.use();
+
+    if (this->Texture) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, this->Texture->TextureID);
+        if (RepeatWidth)
+            shader.setVec2("textureReps", glm::vec2(Size.x * 10.0f, 1.0f));
+        else
+            shader.setVec2("textureReps", glm::vec2(1.0f, 1.0f));
+    }
+
+    // Modifico model altrimenti disegnerei un quadrato in posizione 0,0
+    glm::mat4 model_mat = glm::mat4(1.0f);
+
+    // Posizione
+    model_mat = glm::translate(model_mat, glm::vec3(this->Position, 0.0f));
+
+    // Rotazione
+    model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), glm::vec3(0.0f, 1.0f, 0.0f)); // Ruota attorno all'asse Z
+
+    // Scala
+    //model_mat = glm::scale(model_mat, this->Size);
+    model_mat = glm::scale(model_mat, glm::vec3(FlipX * this->Size.x, this->Size.y, 1.0f));
+
+
+    shader.setMat4("model", model_mat);
+
+    model.Draw(shader);
+}
+
 Hitbox GameObject::GetHitbox() const
 {
     glm::vec3 min_point = glm::vec3(FLT_MAX);  // Inizializza a un valore molto grande

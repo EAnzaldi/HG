@@ -1,3 +1,11 @@
-﻿  PlayState.cpp
+﻿  EndState.cpp
+  Enemy.cpp
+  GameObject.cpp
+  Main.cpp
+  MenuState.cpp
+  MovingObject.cpp
+  PlayState.cpp
 D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\PlayState.cpp(372,25): warning C4244: '=': conversione da 'double' a 'int'. Possibile perdita di dati.
+  Player.cpp
+  Generazione del codice in corso...
   OpenGLApp.vcxproj -> D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\x64\Debug\OpenGLApp.exe

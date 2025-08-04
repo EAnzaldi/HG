@@ -158,6 +158,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="Enemy.h" />
+    <ClInclude Include="FlatMesh.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="EndState.h" />
     <ClInclude Include="GameState.h" />
