@@ -24,6 +24,11 @@ public:
     // render the mesh
     void Draw(const Shader& shader) const;
 
+    // get sprite size
+    glm::vec3 getSize();
+    float getWidth();
+    float getHeigth();
+
 private:
     // render data 
     static unsigned int VAO;

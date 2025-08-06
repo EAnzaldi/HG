@@ -50,6 +50,11 @@ void GameObject::RenderFlat(const Shader& shader) const
 {
     shader.use();
 
+    if (RepeatWidth)
+        shader.setVec2("textureReps", glm::vec2(Size.x * 10.0f, 1.0f));
+    else
+        shader.setVec2("textureReps", glm::vec2(1.0f, 1.0f));
+
     // Modifico model altrimenti disegnerei un quadrato in posizione 0,0
     glm::mat4 model_mat = glm::mat4(1.0f);
 

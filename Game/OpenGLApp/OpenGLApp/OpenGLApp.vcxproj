@@ -182,6 +182,8 @@
     <None Include="enlightened_textured_shader.vs" />
     <None Include="shader.fs" />
     <None Include="shader.vs" />
+    <None Include="shader_sprite.fs" />
+    <None Include="shader_sprite.vs" />
     <None Include="shader_text.fs" />
     <None Include="shader_text.vs" />
   </ItemGroup>

@@ -16,7 +16,7 @@ FlatMesh::FlatMesh(const char* path) : texture(path) {
 void FlatMesh::Draw(const Shader& shader) const
 {
     glActiveTexture(GL_TEXTURE0);
-    shader.setInt("texture0", 0);
+    shader.setInt("ourTexture", 0);
     glBindTexture(GL_TEXTURE_2D, texture.TextureID);
 
     // draw mesh
@@ -61,3 +61,20 @@ void FlatMesh::setupMesh()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3 * sizeof(float)));
     glBindVertexArray(0);
 }
+
+glm::vec3 FlatMesh::getSize()
+{
+    printf("%f %f\n", static_cast<float>(texture.Width), static_cast<float>(texture.Height));
+    return glm::vec3(static_cast<float>(texture.Width), static_cast<float>(texture.Height), 1.0f);
+}
+
+float FlatMesh::getWidth()
+{
+    return static_cast<float>(texture.Width);
+}
+
+float FlatMesh::getHeigth()
+{
+    return static_cast<float>(texture.Height);
+}
+

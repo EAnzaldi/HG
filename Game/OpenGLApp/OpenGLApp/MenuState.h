@@ -43,9 +43,19 @@ private:
 
 	Shader* pShader;
 	Shader* pTextShader;
+	Shader* pSpriteShader;
 
 	// The background image
-	Model* pBackgroundModel;
+	FlatMesh* pBackground;
+	GameObject* pBackgroundObj;
+
+	// The menu images
+	FlatMesh* pMenu[3];
+	GameObject* pMenuObj[3];
+	FlatMesh* pMenuSel[3];
+	GameObject* pMenuSelObj[3];
+	FlatMesh* pMenuNoGame;
+	GameObject* pMenuNoGameObj;
 
 	TextureObject* pTitleTex;
 	Model* pTitleModel;
@@ -57,8 +67,7 @@ private:
 	TextObject* pTextNormal;
 	TextObject* pTitle;
 
-	FlatMesh* pBackground;
-	GameObject* pBackgroundObj;
+
 
 	Camera* pCamera;
 };
