@@ -48,4 +48,6 @@ public:
 
     Hitbox GetHitbox() const;
 
+    Hitbox GetHitboxFlat() const;
+
 };

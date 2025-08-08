@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CursorObject.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="FlatMesh.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -158,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="constants.h" />
+    <ClInclude Include="CursorObject.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="FlatMesh.h" />
     <ClInclude Include="GameObject.h" />

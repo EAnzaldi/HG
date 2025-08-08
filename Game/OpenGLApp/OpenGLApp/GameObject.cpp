@@ -113,3 +113,9 @@ Hitbox GameObject::GetHitbox() const
 
     return Hitbox{ center - size / 2.0f, center + size / 2.0f }; // Restituisci la hitbox
 }
+
+Hitbox GameObject::GetHitboxFlat() const
+{
+    glm::vec2 size = glm::vec2(Size.x, Size.y);
+    return Hitbox{ Position - size / 2.0f, Position + size / 2.0f };
+}

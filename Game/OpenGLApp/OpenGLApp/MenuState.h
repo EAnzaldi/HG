@@ -22,6 +22,9 @@ public:
 	void Render();
 	void EnterState();
 
+	void MouseMoving(double xpos, double ypos);
+	void MouseClick(int button, int action, int mods);
+
 	// Returns the single instance (-> singleton)
 	static MenuState* GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
 
@@ -56,6 +59,9 @@ private:
 	GameObject* pMenuSelObj[3];
 	FlatMesh* pMenuNoGame;
 	GameObject* pMenuNoGameObj;
+
+	FlatMesh* pTest;
+	GameObject* pTestObj;
 
 	TextureObject* pTitleTex;
 	Model* pTitleModel;

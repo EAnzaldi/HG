@@ -26,6 +26,11 @@
 #include "MenuState.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+void cursor_moving_callback(GLFWwindow* window, double xpos, double ypos);
+void cursor_button_callback(GLFWwindow* window, int button, int action, int mods);
+
+// Definisco lo StateManager che si occupa di gestire gli stati di gioco
+StateManager mySManager;
 
 int main()
 {
@@ -53,6 +58,9 @@ int main()
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+    glfwSetCursorPosCallback(window, cursor_moving_callback);
+    glfwSetMouseButtonCallback(window, cursor_button_callback);
+
     // glad: load all OpenGL function pointers
     // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -71,8 +79,6 @@ int main()
         return 0;
     }
 
-    // Inizializzo lo StateManager che si occupa di gestire gli stati di gioco
-    StateManager mySManager;
     //MenuState myPState(&mySManager, window, engine);
     //mySManager.ChangeState(&myPState);
     mySManager.ChangeState(MenuState::GetInstance(&mySManager, window, engine));
@@ -81,7 +87,7 @@ int main()
     // -----------
     while (!glfwWindowShouldClose(window))
     {
-        //il processamento dell'input avviene sempre tramite il manager che conosce il "contesto" dei tasti
+        //il processamento dell'input avviene sempre tramite il manager che conosce il "contesto"
         mySManager.ProcessInput();
         mySManager.Render();
 
@@ -104,4 +110,11 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and 
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+}
+
+void cursor_moving_callback(GLFWwindow* window, double xpos, double ypos) {
+    mySManager.MouseMoving(xpos, ypos);
+}
+void cursor_button_callback(GLFWwindow* window, int button, int action, int mods) {
+    mySManager.MouseClick(button, action, mods);
 }

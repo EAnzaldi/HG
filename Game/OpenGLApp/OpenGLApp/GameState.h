@@ -24,6 +24,10 @@ public:
 	// Child classes can implement the ones in which they are interested in
 	
 	virtual void ProcessInput() { }
+
+	virtual void MouseMoving(double xpos, double ypos) { }
+	virtual void MouseClick(int button, int action, int mods) { }
+
 	virtual void UpdateTime() { }
 	virtual void Render() { }
 

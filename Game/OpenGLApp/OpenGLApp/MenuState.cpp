@@ -1,3 +1,4 @@
+//#include <GLFW/glfw3.h>
 #include "MenuState.h"
 #include "PlayState.h"
 #include "StateManager.h"
@@ -46,6 +47,9 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 	pMenuNoGame = new FlatMesh("resources/textures/resume_game_dark.png");;
 	pMenuNoGameObj = new GameObject(glm::vec2(1100.0f + pMenuNoGame->getWidth()/2, SCR_HEIGHT_F - 750.0f), pMenuNoGame->getSize(), pMenuNoGame, 0);;
 
+	pTest = new FlatMesh("resources/textures/awesomeface.png");
+	pTestObj = new GameObject(glm::vec2(0.0f, 0.0f), pTest->getSize(), pTest, 0);
+
     // setup delle uniform delle shader che non cambieranno nel ciclo di rendering
 	float left = -1.0f;   // Puoi modificare questi valori per adattarli alla tua scena
 	float right = 1.0f;
@@ -53,8 +57,13 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 	float top = 1.0f;
 
 	pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f));
+
 	//glm::mat4 projection = glm::ortho(left, right, bottom, top);
-	glm::mat4 projection = glm::ortho(0.0f, SCR_WIDTH_F, 0.0f, SCR_HEIGHT_F);//left, right, bottom, top
+	/*glm::mat4 projection = glm::ortho(0.0f, SCR_WIDTH_F, 0.0f, SCR_HEIGHT_F);//left, right, bottom, top*/
+	int fbWidth, fbHeight;
+	glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
+	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(fbWidth), 0.0f, static_cast<float>(fbHeight));//left, right, bottom, top
+
 	glm::mat4 view = pCamera->GetViewMatrix();
 
 	// setup delle uniform delle shader che non cambieranno nel ciclo di rendering
@@ -107,8 +116,50 @@ void MenuState::ProcessInput()
 	else if (glfwGetKey(Window, GLFW_KEY_ENTER) == GLFW_RELEASE)
 		canPressEnter = true;
 
+	/*
+	double x, y;
+	glfwGetCursorPos(Window, &x, &y);
+
+	int fbWidth, fbHeight;
+	glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
+	y = fbHeight - y; //OpenGL ha coordinata y Invertita rispetto a GLFW
+
+	for (int i = 0; i < 3; i++) {
+		Hitbox bounds = pMenuObj[i]->GetHitboxFlat();
+		bool isColliding = (x <= bounds.Max.x && x >= bounds.Min.x && y <= bounds.Max.y && y >= bounds.Min.y);
+		if (isColliding) {
+			CurrentSelection = i;
+			printf("x:%lf, y:%lf, select:%d\n", x, y, CurrentSelection);
+			if (glfwGetMouseButton(Window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+				SelectionChosen();
+			break;
+		}
+	}*/
+
+}
+void MenuState::MouseMoving(double xpos, double ypos)
+{
+	int fbWidth, fbHeight;
+	glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
+	ypos = fbHeight - ypos; //OpenGL ha coordinata y Invertita rispetto a GLFW
+
+	for (int i = 0; i < 3; i++) {
+		Hitbox bounds = pMenuObj[i]->GetHitboxFlat();
+		bool isColliding = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
+		if (isColliding) {
+			CurrentSelection = i;
+			printf("x:%lf, y:%lf, select:%d\n", xpos, ypos, CurrentSelection);
+			break;
+		}
+	}
 }
 
+void MenuState::MouseClick(int button, int action, int mods)
+{
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		SelectionChosen();
+	}
+}
 
 void MenuState::Render()
 {
@@ -135,6 +186,8 @@ void MenuState::Render()
 			pMenuObj[i]->RenderFlat(*pSpriteShader);
 		else
 			pMenuSelObj[i]->RenderFlat(*pSpriteShader);
+
+	pTestObj->RenderFlat(*pSpriteShader);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -189,7 +242,7 @@ void MenuState::SelectionUp()
 	
 	if(CurrentSelection > NEW)
 		CurrentSelection--;
-	if (CurrentSelection == RESUME && Status != GameStatus::Paused)
+	if (CurrentSelection == RESUME && Status != GameStatus::Paused)//no game -> skip resume
 			CurrentSelection--;
 }
 
@@ -197,7 +250,7 @@ void MenuState::SelectionDown()
 {
 	if (CurrentSelection < EXIT)
 		CurrentSelection++;
-	if (CurrentSelection == RESUME && Status != GameStatus::Paused)
+	if (CurrentSelection == RESUME && Status != GameStatus::Paused)//no game -> skip resume
 		CurrentSelection++;
 }
 
