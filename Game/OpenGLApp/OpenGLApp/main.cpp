@@ -55,6 +55,22 @@ int main()
         glfwTerminate();
         return -1;
     }
+
+    // Spawna la finestra al centro dello schermo
+    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+    int screenWidth = mode->width;
+    int screenHeight = mode->height;
+
+    int xpos = (screenWidth - SCR_WIDTH) / 2;
+    int ypos = 50;
+
+    glfwSetWindowPos(window, xpos, ypos);
+
+    int fbWidth, fbHeight;
+    glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+    // -----------------------------------------------------------------------------------------
+
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 

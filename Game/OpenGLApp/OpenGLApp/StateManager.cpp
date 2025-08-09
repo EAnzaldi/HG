@@ -18,17 +18,12 @@ void StateManager::MouseClick(int button, int action, int mods) {
 		ActiveState->MouseClick(button, action, mods);
 }
 /*
-
-
-
 void StateManager::Update(DWORD dwCurrentTime)
 {
 	if (ActiveState)
 		ActiveState->Update(dwCurrentTime);
 }
-
 */
-
 void StateManager::Render()
 {
 	if (ActiveState)

@@ -18,6 +18,8 @@ public:
     ~EndState();
 
     void ProcessInput();
+    void MouseClick(int button, int action, int mods);
+
     void Render();
     void EnterState();
     void LeaveState();

@@ -24,31 +24,33 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     //pTextNormal = new TextObject(ft, "resources/fonts/8-bit-operator/8bitOperatorPlus8-Regular.ttf");
 	//pTitle = new TextObject(ft, "resources/fonts/bleeding-cowboys/Bleeding_Cowboys.ttf");
 
+	int fbWidth, fbHeight;
+	glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
 	pBackground = new FlatMesh("resources/textures/background2.png");
-	pBackgroundObj = new GameObject(glm::vec2(SCR_WIDTH_F/2, SCR_HEIGHT_F/2), pBackground->getSize(), pBackground, 0);
+	pBackgroundObj = new GameObject(glm::vec2(fbWidth/2, fbHeight/2), pBackground->getSize()/1.25f, pBackground, 0);
 
 	//unselected menu
 	pMenu[0] = new FlatMesh("resources/textures/new_game.png");
 	pMenu[1] = new FlatMesh("resources/textures/resume_game.png");
 	pMenu[2] = new FlatMesh("resources/textures/exit.png");
-	pMenuObj[0] = new GameObject(glm::vec2(1100.0f + pMenu[0]->getWidth()/2, SCR_HEIGHT_F - 550.0f), pMenu[0]->getSize(), pMenu[0], 0);
-	pMenuObj[1] = new GameObject(glm::vec2(1100.0f + pMenu[1]->getWidth()/2, SCR_HEIGHT_F - 750.0f), pMenu[1]->getSize(), pMenu[1], 0);
-	pMenuObj[2] = new GameObject(glm::vec2(1100.0f + pMenu[2]->getWidth()/2, SCR_HEIGHT_F - 950.0f), pMenu[2]->getSize(), pMenu[2], 0);
+	pMenuObj[0] = new GameObject(glm::vec2(880.0f + pMenu[0]->getWidth()/2.5f, fbHeight - 440.0f), pMenu[0]->getSize()/1.25f, pMenu[0], 0);
+	pMenuObj[1] = new GameObject(glm::vec2(880.0f + pMenu[1]->getWidth()/2.5f, fbHeight - 600.0f), pMenu[1]->getSize()/1.25f, pMenu[1], 0);
+	pMenuObj[2] = new GameObject(glm::vec2(880.0f + pMenu[2]->getWidth()/2.5f, fbHeight - 760.0f), pMenu[2]->getSize()/1.25f, pMenu[2], 0);
 
 	//selected menu
 	pMenuSel[0] = new FlatMesh("resources/textures/new_game_yellow.png");
 	pMenuSel[1] = new FlatMesh("resources/textures/resume_game_yellow.png");
 	pMenuSel[2] = new FlatMesh("resources/textures/exit_yellow.png");
-	pMenuSelObj[0] = new GameObject(glm::vec2(1100.0f + pMenuSel[0]->getWidth()/2, SCR_HEIGHT_F - 550.0f), pMenuSel[0]->getSize(), pMenuSel[0], 0);
-	pMenuSelObj[1] = new GameObject(glm::vec2(1100.0f + pMenuSel[1]->getWidth()/2, SCR_HEIGHT_F - 750.0f), pMenuSel[1]->getSize(), pMenuSel[1], 0);
-	pMenuSelObj[2] = new GameObject(glm::vec2(1100.0f + pMenuSel[2]->getWidth()/2, SCR_HEIGHT_F - 950.0f), pMenuSel[2]->getSize(), pMenuSel[2], 0);
+	pMenuSelObj[0] = new GameObject(glm::vec2(880.0f + pMenuSel[0]->getWidth()/2.5f, fbHeight - 440.0f), pMenuSel[0]->getSize()/1.25f, pMenuSel[0], 0);
+	pMenuSelObj[1] = new GameObject(glm::vec2(880.0f + pMenuSel[1]->getWidth()/2.5f, fbHeight - 600.0f), pMenuSel[1]->getSize()/1.25f, pMenuSel[1], 0);
+	pMenuSelObj[2] = new GameObject(glm::vec2(880.0f + pMenuSel[2]->getWidth()/2.5f, fbHeight - 760.0f), pMenuSel[2]->getSize()/1.25f, pMenuSel[2], 0);
 
 	//resume game not available
 	pMenuNoGame = new FlatMesh("resources/textures/resume_game_dark.png");;
-	pMenuNoGameObj = new GameObject(glm::vec2(1100.0f + pMenuNoGame->getWidth()/2, SCR_HEIGHT_F - 750.0f), pMenuNoGame->getSize(), pMenuNoGame, 0);;
+	pMenuNoGameObj = new GameObject(glm::vec2(880.0f + pMenuNoGame->getWidth()/2.5f, fbHeight - 600.0f), pMenuNoGame->getSize()/1.25f, pMenuNoGame, 0);;
 
-	pTest = new FlatMesh("resources/textures/awesomeface.png");
-	pTestObj = new GameObject(glm::vec2(0.0f, 0.0f), pTest->getSize(), pTest, 0);
+	//pTest = new FlatMesh("resources/textures/awesomeface.png");
+	//pTestObj = new GameObject(glm::vec2(0.0f, 0.0f), pTest->getSize(), pTest, 0);
 
     // setup delle uniform delle shader che non cambieranno nel ciclo di rendering
 	float left = -1.0f;   // Puoi modificare questi valori per adattarli alla tua scena
@@ -60,8 +62,6 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
 	//glm::mat4 projection = glm::ortho(left, right, bottom, top);
 	/*glm::mat4 projection = glm::ortho(0.0f, SCR_WIDTH_F, 0.0f, SCR_HEIGHT_F);//left, right, bottom, top*/
-	int fbWidth, fbHeight;
-	glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
 	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(fbWidth), 0.0f, static_cast<float>(fbHeight));//left, right, bottom, top
 
 	glm::mat4 view = pCamera->GetViewMatrix();
@@ -116,26 +116,6 @@ void MenuState::ProcessInput()
 	else if (glfwGetKey(Window, GLFW_KEY_ENTER) == GLFW_RELEASE)
 		canPressEnter = true;
 
-	/*
-	double x, y;
-	glfwGetCursorPos(Window, &x, &y);
-
-	int fbWidth, fbHeight;
-	glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
-	y = fbHeight - y; //OpenGL ha coordinata y Invertita rispetto a GLFW
-
-	for (int i = 0; i < 3; i++) {
-		Hitbox bounds = pMenuObj[i]->GetHitboxFlat();
-		bool isColliding = (x <= bounds.Max.x && x >= bounds.Min.x && y <= bounds.Max.y && y >= bounds.Min.y);
-		if (isColliding) {
-			CurrentSelection = i;
-			printf("x:%lf, y:%lf, select:%d\n", x, y, CurrentSelection);
-			if (glfwGetMouseButton(Window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-				SelectionChosen();
-			break;
-		}
-	}*/
-
 }
 void MenuState::MouseMoving(double xpos, double ypos)
 {
@@ -187,7 +167,7 @@ void MenuState::Render()
 		else
 			pMenuSelObj[i]->RenderFlat(*pSpriteShader);
 
-	pTestObj->RenderFlat(*pSpriteShader);
+	//pTestObj->RenderFlat(*pSpriteShader);
 
 	glEnable(GL_DEPTH_TEST);
 
