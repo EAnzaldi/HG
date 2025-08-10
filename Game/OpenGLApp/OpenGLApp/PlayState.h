@@ -72,8 +72,15 @@ private:
 	GameObject* pCauldron_left;
 	GameObject* pBackground;
 
+	FlatMesh* pTest;
+	std::vector<GameObject> tests;
+
+
 	glm::vec2 positions[8];
 	glm::vec3 sizes[8];
+
+	glm::vec2 positionsTest[8];
+	glm::vec2 sizesTest[8];
 
 	// Pointer to the current player
 	Player* pPlayer;
@@ -92,7 +99,7 @@ private:
 	Shader* pTextShader;
 	Shader* pEnlightenedShader;
 	Shader* pEnlightenedTexturedShader;
-
+	Shader* pSpriteShader;
 
 	// The background image
 	//TImagePtr m_pBackgroundImg;

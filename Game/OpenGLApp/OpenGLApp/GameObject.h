@@ -50,4 +50,6 @@ public:
 
     Hitbox GetHitboxFlat() const;
 
+    void Print() const;
+
 };

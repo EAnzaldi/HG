@@ -4,14 +4,19 @@
 #include "EndState.h"
 
 #define SENEMY 0
+#define NP 1
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
     : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), nEnemies(TOTENEM)
 {
+
+    int fbWidth, fbHeight;
+    glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
+
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     glm::vec2 positions[8] = {
-       {0.0f, -0.9f},
+       {0.0f, -0.95f},
        {-0.6f, -0.5f}, {0.6f, -0.5f},
        {-0.85f, -0.1f}, {0.85f, -0.1f},
        {0.0f, 0.0f},
@@ -25,6 +30,30 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
         {1.0f, 0.1f, 0.2f},
         {0.8f, 0.1f, 0.2f}, {0.8f, 0.1f, 0.2f}
     };
+
+    glm::vec3 sizesTest[8] = {
+        {0.3f, 0.1f, 0.1f},
+        {0.3f, 0.1f, 0.1f}, {0.3f, 0.1f, 0.1f},
+        {0.3f, 0.1f, 0.1f}, {0.3f, 0.1f, 0.1f},
+        {0.3f, 0.1f, 0.1f},
+        {0.3f, 0.1f, 0.1f}, {0.3f, 0.1f, 0.1f}
+    };
+
+    /*
+
+    for (int i = 0; i < 8; i++) {
+        float x_ndc, y_ndc, x_pixel, y_pixel;
+        x_ndc = positions[i].x;
+        y_ndc = positions[i].y;
+        x_pixel = (x_ndc + 1.0f) * 0.5f * fbWidth;
+        y_pixel = fbHeight - ((y_ndc + 1.0f) * 0.5f * fbHeight);
+        positionsTest[i] = { x_pixel, y_pixel };
+        x_pixel = sizes[i].x * (fbWidth / 2.0f);
+        y_pixel = sizes[i].y * (fbHeight / 2.0f);
+        sizesTest[i] = { x_pixel, y_pixel, 0.1f };
+
+        //positionsTest[i] = { x_ndc, y_ndc };
+    }*/
 
     pTexPlatforms = new TextureObject("resources/textures/donut_block.jpg");
     pTexPlayer = new TextureObject("resources/textures/ice_cream_block.jpg");
@@ -40,6 +69,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pTextShader = new Shader("shader_text.vs", "shader_text.fs");
     pEnlightenedShader = new Shader("enlightened_object_shader.vs", "enlightened_object_shader.fs");
     //pEnlightenedTexturedShader = new Shader("enlightened_textured_shader.vs", "enlightened_textured_shader.fs");
+    pSpriteShader = new Shader("shader_sprite.vs", "shader_sprite.fs");
 
     // Initializza FreeType
     if (FT_Init_FreeType(&ft)) {
@@ -59,18 +89,33 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
         platforms.emplace_back(positions[i], sizes[i], pCubeModel, pTexPlatforms, 1);
     }
 
+    pTest = new FlatMesh("resources/textures/test.png");
+
+    for (int i = 0; i < 8; ++i)
+    {
+        tests.emplace_back(positions[i], sizes[i], pTest, 1);
+    }
+
+    for (int i = 0; i < 8; ++i)
+    {
+        tests[i].Print();
+    }
+
     pBackground = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f), pBackgroundModel, pTexBackground, 0);
     
     // passo nullptr come texture per ora
     pCauldron_right = new GameObject(glm::vec2(0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), pCauldronModel, nullptr, 0);
     pCauldron_left = new GameObject(glm::vec2(-0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), pCauldronModel, nullptr, 0);
 
+    glm::mat4 projection2 = glm::ortho(0.0f, static_cast<float>(fbWidth), 0.0f, static_cast<float>(fbHeight));//left, right, bottom, top
+    
     float left = -1.0f;   // Puoi modificare questi valori per adattarli alla tua scena
     float right = 1.0f;
     float bottom = -1.0f;
     float top = 1.0f;
 
     glm::mat4 projection = glm::ortho(left, right, bottom, top);
+    
     glm::mat4 view = pCamera->GetViewMatrix();
 
     // setup delle uniform delle shader che non cambieranno nel ciclo di rendering
@@ -101,29 +146,10 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pEnlightenedShader->setVec3("light.diffuse", lightColor * glm::vec3(0.6f));
     pEnlightenedShader->setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
-    //Shader per modelli blender generici
-    /*
-    pEnlightenedTexturedShader->use();
-    pEnlightenedTexturedShader->setMat4("projection", projection);
-    pEnlightenedTexturedShader->setMat4("view", view);
+    pSpriteShader->use();
+    pSpriteShader->setMat4("projection", projection);
+    pSpriteShader->setMat4("view", view);
 
-    pEnlightenedTexturedShader->setVec3("viewPos", pCamera->Position);
-
-    // Materiale: solo ambient, specular, shininess (diffuse ora è texture)
-    //pEnlightenedTexturedShader->setVec3("material.ambient", glm::vec3(0.24725f, 0.1995f, 0.0745f));
-    //pEnlightenedTexturedShader->setVec3("material.specular", glm::vec3(0.628281f, 0.555802f, 0.366065f));
-    //pEnlightenedTexturedShader->setFloat("material.shininess", 128.0f * 0.4f);
-
-    //pEnlightenedTexturedShader->setInt("material.diffuse", 0);
-
-    // posizione fonte di luce
-    pEnlightenedTexturedShader->setVec3("light.position", glm::vec3(0.0f, -0.75f, 1.2f));
-
-    // parametri luce
-    pEnlightenedTexturedShader->setVec3("light.ambient", lightColor * glm::vec3(0.3f));
-    pEnlightenedTexturedShader->setVec3("light.diffuse", lightColor * glm::vec3(0.6f));
-    pEnlightenedTexturedShader->setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-    */
     // musica di sottofondo
     engine->play2D("resources/sounds/ost.wav", true);
 
@@ -334,13 +360,22 @@ void PlayState::Render()
     glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glDisable(GL_DEPTH_TEST);
+
     //pBackground->Render(*pShader);
 
+    
+    
     for (const GameObject& object : platforms)
     {
         object.Render(*pShader);
     }
-    
+    /*
+    for (const GameObject& object : tests)
+    {
+        object.RenderFlat(*pSpriteShader);
+    }*/
+
     // disattiva depth buffer quando si disegnano oggetti trasparenti (interferisce con blending)
     glDepthMask(GL_FALSE);
 
@@ -353,7 +388,7 @@ void PlayState::Render()
     for (int i = 0; i < TOTENEM; ++i) {
         if (!pEnemies[i]->IsDead()) {
             pEnemies[i]->Render(*pShader);
-            printf("Renderizzo nemico %d, morto? %d\n", i + 1, pEnemies[i]->IsDead());
+            //printf("Renderizzo nemico %d, morto? %d\n", i + 1, pEnemies[i]->IsDead());
         }
         
     }
@@ -362,6 +397,9 @@ void PlayState::Render()
     pPlayer->Render(*pShader);
 
     glDepthMask(GL_TRUE); // riattiva depth buffer
+
+    glEnable(GL_DEPTH_TEST);
+
 
     pCauldron_right->Render(*pEnlightenedShader);
     pCauldron_left->Render(*pEnlightenedShader);
@@ -377,11 +415,18 @@ void PlayState::Render()
         Status = GameStatus::GameOver;
     }
 
+    /*
     std::string time = "TIME: " + std::to_string(currentTime);
     pText->Render(*pTextShader, time, 200.0f, 1100.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
 
     std::string lives = "LIVES: " + std::to_string(pPlayer->lives);
-    pText->Render(*pTextShader, lives, 1200.0f, 1100.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
+    pText->Render(*pTextShader, lives, 1200.0f, 1100.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));*/
+
+    std::string time = "TIME: " + std::to_string(currentTime);
+    pText->Render(*pTextShader, time, 160.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
+
+    std::string lives = "LIVES: " + std::to_string(pPlayer->lives);
+    pText->Render(*pTextShader, lives, 960.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
 }
 
 void PlayState::EnterState()

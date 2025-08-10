@@ -68,7 +68,7 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
 	// setup delle uniform delle shader che non cambieranno nel ciclo di rendering
 	// Shader base
-	//pShader->use();
+	pShader->use();
 	pShader->setMat4("projection", projection);
 	pShader->setMat4("view", view);
 
@@ -128,7 +128,7 @@ void MenuState::MouseMoving(double xpos, double ypos)
 		bool isColliding = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
 		if (isColliding) {
 			CurrentSelection = i;
-			printf("x:%lf, y:%lf, select:%d\n", xpos, ypos, CurrentSelection);
+			//printf("x:%lf, y:%lf, select:%d\n", xpos, ypos, CurrentSelection);
 			break;
 		}
 	}
@@ -137,7 +137,16 @@ void MenuState::MouseMoving(double xpos, double ypos)
 void MenuState::MouseClick(int button, int action, int mods)
 {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-		SelectionChosen();
+		double xpos, ypos;
+		int fbWidth, fbHeight;
+		glfwGetCursorPos(Window, &xpos, &ypos);
+		glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
+		ypos = fbHeight - ypos;
+		Hitbox bounds = pMenuObj[CurrentSelection]->GetHitboxFlat();
+		bool isColliding = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
+		if (isColliding) {
+			SelectionChosen();
+		}
 	}
 }
 

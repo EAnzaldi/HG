@@ -43,6 +43,8 @@ void GameObject::Render(const Shader& shader) const
 
     shader.setMat4("model", model_mat);
 
+
+
     model->Draw(shader);
 }
 
@@ -69,6 +71,8 @@ void GameObject::RenderFlat(const Shader& shader) const
     model_mat = glm::scale(model_mat, glm::vec3(FlipX * this->Size.x, this->Size.y, 1.0f));
 
     shader.setMat4("model", model_mat);
+
+    //this->Print();
 
     fmesh->Draw(shader);
 }
@@ -118,4 +122,15 @@ Hitbox GameObject::GetHitboxFlat() const
 {
     glm::vec2 size = glm::vec2(Size.x, Size.y);
     return Hitbox{ Position - size / 2.0f, Position + size / 2.0f };
+}
+void GameObject::Print() const
+{
+    printf("Position:%0.1f,%0.1f ", Position.x, Position.y);
+    printf("Size:%0.1f,%0.1f,%0.1f ", Size.x, Size.y, Size.z);
+    printf("Rotation:%0.1f ", Rotation);
+    printf("Size:0.1f ", Size);
+    printf("FlipX:0.1f ", FlipX);
+    printf("RepeatWidth:%d ", RepeatWidth);
+    printf("Model? %s ", model != nullptr ? "true" : "false");
+    printf("Fmesh? %s\n", fmesh != nullptr ? "true" : "false");
 }

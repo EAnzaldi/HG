@@ -31,14 +31,14 @@ void FlatMesh::Draw(const Shader& shader) const
 void FlatMesh::setupMesh()
 {
     float vertices[] = {
-    -0.5f, -0.5f, 0.0f,  0.0f, 0.0f,
-    0.5f, -0.5f, 0.0f,  1.0f, 0.0f,
-    0.5f,  0.5f, 0.0f,  1.0f, 1.0f,
+        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f,
+        0.5f, -0.5f, 0.0f,  1.0f, 0.0f,
+        0.5f,  0.5f, 0.0f,  1.0f, 1.0f,
 
-    -0.5f, -0.5f, 0.0f,  0.0f, 0.0f,
-    0.5f,  0.5f, 0.0f,  1.0f, 1.0f,
-    -0.5f,  0.5f, 0.0f,  0.0f, 1.0f
-        };
+        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f,
+        0.5f,  0.5f, 0.0f,  1.0f, 1.0f,
+        -0.5f,  0.5f, 0.0f,  0.0f, 1.0f
+    };
 
     // create buffers/arrays
     glGenVertexArrays(1, &VAO);

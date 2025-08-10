@@ -25,11 +25,11 @@ void TextureObject::LoadTexture(const char* path)
     unsigned char* data = stbi_load(path, &this->Width, &this->Height, &nrChannels, 0);
     if (data)
     {
-        if (extension == "jpg")
+        if (nrChannels == 3)//RGB only
         {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, this->Width, this->Height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         }
-        else if (extension == "png")
+        else if (nrChannels == 4)//RGB + alpha
         {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, this->Width, this->Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
         }
