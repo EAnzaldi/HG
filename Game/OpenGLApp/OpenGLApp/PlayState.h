@@ -19,6 +19,7 @@ public:
 
 	// Implementation of specific events
 	void ProcessInput();
+	void ProcessEvents();
 	void UpdateTime(long currentTime);
 	void Render();
 	void EnterState();

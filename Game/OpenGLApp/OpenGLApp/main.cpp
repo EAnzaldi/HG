@@ -103,8 +103,9 @@ int main()
     // -----------
     while (!glfwWindowShouldClose(window))
     {
-        //il processamento dell'input avviene sempre tramite il manager che conosce il "contesto"
+        //il processamento e il rendering avvengono sempre tramite il manager che conosce il "contesto" di gioco
         mySManager.ProcessInput();
+        mySManager.ProcessEvents();
         mySManager.Render();
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

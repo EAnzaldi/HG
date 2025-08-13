@@ -9,6 +9,11 @@ void StateManager::ProcessInput()
 	if (ActiveState)
 		ActiveState->ProcessInput();
 }
+void StateManager::ProcessEvents()
+{
+	if (ActiveState)
+		ActiveState->ProcessEvents();
+}
 void StateManager::MouseMoving(double xpos, double ypos) {
 	if (ActiveState)
 		ActiveState->MouseMoving(xpos, ypos);

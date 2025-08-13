@@ -3,7 +3,6 @@
 #include "MenuState.h"
 #include "EndState.h"
 
-#define SENEMY 0
 #define NP 1
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
@@ -91,14 +90,26 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
     pTest = new FlatMesh("resources/textures/test.png");
 
+    /*
     for (int i = 0; i < 8; ++i)
     {
         tests.emplace_back(positions[i], sizes[i], pTest, 1);
-    }
+    }*/
 
-    for (int i = 0; i < 8; ++i)
+    float l = fbWidth / 20;
+
+
+    tests.emplace_back(glm::vec2(fbWidth/ 2, l/2), glm::vec3(l*20.0f, l, 0.0f), pTest, 1);
+    tests.emplace_back(glm::vec2(fbWidth/5, 3*l + l/2), glm::vec3(l * 8.0f, l, 0.0f), pTest, 1);
+    tests.emplace_back(glm::vec2(fbWidth*4/5, 3*l +l/2), glm::vec3(l * 8.0f, l, 0.0f), pTest, 1);
+    tests.emplace_back(glm::vec2(fbWidth / 5, 3 * l + l / 2), glm::vec3(l * 3.0f, l, 0.0f), pTest, 1);
+    tests.emplace_back(glm::vec2(fbWidth * 4 / 5, 3 * l + l / 2), glm::vec3(l * 3.0f, l, 0.0f), pTest, 1);
+
+
+
+    for (const GameObject& object : tests)
     {
-        tests[i].Print();
+        object.Print();
     }
 
     pBackground = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f), pBackgroundModel, pTexBackground, 0);
@@ -147,7 +158,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pEnlightenedShader->setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
     pSpriteShader->use();
-    pSpriteShader->setMat4("projection", projection);
+    pSpriteShader->setMat4("projection", projection2);
     pSpriteShader->setMat4("view", view);
 
     // musica di sottofondo
@@ -294,10 +305,9 @@ void PlayState::ProcessInput()
     pPlayer->CheckCollisionWithSolids(platforms);
 
     pPlayer->Update(deltaTime); // Aggiorna lo stato del giocatore
+}
 
-    //pEnemies[0]->CheckCollisionWithSolids(pEnemies[1]);
-
-    #if !SENEMY
+void PlayState::ProcessEvents() {
     for (int i = 0; i < TOTENEM; ++i)
     {
         if (pEnemies[i]->IsDead() == false) {
@@ -317,26 +327,6 @@ void PlayState::ProcessInput()
             }
         }
     }
-    #endif
-
-    #if SENEMY
-    if (pEnemy->IsDead() == false) {
-
-        if (pPlayer->CheckEnemyCollision(pEnemy, Engine)) {//Se player muore
-            Status = GameStatus::GameOver;
-        }
-        else if (pEnemy->IsDead()) {//Se enemy muore
-            nEnemies--;
-            if (nEnemies <= 0) {
-                Status = GameStatus::Victory;
-            }
-        }
-        else {
-            pEnemy->Move(deltaTime);  // Aggiorna la posizione del nemico con controllo delle collisioni
-            pEnemy->CheckCollisionWithSolids(platforms);
-        }     
-    }
-    #endif
 
     if (Status == GameStatus::GameOver || Status == GameStatus::Victory) {
         //reset !
@@ -366,15 +356,17 @@ void PlayState::Render()
 
     
     
+   
+    
+    for (const GameObject& object : tests)
+    {
+        object.RenderFlat(*pSpriteShader);
+    }
+
     for (const GameObject& object : platforms)
     {
         object.Render(*pShader);
     }
-    /*
-    for (const GameObject& object : tests)
-    {
-        object.RenderFlat(*pSpriteShader);
-    }*/
 
     // disattiva depth buffer quando si disegnano oggetti trasparenti (interferisce con blending)
     glDepthMask(GL_FALSE);

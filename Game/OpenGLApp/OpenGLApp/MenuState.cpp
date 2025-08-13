@@ -123,9 +123,11 @@ void MenuState::MouseMoving(double xpos, double ypos)
 	glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
 	ypos = fbHeight - ypos; //OpenGL ha coordinata y Invertita rispetto a GLFW
 
+	//Controllare se il cursore sia su una delle box
 	for (int i = 0; i < 3; i++) {
 		Hitbox bounds = pMenuObj[i]->GetHitboxFlat();
 		bool isColliding = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
+		//Se è su una box selezionarla
 		if (isColliding) {
 			CurrentSelection = i;
 			//printf("x:%lf, y:%lf, select:%d\n", xpos, ypos, CurrentSelection);
@@ -137,6 +139,7 @@ void MenuState::MouseMoving(double xpos, double ypos)
 void MenuState::MouseClick(int button, int action, int mods)
 {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		//Controllare che il cursore sia sulla box
 		double xpos, ypos;
 		int fbWidth, fbHeight;
 		glfwGetCursorPos(Window, &xpos, &ypos);
@@ -144,6 +147,7 @@ void MenuState::MouseClick(int button, int action, int mods)
 		ypos = fbHeight - ypos;
 		Hitbox bounds = pMenuObj[CurrentSelection]->GetHitboxFlat();
 		bool isColliding = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
+		//Se è sulla box scegliere la selezione
 		if (isColliding) {
 			SelectionChosen();
 		}

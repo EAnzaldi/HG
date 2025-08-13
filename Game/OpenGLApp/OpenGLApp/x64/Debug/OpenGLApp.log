@@ -1,2 +1,13 @@
-﻿  MenuState.cpp
+﻿  GameObject.cpp
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\GameObject.cpp(131,26): warning C4474: 'printf': sono stati passati troppi argomenti per la stringa di formato
+      D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\GameObject.cpp(131,26):
+      con i segnaposto e i relativi parametri sono previsti argomenti variadic 0, ma sono stati specificati quelli 1
+  
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\GameObject.cpp(132,27): warning C4474: 'printf': sono stati passati troppi argomenti per la stringa di formato
+      D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\GameObject.cpp(132,27):
+      con i segnaposto e i relativi parametri sono previsti argomenti variadic 0, ma sono stati specificati quelli 1
+  
+  GameState.cpp
+  StateManager.cpp
+  Generazione del codice in corso...
   OpenGLApp.vcxproj -> D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\x64\Debug\OpenGLApp.exe

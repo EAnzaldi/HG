@@ -24,6 +24,8 @@ public:
 	// 'Events' function are redirected to the active state
 	void ProcessInput();
 
+	void ProcessEvents();
+
 	void MouseMoving(double xpos, double ypos);
 	void MouseClick(int button, int action, int mods);
 
