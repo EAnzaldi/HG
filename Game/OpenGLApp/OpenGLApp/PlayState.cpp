@@ -6,7 +6,7 @@
 #define NP 1
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
-    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), nEnemies(TOTENEM)
+    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), nEnemies(0)
 {
 
     int fbWidth, fbHeight;
@@ -202,20 +202,14 @@ void PlayState::Reset()
 
     Status = GameStatus::Playing;
 
-    delete pPlayer;
+    if(pPlayer != nullptr)
+        delete pPlayer;
 
-    #if SENEMY
-    delete pEnemy;
-    #endif
-
-    #if !SENEMY
     if (nEnemies != 0) {
-        for (int i = 0; i < TOTENEM; ++i)
-        {
-            delete pEnemies[i];
+        for (Enemy* pe : pEnemies) {
+            delete pe;
         }
     }
-    #endif
 
     pPlayer = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexPlayer, 0);
     //pEnemy = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexEnemy, 0, glm::vec2(0.8f, 0.0f));
@@ -225,9 +219,10 @@ void PlayState::Reset()
     #endif
 
     #if !SENEMY
-    nEnemies = TOTENEM;
-    pEnemies[0] = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, glm::vec2(0.3f, 0.0f), true);
-    pEnemies[1] = new Enemy(glm::vec2(0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, glm::vec2(-0.3f, 0.0f), false);
+    pEnemies.emplace_back(new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, glm::vec2(0.3f, 0.0f), true));
+    pEnemies.emplace_back(new Enemy(glm::vec2(0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, glm::vec2(-0.3f, 0.0f), false));
+    nEnemies++;
+    nEnemies++;
     #endif
 
     // musica di sottofondo
@@ -308,6 +303,26 @@ void PlayState::ProcessInput()
 }
 
 void PlayState::ProcessEvents() {
+
+    for (Enemy* pe : pEnemies) {
+        if (pe->IsDead() == false) {
+
+            if (pPlayer->CheckEnemyCollision(pe, Engine)) {//Se player muore
+                Status = GameStatus::GameOver;
+            }
+            else if (pe->IsDead()) {//Se enemy muore
+                nEnemies--;
+                if (nEnemies <= 0) {
+                    Status = GameStatus::Victory;
+                }
+            }
+            else {
+                pe->Move(deltaTime);  // Aggiorna la posizione del nemico con controllo delle collisioni
+                pe->CheckCollisionWithSolids(platforms);
+            }
+        }
+    }
+    /*
     for (int i = 0; i < TOTENEM; ++i)
     {
         if (pEnemies[i]->IsDead() == false) {
@@ -326,7 +341,7 @@ void PlayState::ProcessEvents() {
                 pEnemies[i]->CheckCollisionWithSolids(platforms);
             }
         }
-    }
+    }*/
 
     if (Status == GameStatus::GameOver || Status == GameStatus::Victory) {
         //reset !
@@ -354,10 +369,6 @@ void PlayState::Render()
 
     //pBackground->Render(*pShader);
 
-    
-    
-   
-    
     for (const GameObject& object : tests)
     {
         object.RenderFlat(*pSpriteShader);
@@ -371,20 +382,12 @@ void PlayState::Render()
     // disattiva depth buffer quando si disegnano oggetti trasparenti (interferisce con blending)
     glDepthMask(GL_FALSE);
 
-    #if SENEMY
-    if(!pEnemy->IsDead())
-        pEnemy->Render(*pShader);
-    #endif
-
-    #if !SENEMY
-    for (int i = 0; i < TOTENEM; ++i) {
-        if (!pEnemies[i]->IsDead()) {
-            pEnemies[i]->Render(*pShader);
+    for (Enemy* pe : pEnemies) {
+        if (!pe->IsDead()) {
+            pe->Render(*pShader);
             //printf("Renderizzo nemico %d, morto? %d\n", i + 1, pEnemies[i]->IsDead());
         }
-        
     }
-    #endif
 
     pPlayer->Render(*pShader);
 
@@ -399,26 +402,7 @@ void PlayState::Render()
     // render testo per ultimo per essere davanti a tutto
     // --------------------------------------------------
 
-    currentTime = start - static_cast<int>((glfwGetTime() - startTime) - totalPauseTime);
-
-    // se scade il tempo perdo e chiudo il gioco
-    if (currentTime <= 0)
-    {
-        Status = GameStatus::GameOver;
-    }
-
-    /*
-    std::string time = "TIME: " + std::to_string(currentTime);
-    pText->Render(*pTextShader, time, 200.0f, 1100.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
-
-    std::string lives = "LIVES: " + std::to_string(pPlayer->lives);
-    pText->Render(*pTextShader, lives, 1200.0f, 1100.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));*/
-
-    std::string time = "TIME: " + std::to_string(currentTime);
-    pText->Render(*pTextShader, time, 160.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
-
-    std::string lives = "LIVES: " + std::to_string(pPlayer->lives);
-    pText->Render(*pTextShader, lives, 960.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
+    RenderStats();
 }
 
 void PlayState::EnterState()
@@ -437,5 +421,26 @@ void PlayState::LeaveState() {
 }
 
 void PlayState::RenderStats() {
+    currentTime = static_cast<int>((glfwGetTime() - startTime) - totalPauseTime);
 
+    int remainingTime = start - currentTime;
+
+    // se scade il tempo perdo e chiudo il gioco
+    if (remainingTime <= 0)
+    {
+        Status = GameStatus::GameOver;
+    }
+
+    /*
+    std::string time = "TIME: " + std::to_string(remainingTime);
+    pText->Render(*pTextShader, time, 200.0f, 1100.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
+
+    std::string lives = "LIVES: " + std::to_string(pPlayer->lives);
+    pText->Render(*pTextShader, lives, 1200.0f, 1100.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));*/
+
+    std::string time = "TIME: " + std::to_string(remainingTime);
+    pText->Render(*pTextShader, time, 160.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
+
+    std::string lives = "LIVES: " + std::to_string(pPlayer->lives);
+    pText->Render(*pTextShader, lives, 960.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
 }

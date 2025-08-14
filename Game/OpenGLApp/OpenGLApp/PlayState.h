@@ -9,6 +9,7 @@
 #include "model.h"
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include "random.h"
 
 #define TOTENEM 2
 
@@ -53,14 +54,9 @@ private:
 	//CTextControl* m_pLevelControl;
 	//CTextControl* m_pLinesControl;
 
-	//Store time when game pauses
-	int currentTime;
-	double startTime;
-	double totalPauseTime;
-	double startPauseTime;
-
 	std::vector<GameObject> platforms;
-	std::vector<Enemy*> pEnemies = std::vector<Enemy*>(TOTENEM, nullptr);
+	//std::vector<Enemy*> pEnemies = std::vector<Enemy*>(TOTENEM, nullptr);
+	std::vector<Enemy*> pEnemies;
 
 	int nEnemies;
 
@@ -115,8 +111,18 @@ private:
 	TextObject* pText;
 
 	// Gestione frame
-	float lastFrame;
-	float deltaTime;	
+	double lastFrame;
+	double deltaTime;
+
+	//Store time when game pauses
+	int currentTime;//countdown
+	double startTime;
+	double totalPauseTime;
+	double startPauseTime;
+
+	//Store time per enemies' spawn
+	
+
 };
 
 #endif

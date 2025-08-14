@@ -1,4 +1,24 @@
-﻿  GameObject.cpp
+﻿  EndState.cpp
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\utils.h(15,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
+  (compilazione del file di origine 'EndState.cpp')
+  
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\utils.h(15,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
+  (compilazione del file di origine 'EndState.cpp')
+  
+  Enemy.cpp
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\utils.h(15,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
+  (compilazione del file di origine 'Enemy.cpp')
+  
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\utils.h(15,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
+  (compilazione del file di origine 'Enemy.cpp')
+  
+  GameObject.cpp
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\utils.h(15,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
+  (compilazione del file di origine 'GameObject.cpp')
+  
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\utils.h(15,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
+  (compilazione del file di origine 'GameObject.cpp')
+  
 D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\GameObject.cpp(131,26): warning C4474: 'printf': sono stati passati troppi argomenti per la stringa di formato
       D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\GameObject.cpp(131,26):
       con i segnaposto e i relativi parametri sono previsti argomenti variadic 0, ma sono stati specificati quelli 1
@@ -7,7 +27,54 @@ D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\GameObject.cpp(132,27): warnin
       D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\GameObject.cpp(132,27):
       con i segnaposto e i relativi parametri sono previsti argomenti variadic 0, ma sono stati specificati quelli 1
   
-  GameState.cpp
-  StateManager.cpp
+  Main.cpp
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\utils.h(15,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
+  (compilazione del file di origine 'Main.cpp')
+  
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\utils.h(15,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
+  (compilazione del file di origine 'Main.cpp')
+  
+  MenuState.cpp
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\utils.h(15,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
+  (compilazione del file di origine 'MenuState.cpp')
+  
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\utils.h(15,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
+  (compilazione del file di origine 'MenuState.cpp')
+  
+  MovingObject.cpp
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\utils.h(15,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
+  (compilazione del file di origine 'MovingObject.cpp')
+  
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\utils.h(15,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
+  (compilazione del file di origine 'MovingObject.cpp')
+  
+  PlayState.cpp
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\utils.h(15,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
+  (compilazione del file di origine 'PlayState.cpp')
+  
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\utils.h(15,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
+  (compilazione del file di origine 'PlayState.cpp')
+  
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\PlayState.cpp(99,13): warning C4244: 'inizializzazione': conversione da 'int' a 'float'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\PlayState.cpp(289,29): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\PlayState.cpp(299,19): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\PlayState.cpp(302,21): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\PlayState.cpp(320,26): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\PlayState.cpp(426,23): warning C4244: 'inizializzazione': conversione da 'double' a 'int'. Possibile perdita di dati.
+  Player.cpp
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\utils.h(15,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
+  (compilazione del file di origine 'Player.cpp')
+  
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\utils.h(15,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
+  (compilazione del file di origine 'Player.cpp')
+  
+  TextObject.cpp
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\utils.h(15,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
+  (compilazione del file di origine 'TextObject.cpp')
+  
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\utils.h(15,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
+  (compilazione del file di origine 'TextObject.cpp')
+  
   Generazione del codice in corso...
+LINK : warning LNK4098: la libreria predefinita 'MSVCRT' è in conflitto con l'utilizzo di altre librerie; usare /NODEFAULTLIB:libreria
   OpenGLApp.vcxproj -> D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\x64\Debug\OpenGLApp.exe

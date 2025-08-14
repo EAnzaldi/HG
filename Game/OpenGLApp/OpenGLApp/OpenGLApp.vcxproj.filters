@@ -83,7 +83,7 @@
     <ClInclude Include="TextureObject.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="constants.h">
+    <ClInclude Include="utils.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h">
