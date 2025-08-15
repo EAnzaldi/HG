@@ -11,7 +11,7 @@
 #include <glm/glm.hpp>
 #include "random.h"
 
-#define TOTENEM 2
+#define TOTENEM 10
 
 class PlayState : public GameState
 {
@@ -58,6 +58,8 @@ private:
 	//std::vector<Enemy*> pEnemies = std::vector<Enemy*>(TOTENEM, nullptr);
 	std::vector<Enemy*> pEnemies;
 	std::vector<GameObject*> pCauldrons;
+	std::vector<GameObject*> pCandies;
+
 
 	int nEnemies;
 	int spawnPlace;
@@ -69,8 +71,8 @@ private:
 
 	GameObject* pBackground;
 
-	FlatMesh* pTest;
-	std::vector<GameObject> tests;
+	//FlatMesh* pTest;
+	//std::vector<GameObject> tests;
 
 
 	glm::vec2 positions[8];

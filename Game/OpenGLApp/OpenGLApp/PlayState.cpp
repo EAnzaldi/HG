@@ -4,8 +4,8 @@
 #include "EndState.h"
 
 #define NP 1
-#define SPAWN_MIN_E 5
-#define SPAWN_MAX_E 10
+#define SPAWN_MIN_E 2
+#define SPAWN_MAX_E 6
 
 const glm::vec2 spawnPos[2] = { {-0.8f, 0.80f}, {0.8f, 0.80f} };
 const glm::vec2 velocity = { 0.3f, 0.0f };
@@ -92,30 +92,24 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     {
         platforms.emplace_back(positions[i], sizes[i], pCubeModel, pTexPlatforms, 1);
     }
+    /*
 
     pTest = new FlatMesh("resources/textures/test.png");
 
-    /*
-    for (int i = 0; i < 8; ++i)
-    {
-        tests.emplace_back(positions[i], sizes[i], pTest, 1);
-    }*/
-
     float l = fbWidth / 20;
-
 
     tests.emplace_back(glm::vec2(fbWidth/ 2, l/2), glm::vec3(l*20.0f, l, 0.0f), pTest, 1);
     tests.emplace_back(glm::vec2(fbWidth/5, 3*l + l/2), glm::vec3(l * 8.0f, l, 0.0f), pTest, 1);
     tests.emplace_back(glm::vec2(fbWidth*4/5, 3*l +l/2), glm::vec3(l * 8.0f, l, 0.0f), pTest, 1);
     tests.emplace_back(glm::vec2(fbWidth / 5, 3 * l + l / 2), glm::vec3(l * 3.0f, l, 0.0f), pTest, 1);
     tests.emplace_back(glm::vec2(fbWidth * 4 / 5, 3 * l + l / 2), glm::vec3(l * 3.0f, l, 0.0f), pTest, 1);
-
+    
 
 
     for (const GameObject& object : tests)
     {
         object.Print();
-    }
+    }*/
 
     pBackground = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f), pBackgroundModel, pTexBackground, 0);
     
@@ -308,15 +302,18 @@ void PlayState::ProcessInput()
 
 void PlayState::ProcessEvents() {
 
-    lastSpawnTime += deltaTime;
 
-    if (lastSpawnTime >= spawnTime) {
-        pEnemies.emplace_back(new Enemy(spawnPos[spawnPlace], glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, velocities[spawnPlace], true));
-        nEnemies++;
-        lastSpawnTime = 0.0f;
-        spawnTime = RandomInt(SPAWN_MIN_E, SPAWN_MAX_E);
-        spawnPlace = RandomInt(0, pCauldrons.size() - 1);
-        printf("Prossimo spawn tra %d s nel calderone %d\n", spawnTime, spawnPlace);
+    if (pEnemies.size() < TOTENEM) {
+        lastSpawnTime += deltaTime;
+
+        if (lastSpawnTime >= spawnTime) {
+            pEnemies.emplace_back(new Enemy(spawnPos[spawnPlace], glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, velocities[spawnPlace], true));
+            nEnemies++;
+            lastSpawnTime = 0.0f;
+            spawnTime = RandomInt(SPAWN_MIN_E, SPAWN_MAX_E);
+            spawnPlace = RandomInt(0, pCauldrons.size() - 1);
+            printf("Prossimo spawn tra %d s nel calderone %d\n", spawnTime, spawnPlace);
+        }
     }
 
     for (Enemy* pe : pEnemies) {
@@ -337,26 +334,6 @@ void PlayState::ProcessEvents() {
             }
         }
     }
-    /*
-    for (int i = 0; i < TOTENEM; ++i)
-    {
-        if (pEnemies[i]->IsDead() == false) {
-
-            if (pPlayer->CheckEnemyCollision(pEnemies[i], Engine)) {//Se player muore
-                Status = GameStatus::GameOver;
-            }
-            else if (pEnemies[i]->IsDead()) {//Se enemy muore
-                nEnemies--;
-                if (nEnemies <= 0) {
-                    Status = GameStatus::Victory;
-                }
-            }
-            else {
-                pEnemies[i]->Move(deltaTime);  // Aggiorna la posizione del nemico con controllo delle collisioni
-                pEnemies[i]->CheckCollisionWithSolids(platforms);
-            }
-        }
-    }*/
 
     if (Status == GameStatus::GameOver || Status == GameStatus::Victory) {
         //reset !
@@ -383,11 +360,11 @@ void PlayState::Render()
     glDisable(GL_DEPTH_TEST);
 
     //pBackground->Render(*pShader);
-
+    /*
     for (const GameObject& object : tests)
     {
         object.RenderFlat(*pSpriteShader);
-    }
+    }*/
 
     for (const GameObject& object : platforms)
     {
