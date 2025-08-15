@@ -12,7 +12,7 @@ const float SCR_WIDTH_F = static_cast<float>(SCR_WIDTH);
 const float SCR_HEIGHT_F = static_cast<float>(SCR_HEIGHT);
 
 // random generator
-const unsigned int seed = time(0);
+const unsigned int seed = time(nullptr);
 
 static void RandomSetup() {
     srand(seed);
@@ -20,7 +20,7 @@ static void RandomSetup() {
 
 static int RandomInt(int min, int max) {
     int n = std::rand();
-    n *= (max - min);
+    n = n % (max - min + 1);
     n += min;
     return n;
 }

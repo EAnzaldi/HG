@@ -56,6 +56,9 @@ int main()
         return -1;
     }
 
+    //inizializza generatore numeri casuali
+    RandomSetup();
+
     // Spawna la finestra al centro dello schermo
     const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 

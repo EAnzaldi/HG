@@ -57,16 +57,16 @@ private:
 	std::vector<GameObject> platforms;
 	//std::vector<Enemy*> pEnemies = std::vector<Enemy*>(TOTENEM, nullptr);
 	std::vector<Enemy*> pEnemies;
+	std::vector<GameObject*> pCauldrons;
 
 	int nEnemies;
+	int spawnPlace;
 
 	Model* pCubeModel;
 	Model* pCauldronModel;
 	Model* pSlimeModel;
 	Model* pBackgroundModel;
 
-	GameObject* pCauldron_right;
-	GameObject* pCauldron_left;
 	GameObject* pBackground;
 
 	FlatMesh* pTest;
@@ -119,6 +119,8 @@ private:
 	double startTime;
 	double totalPauseTime;
 	double startPauseTime;
+	int spawnTime;
+	double lastSpawnTime;
 
 	//Store time per enemies' spawn
 	

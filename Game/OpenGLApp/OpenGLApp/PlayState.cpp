@@ -4,11 +4,16 @@
 #include "EndState.h"
 
 #define NP 1
+#define SPAWN_MIN_E 5
+#define SPAWN_MAX_E 10
+
+const glm::vec2 spawnPos[2] = { {-0.8f, 0.80f}, {0.8f, 0.80f} };
+const glm::vec2 velocity = { 0.3f, 0.0f };
+const glm::vec2 velocities[2] = { velocity, -velocity };
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
     : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), nEnemies(0)
 {
-
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
 
@@ -115,8 +120,8 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pBackground = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f), pBackgroundModel, pTexBackground, 0);
     
     // passo nullptr come texture per ora
-    pCauldron_right = new GameObject(glm::vec2(0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), pCauldronModel, nullptr, 0);
-    pCauldron_left = new GameObject(glm::vec2(-0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), pCauldronModel, nullptr, 0);
+    pCauldrons.emplace_back(new GameObject(glm::vec2(0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), pCauldronModel, nullptr, 0));
+    pCauldrons.emplace_back(new GameObject(glm::vec2(-0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), pCauldronModel, nullptr, 0));
 
     glm::mat4 projection2 = glm::ortho(0.0f, static_cast<float>(fbWidth), 0.0f, static_cast<float>(fbHeight));//left, right, bottom, top
     
@@ -182,8 +187,8 @@ PlayState::~PlayState() {
     delete pCauldronModel;
     delete pPlayer;
     //delete pEnemy;
-    delete pCauldron_right;
-    delete pCauldron_left;
+    //delete pCauldron_right;
+    //delete pCauldron_left;
 
     //Distrugge FreeType
     FT_Done_FreeType(ft);
@@ -212,21 +217,20 @@ void PlayState::Reset()
     }
 
     pPlayer = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexPlayer, 0);
-    //pEnemy = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexEnemy, 0, glm::vec2(0.8f, 0.0f));
 
-    #if SENEMY
-    pEnemy = new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, glm::vec2(0.4f, 0.0f));
-    #endif
-
-    #if !SENEMY
+    /*
     pEnemies.emplace_back(new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, glm::vec2(0.3f, 0.0f), true));
     pEnemies.emplace_back(new Enemy(glm::vec2(0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, glm::vec2(-0.3f, 0.0f), false));
     nEnemies++;
-    nEnemies++;
-    #endif
+    nEnemies++;*/
 
     // musica di sottofondo
     Engine->play2D("resources/sounds/ost.wav", true);
+
+    lastSpawnTime = 0.0f;
+    spawnTime = RandomInt(SPAWN_MIN_E, SPAWN_MAX_E);
+    spawnPlace = RandomInt(0, pCauldrons.size() - 1);
+    printf("Prossimo spawn tra %d s nel calderone %d\n", spawnTime, spawnPlace);
 
     if (Status != GameStatus::Paused) {
         currentTime = 0;
@@ -303,6 +307,17 @@ void PlayState::ProcessInput()
 }
 
 void PlayState::ProcessEvents() {
+
+    lastSpawnTime += deltaTime;
+
+    if (lastSpawnTime >= spawnTime) {
+        pEnemies.emplace_back(new Enemy(spawnPos[spawnPlace], glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, velocities[spawnPlace], true));
+        nEnemies++;
+        lastSpawnTime = 0.0f;
+        spawnTime = RandomInt(SPAWN_MIN_E, SPAWN_MAX_E);
+        spawnPlace = RandomInt(0, pCauldrons.size() - 1);
+        printf("Prossimo spawn tra %d s nel calderone %d\n", spawnTime, spawnPlace);
+    }
 
     for (Enemy* pe : pEnemies) {
         if (pe->IsDead() == false) {
@@ -396,8 +411,8 @@ void PlayState::Render()
     glEnable(GL_DEPTH_TEST);
 
 
-    pCauldron_right->Render(*pEnlightenedShader);
-    pCauldron_left->Render(*pEnlightenedShader);
+    for (GameObject* pc : pCauldrons)
+        pc->Render(*pEnlightenedShader);
 
     // render testo per ultimo per essere davanti a tutto
     // --------------------------------------------------
