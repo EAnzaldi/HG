@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Candy.cpp" />
     <ClCompile Include="CursorObject.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="FlatMesh.cpp" />
@@ -158,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="Candy.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="CursorObject.h" />
     <ClInclude Include="Enemy.h" />

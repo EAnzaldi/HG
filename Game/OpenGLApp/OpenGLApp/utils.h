@@ -4,7 +4,7 @@
 #include<ctime>
 
 // screen's settings
-//const unsigned int SCR_WIDTH = 1600;
+// const unsigned int SCR_WIDTH = 1600;
 //const unsigned int SCR_HEIGHT = 1200;
 const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HEIGHT = 960;

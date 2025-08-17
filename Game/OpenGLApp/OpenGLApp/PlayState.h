@@ -74,6 +74,7 @@ private:
 	//FlatMesh* pTest;
 	//std::vector<GameObject> tests;
 
+	std::vector<FlatMesh*> pCandiesMesh;
 
 	glm::vec2 positions[8];
 	glm::vec3 sizes[8];

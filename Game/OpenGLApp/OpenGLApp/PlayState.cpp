@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "MenuState.h"
 #include "EndState.h"
+#include "Candy.h"
 
 #define NP 1
 #define SPAWN_MIN_E 2
@@ -88,6 +89,9 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pSlimeModel = new Model("resources/models/slime2.obj");
     pBackgroundModel = new Model("resources/models/background.obj");
 
+    //caricamento modelli 2d
+    pCandiesMesh.emplace_back(new FlatMesh("resources/textures/candy1.png"));
+
     for (int i = 0; i < 8; ++i)
     {
         platforms.emplace_back(positions[i], sizes[i], pCubeModel, pTexPlatforms, 1);
@@ -124,19 +128,25 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     float bottom = -1.0f;
     float top = 1.0f;
 
-    glm::mat4 projection = glm::ortho(left, right, bottom, top);
+    glm::mat4 projectionNDC = glm::ortho(left, right, bottom, top);
+    glm::mat4 projectionPixels = glm::ortho(0.0f, static_cast<float>(fbWidth), 0.0f, static_cast<float>(fbHeight));//left, right, bottom, top
     
     glm::mat4 view = pCamera->GetViewMatrix();
 
     // setup delle uniform delle shader che non cambieranno nel ciclo di rendering
     // Shader base
     pShader->use();
-    pShader->setMat4("projection", projection);
+    pShader->setMat4("projection", projectionNDC);
     pShader->setMat4("view", view);
+
+    // Shader sprite
+    pSpriteShader->use();
+    pSpriteShader->setMat4("projection", projectionPixels);
+    pSpriteShader->setMat4("view", view);
 
     //Shader per materiale metallico
     pEnlightenedShader->use();
-    pEnlightenedShader->setMat4("projection", projection);
+    pEnlightenedShader->setMat4("projection", projectionNDC);
     pEnlightenedShader->setMat4("view", view);
 
     pEnlightenedShader->setVec3("viewPos", pCamera->Position);
@@ -155,10 +165,6 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pEnlightenedShader->setVec3("light.ambient", lightColor * glm::vec3(0.3f));
     pEnlightenedShader->setVec3("light.diffuse", lightColor * glm::vec3(0.6f));
     pEnlightenedShader->setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-
-    pSpriteShader->use();
-    pSpriteShader->setMat4("projection", projection2);
-    pSpriteShader->setMat4("view", view);
 
     // musica di sottofondo
     engine->play2D("resources/sounds/ost.wav", true);
@@ -222,7 +228,7 @@ void PlayState::Reset()
     Engine->play2D("resources/sounds/ost.wav", true);
 
     lastSpawnTime = 0.0f;
-    spawnTime = RandomInt(SPAWN_MIN_E, SPAWN_MAX_E);
+    spawnTime = 0;
     spawnPlace = RandomInt(0, pCauldrons.size() - 1);
     printf("Prossimo spawn tra %d s nel calderone %d\n", spawnTime, spawnPlace);
 
@@ -302,6 +308,8 @@ void PlayState::ProcessInput()
 
 void PlayState::ProcessEvents() {
 
+    int fbWidth, fbHeight;
+    glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
 
     if (pEnemies.size() < TOTENEM) {
         lastSpawnTime += deltaTime;
@@ -327,6 +335,18 @@ void PlayState::ProcessEvents() {
                 if (nEnemies <= 0) {
                     Status = GameStatus::Victory;
                 }
+                //spawn candy
+
+                float pixelX = (pe->Position.x + 1.0f) * 0.5f * fbWidth;
+                float pixelY = (pe->Position.y + 1.0f) * 0.5f * fbHeight;
+                float scale = 0.05f;
+                /*
+                pixelY-=pe->Size.y;
+                pCandies.emplace_back(new GameObject(glm::vec2(pixelX, pixelY+pCandiesMesh[0]->getHeigth()*scale/2), pCandiesMesh[0]->getSize()*scale, pCandiesMesh[0], 0));
+                */
+                pCandies.emplace_back(new GameObject(glm::vec2(pixelX, pixelY), pCandiesMesh[0]->getSize() * scale, pCandiesMesh[0], 0));
+                printf("Spawnata caramella in posizione %d %d", pixelX, pixelY);
+
             }
             else {
                 pe->Move(deltaTime);  // Aggiorna la posizione del nemico con controllo delle collisioni
@@ -373,6 +393,10 @@ void PlayState::Render()
 
     // disattiva depth buffer quando si disegnano oggetti trasparenti (interferisce con blending)
     glDepthMask(GL_FALSE);
+
+    for (GameObject* pc : pCandies) {
+        pc->RenderFlat(*pSpriteShader);
+    }
 
     for (Enemy* pe : pEnemies) {
         if (!pe->IsDead()) {

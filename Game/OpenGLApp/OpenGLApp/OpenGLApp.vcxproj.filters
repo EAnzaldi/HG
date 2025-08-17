@@ -63,6 +63,9 @@
     <ClCompile Include="CursorObject.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="Candy.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader_s.h">
@@ -120,6 +123,9 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="CursorObject.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="Candy.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

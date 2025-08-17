@@ -60,20 +60,20 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
 	pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f));
 
-	//glm::mat4 projection = glm::ortho(left, right, bottom, top);
+	glm::mat4 projectionNDC = glm::ortho(left, right, bottom, top);
 	/*glm::mat4 projection = glm::ortho(0.0f, SCR_WIDTH_F, 0.0f, SCR_HEIGHT_F);//left, right, bottom, top*/
-	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(fbWidth), 0.0f, static_cast<float>(fbHeight));//left, right, bottom, top
+	glm::mat4 projectionPixels = glm::ortho(0.0f, static_cast<float>(fbWidth), 0.0f, static_cast<float>(fbHeight));//left, right, bottom, top
 
 	glm::mat4 view = pCamera->GetViewMatrix();
 
 	// setup delle uniform delle shader che non cambieranno nel ciclo di rendering
 	// Shader base
 	pShader->use();
-	pShader->setMat4("projection", projection);
+	pShader->setMat4("projection", projectionNDC);
 	pShader->setMat4("view", view);
 
 	pSpriteShader->use();
-	pSpriteShader->setMat4("projection", projection);
+	pSpriteShader->setMat4("projection", projectionPixels);
 	pSpriteShader->setMat4("view", view);
 
 }
