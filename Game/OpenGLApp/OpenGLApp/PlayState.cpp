@@ -1,19 +1,17 @@
 #include "PlayState.h"
-#include "Player.h"
-#include "MenuState.h"
-#include "EndState.h"
-#include "Candy.h"
 
 #define NP 1
 #define SPAWN_MIN_E 2
 #define SPAWN_MAX_E 6
+
+#define SPAWN_PROB_C 25 //percentuale di spawn delle caramelle (bonus e malus)
 
 const glm::vec2 spawnPos[2] = { {-0.8f, 0.80f}, {0.8f, 0.80f} };
 const glm::vec2 velocity = { 0.3f, 0.0f };
 const glm::vec2 velocities[2] = { velocity, -velocity };
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
-    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), nEnemies(0)
+    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), nEnemies(0), CurrentLevel(1)
 {
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
@@ -91,6 +89,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
     //caricamento modelli 2d
     pCandiesMesh.emplace_back(new FlatMesh("resources/textures/candy1.png"));
+    pCandiesMesh.emplace_back(new FlatMesh("resources/textures/candy2.png"));
 
     for (int i = 0; i < 8; ++i)
     {
@@ -202,7 +201,6 @@ PlayState* PlayState::GetInstance(StateManager* manager, GLFWwindow* window, irr
 
 void PlayState::Reset()
 {
-    CurrentLevel = 0;
     CurrentScore = 0;
 
     Status = GameStatus::Playing;
@@ -210,11 +208,13 @@ void PlayState::Reset()
     if(pPlayer != nullptr)
         delete pPlayer;
 
-    if (nEnemies != 0) {
-        for (Enemy* pe : pEnemies) {
+    if (pEnemies.size() != 0)
+        for (Enemy* pe : pEnemies)
             delete pe;
-        }
-    }
+
+    if(pCandies.size() != 0)
+        for (GameObject* pc : pCandies)
+            delete pc;
 
     pPlayer = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexPlayer, 0);
 
@@ -332,20 +332,21 @@ void PlayState::ProcessEvents() {
             }
             else if (pe->IsDead()) {//Se enemy muore
                 nEnemies--;
-                if (nEnemies <= 0) {
+                if (nEnemies <= 0 && pEnemies.size() == TOTENEM) {
                     Status = GameStatus::Victory;
                 }
                 //spawn candy
-
-                float pixelX = (pe->Position.x + 1.0f) * 0.5f * fbWidth;
-                float pixelY = (pe->Position.y + 1.0f) * 0.5f * fbHeight;
-                float scale = 0.05f;
-                /*
-                pixelY-=pe->Size.y;
-                pCandies.emplace_back(new GameObject(glm::vec2(pixelX, pixelY+pCandiesMesh[0]->getHeigth()*scale/2), pCandiesMesh[0]->getSize()*scale, pCandiesMesh[0], 0));
-                */
-                pCandies.emplace_back(new GameObject(glm::vec2(pixelX, pixelY), pCandiesMesh[0]->getSize() * scale, pCandiesMesh[0], 0));
-                printf("Spawnata caramella in posizione %d %d", pixelX, pixelY);
+                if (DoAction(SPAWN_PROB_C)) {
+                    float pixelX = (pe->Position.x + 1.0f) * 0.5f * fbWidth;
+                    float pixelY = (pe->Position.y + 1.0f) * 0.5f * fbHeight;
+                    float scale = 0.05f;
+                    /*
+                    pixelY-=pe->Size.y;
+                    pCandies.emplace_back(new GameObject(glm::vec2(pixelX, pixelY+pCandiesMesh[0]->getHeigth()*scale/2), pCandiesMesh[0]->getSize()*scale, pCandiesMesh[0], 0));
+                    */
+                    pCandies.emplace_back(new Candy(glm::vec2(pixelX, pixelY), pCandiesMesh[0]->getSize() * scale, pCandiesMesh[0], 0));
+                    printf("Spawnata caramella in posizione %f %f", pixelX, pixelY);
+                }
 
             }
             else {
@@ -354,6 +355,10 @@ void PlayState::ProcessEvents() {
             }
         }
     }
+
+    if (pCandies.size() != 0)
+        for (Candy* pc : pCandies)
+            pc->Move(deltaTime);
 
     if (Status == GameStatus::GameOver || Status == GameStatus::Victory) {
         //reset !
@@ -394,14 +399,18 @@ void PlayState::Render()
     // disattiva depth buffer quando si disegnano oggetti trasparenti (interferisce con blending)
     glDepthMask(GL_FALSE);
 
-    for (GameObject* pc : pCandies) {
-        pc->RenderFlat(*pSpriteShader);
+    if(pCandies.size() > 0){
+        for (GameObject* pc : pCandies) {
+            pc->RenderFlat(*pSpriteShader);
+        }
     }
 
-    for (Enemy* pe : pEnemies) {
-        if (!pe->IsDead()) {
-            pe->Render(*pShader);
-            //printf("Renderizzo nemico %d, morto? %d\n", i + 1, pEnemies[i]->IsDead());
+    if(pEnemies.size() > 0) {
+        for (Enemy* pe : pEnemies) {
+            if (!pe->IsDead()) {
+                pe->Render(*pShader);
+                //printf("Renderizzo nemico %d, morto? %d\n", i + 1, pEnemies[i]->IsDead());
+            }
         }
     }
 
@@ -437,6 +446,9 @@ void PlayState::LeaveState() {
 }
 
 void PlayState::RenderStats() {
+    int fbWidth, fbHeight;
+    glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
+
     currentTime = static_cast<int>((glfwGetTime() - startTime) - totalPauseTime);
 
     int remainingTime = start - currentTime;
@@ -459,4 +471,9 @@ void PlayState::RenderStats() {
 
     std::string lives = "LIVES: " + std::to_string(pPlayer->lives);
     pText->Render(*pTextShader, lives, 960.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
+
+    std::string level = "LEVEL " + std::to_string(CurrentLevel);
+    pText->Render(*pTextShader, level, fbWidth*0.4f, 880.0f, 1.3f, glm::vec3(255.0, 255.0, 255.0));
+
+
 }

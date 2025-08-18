@@ -1,5 +1,4 @@
-#ifndef STATEMANAGER_H
-#define STATEMANAGER_H
+#pragma once
 
 #include "GameState.h"
 
@@ -36,5 +35,3 @@ private:
 	// Active State of the game (intro, play, ...)
 	GameState* ActiveState;
 };
-
-#endif

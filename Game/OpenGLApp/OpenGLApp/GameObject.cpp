@@ -1,7 +1,5 @@
 #include "GameObject.h"
 
-#include <glm/gtc/matrix_transform.hpp>
-
 GameObject::GameObject(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth)
     : Position(position), Size(size), Rotation(0.0f), model(model), Texture(texture), fmesh(nullptr), RepeatWidth(repeatWidth), FlipX(1.0f)
 {

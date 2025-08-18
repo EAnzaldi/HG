@@ -1,7 +1,6 @@
 //#include <GLFW/glfw3.h>
 #include "MenuState.h"
 #include "PlayState.h"
-#include "StateManager.h"
 
 #define NEW 0
 #define RESUME 1

@@ -24,3 +24,9 @@ static int RandomInt(int min, int max) {
     n += min;
     return n;
 }
+
+static bool DoAction(int probability) {
+    int n = rand() % 100;
+    printf("Percentuale estratta %d\n", n);
+    return n < probability;
+}

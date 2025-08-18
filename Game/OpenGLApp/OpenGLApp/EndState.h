@@ -1,5 +1,4 @@
-#ifndef ENDSTATE_H
-#define ENDSTATE_H
+#pragma once
 
 #include "GameState.h"
 #include "MenuState.h"
@@ -42,6 +41,3 @@ private:
     Shader* pShader;
 
 };
-
-#endif  // ENDSTATE_H
-

@@ -1,5 +1,4 @@
-#ifndef FLATMESH_H
-#define FLATMESH_H
+#pragma once
 
 #include <glad/glad.h> // holds all OpenGL type declarations
 
@@ -38,5 +37,3 @@ private:
     // initializes all the buffer objects/arrays
     static void setupMesh();
 };
-
-#endif

@@ -4,6 +4,10 @@ MovingObject::MovingObject(glm::vec2 position, glm::vec3 size, Model* model, Tex
     : GameObject(position, size, model, texture, repeatWidth), velocity(velocity), lastDirectionRight(moveRight) {
 }
 
+MovingObject::MovingObject(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth, glm::vec2 velocity, bool moveRight)
+    : GameObject(position, size, fmesh, repeatWidth), velocity(velocity), lastDirectionRight(moveRight) {
+}
+
 void MovingObject::Move(float deltaTime)
 {
     if (!isOnGround)

@@ -1,5 +1,5 @@
 #include "Candy.h"
 
-Candy::Candy(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight)
-    : MovingObject(position, size, model, texture, repeatWidth, velocity, moveRight) {
+Candy::Candy(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth)
+    : MovingObject(position, size, fmesh, repeatWidth, velocity = glm::vec2(0.0f, 0.0f), false) {
 }

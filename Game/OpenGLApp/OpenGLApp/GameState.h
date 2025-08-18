@@ -1,5 +1,4 @@
-#ifndef GAMESTATE_H
-#define GAMESTATE_H
+#pragma once
 
 #include <glad\glad.h>
 #include <GLFW/glfw3.h>
@@ -46,5 +45,3 @@ protected:
 	irrklang::ISoundEngine* Engine;	// The sound manager
 
 };
-
-#endif

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MovingObject.h"
+#include "GameObject.h"
 
 class Enemy : public MovingObject {
 public:

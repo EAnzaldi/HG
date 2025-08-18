@@ -1,15 +1,16 @@
-#ifndef PLAYSTATE_H
-#define PLAYSTATE_H
+#pragma once
 
-#include "GameState.h"
-#include "Player.h"
+#include <glad/glad.h>
+#include <glm/glm.hpp>
 #include "Camera.h"
 #include "TextObject.h"
 #include "TextureObject.h"
 #include "model.h"
-#include <glad/glad.h>
-#include <glm/glm.hpp>
-#include "random.h"
+#include "GameState.h"
+#include "MenuState.h"
+#include "EndState.h"
+#include "Player.h"
+#include "Candy.h"
 
 #define TOTENEM 10
 
@@ -58,7 +59,7 @@ private:
 	//std::vector<Enemy*> pEnemies = std::vector<Enemy*>(TOTENEM, nullptr);
 	std::vector<Enemy*> pEnemies;
 	std::vector<GameObject*> pCauldrons;
-	std::vector<GameObject*> pCandies;
+	std::vector<Candy*> pCandies;
 
 
 	int nEnemies;
@@ -75,6 +76,7 @@ private:
 	//std::vector<GameObject> tests;
 
 	std::vector<FlatMesh*> pCandiesMesh;
+	std::vector<FlatMesh*> pBHeartsMesh;
 
 	glm::vec2 positions[8];
 	glm::vec3 sizes[8];
@@ -129,5 +131,3 @@ private:
 	
 
 };
-
-#endif
