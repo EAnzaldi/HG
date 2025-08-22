@@ -23,9 +23,9 @@ public:
     //Costruttore 2d
     MovingObject(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth, glm::vec2 velocity, bool moveRight);
 
-    void Move(float deltaTime);
+    virtual void Move(float deltaTime);
 
-    void Render(const Shader& Shader) const;
+    virtual void Render(const Shader& Shader) const;
 
     //bool CheckCollision(GameObject other);
 

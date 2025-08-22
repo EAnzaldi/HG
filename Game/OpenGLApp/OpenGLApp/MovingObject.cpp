@@ -19,6 +19,7 @@ void MovingObject::Move(float deltaTime)
 
     this->Position += this->velocity * deltaTime;
 
+    //Teletrasporto
     if (this->Position.x - this->Size.x / 2 >= 1.0f) {
         this->Position.x = -1.0f + this->Size.x / 2;
     }
@@ -26,7 +27,6 @@ void MovingObject::Move(float deltaTime)
     if (this->Position.x + this->Size.x / 2 <= -1.0f) {
         this->Position.x = 1.0f - this->Size.x / 2;
     }
-
 
     if (velocity.x > 0.0f && !lastDirectionRight) {
         targetRotation = 0.0f;  // Direzione verso destra

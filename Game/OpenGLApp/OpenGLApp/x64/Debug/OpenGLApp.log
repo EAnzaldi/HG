@@ -11,6 +11,6 @@ D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\PlayState.cpp(303,19): warning
 D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\PlayState.cpp(306,21): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
 D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\PlayState.cpp(323,57): warning C4267: 'argomento': conversione da 'size_t' a 'int'. Possibile perdita di dati.
 D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\PlayState.cpp(360,26): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
-D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\PlayState.cpp(368,22): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
-D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\PlayState.cpp(460,23): warning C4244: 'inizializzazione': conversione da 'double' a 'int'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\PlayState.cpp(369,22): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\OpenGLApp\PlayState.cpp(462,23): warning C4244: 'inizializzazione': conversione da 'double' a 'int'. Possibile perdita di dati.
   OpenGLApp.vcxproj -> D:\ellyb\POLITO\04\IG\HG\Game\OpenGLApp\x64\Debug\OpenGLApp.exe

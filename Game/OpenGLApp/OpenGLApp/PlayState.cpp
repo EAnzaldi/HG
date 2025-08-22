@@ -364,8 +364,10 @@ void PlayState::ProcessEvents() {
     }
 
     if (pCandies.size() != 0)
-        for (Candy* pc : pCandies)
+        for (Candy* pc : pCandies) {
+            pc->CheckCollisionWithSolids(platforms);
             pc->Move(deltaTime);
+        }           
 
     if (Status == GameStatus::GameOver || Status == GameStatus::Victory) {
         //reset !
