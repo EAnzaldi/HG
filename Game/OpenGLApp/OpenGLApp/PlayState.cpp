@@ -11,7 +11,7 @@ const glm::vec2 velocity = { 0.3f, 0.0f };
 const glm::vec2 velocities[2] = { velocity, -velocity };
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
-    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), nEnemies(0), CurrentLevel(1)
+    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), CurrentLevel(1)
 {
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
@@ -211,10 +211,13 @@ void PlayState::Reset()
     if (pEnemies.size() != 0)
         for (Enemy* pe : pEnemies)
             delete pe;
+    pEnemies.clear();
+    nEnemies = 0;
 
     if(pCandies.size() != 0)
-        for (GameObject* pc : pCandies)
+        for (Candy* pc : pCandies)
             delete pc;
+    pCandies.clear();
 
     pPlayer = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexPlayer, 0);
 
@@ -409,8 +412,10 @@ void PlayState::Render()
     glDepthMask(GL_FALSE);
 
     if(pCandies.size() > 0){
-        for (GameObject* pc : pCandies) {
-            pc->Render(*pSpriteShader);
+        for (Candy* pc : pCandies) {
+            if (!pc->IsAte()) {
+                pc->Render(*pSpriteShader);
+            }
         }
     }
 

@@ -56,11 +56,9 @@ private:
 	//CTextControl* m_pLinesControl;
 
 	std::vector<GameObject> platforms;
-	//std::vector<Enemy*> pEnemies = std::vector<Enemy*>(TOTENEM, nullptr);
 	std::vector<Enemy*> pEnemies;
 	std::vector<GameObject*> pCauldrons;
 	std::vector<Candy*> pCandies;
-
 
 	int nEnemies;
 	int spawnPlace;

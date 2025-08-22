@@ -10,6 +10,11 @@ public:
     CandyType type;
     int duration; // seconds
 
+    bool Ate = false;
+
+    bool IsAte() { return Ate; }
+    void Eat() { Ate = true; }
+
     Candy(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth);
 
     void Move(float deltaTime) override;
