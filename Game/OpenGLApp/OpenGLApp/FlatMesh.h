@@ -15,18 +15,19 @@ using namespace std;
 class FlatMesh {
 public:
     // mesh Data
-    TextureObject texture;
+    //TextureObject texture;
 
     // constructor
-    FlatMesh(const char* path);
+    //FlatMesh(const char* path);
+    FlatMesh();
 
     // render the mesh
-    void Draw(const Shader& shader) const;
+    void Draw(const Shader& shader, unsigned int textureID) const;
 
     // get sprite size
-    glm::vec3 getSize();
-    float getWidth();
-    float getHeigth();
+    //glm::vec3 getSize();
+    //float getWidth();
+    //float getHeigth();
 
 private:
     // render data 

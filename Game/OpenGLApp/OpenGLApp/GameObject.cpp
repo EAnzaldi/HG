@@ -1,15 +1,18 @@
 #include "GameObject.h"
 
+FlatMesh* GameObject::fmesh = nullptr;
+
 GameObject::GameObject(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth)
-    : Position(position), Size(size), Rotation(0.0f), model(model), Texture(texture), fmesh(nullptr), RepeatWidth(repeatWidth), FlipX(1.0f), Dimension(DimensionType::ThreeD)
+    : Position(position), Size(size), Rotation(0.0f), model(model), Texture(texture), RepeatWidth(repeatWidth), FlipX(1.0f), Dimension(DimensionType::ThreeD)
 {
     // flag specifica se si voglia scalare la texture (consigliato=1 per piattaforme)
+    if (!fmesh) fmesh = new FlatMesh();
 }
 
-GameObject::GameObject(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth)
-    : Position(position), Size(size), Rotation(0.0f), model(nullptr), Texture(nullptr), fmesh(fmesh), RepeatWidth(repeatWidth), FlipX(1.0f), Dimension(DimensionType::TwoD)
+GameObject::GameObject(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth)
+    : Position(position), Size(size), Rotation(0.0f), model(nullptr), Texture(texture), RepeatWidth(repeatWidth), FlipX(1.0f), Dimension(DimensionType::TwoD)
 {
-
+    if (!fmesh) fmesh = new FlatMesh();
 }
 void GameObject::Render(const Shader& shader) const
 {
@@ -76,7 +79,7 @@ void GameObject::Render2D(const Shader& shader) const
 
     //this->Print();
 
-    fmesh->Draw(shader);
+    fmesh->Draw(shader, Texture->TextureID);
 }
 Hitbox GameObject::GetHitbox() const
 {

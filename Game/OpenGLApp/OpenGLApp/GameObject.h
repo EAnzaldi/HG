@@ -28,7 +28,8 @@ class GameObject
 public:
     DimensionType Dimension;
 
-    FlatMesh* fmesh;
+    static FlatMesh* fmesh; //unica fmesh per tutti gli sprite
+
     Model* model;
     TextureObject* Texture;
 
@@ -42,7 +43,7 @@ public:
     //Costruttore 3d
     GameObject(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth);
     //Costruttore 2d
-    GameObject(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth);
+    GameObject(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth);
 
     void Render(const Shader& shader) const;
 

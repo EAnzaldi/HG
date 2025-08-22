@@ -44,6 +44,8 @@ private:
 	// Index of the current selected menu item
 	int CurrentSelection;
 
+	//FlatMesh* fmesh; //unica mesh quadrata per sprite
+
 	// A pointer to the current active game (if any).
 	PlayState* CurrentGame;
 
@@ -52,15 +54,15 @@ private:
 	Shader* pSpriteShader;
 
 	// The background image
-	FlatMesh* pBackground;
+	TextureObject* pBackground;
 	GameObject* pBackgroundObj;
 
 	// The menu images
-	FlatMesh* pMenu[3];
+	TextureObject* pMenu[3];
 	GameObject* pMenuObj[3];
-	FlatMesh* pMenuSel[3];
+	TextureObject* pMenuSel[3];
 	GameObject* pMenuSelObj[3];
-	FlatMesh* pMenuNoGame;
+	TextureObject* pMenuNoGame;
 	GameObject* pMenuNoGameObj;
 
 	/*

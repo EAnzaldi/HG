@@ -13,7 +13,7 @@ public:
     bool IsAte() { return Ate; }
     void Eat() { Ate = true; }
 
-    Candy(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth);
+    Candy(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth);
 
     void Move(float deltaTime) override;
     void Render(const Shader& Shader) const override;

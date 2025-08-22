@@ -6,8 +6,8 @@ Enemy::Enemy(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* te
 {
 
 }
-Enemy::Enemy(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth, glm::vec2 velocity, bool moveRight)
-    : MovingObject(position, size, fmesh, repeatWidth, velocity, moveRight)
+Enemy::Enemy(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight)
+    : MovingObject(position, size, texture, repeatWidth, velocity, moveRight)
 {
 
 }

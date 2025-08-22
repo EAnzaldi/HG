@@ -21,7 +21,7 @@ public:
     //Costruttore 3d
     MovingObject(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight);
     //Costruttore 2d
-    MovingObject(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth, glm::vec2 velocity, bool moveRight);
+    MovingObject(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight);
 
     virtual void Move(float deltaTime);
 

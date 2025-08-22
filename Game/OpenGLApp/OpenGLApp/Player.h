@@ -28,7 +28,7 @@ class Player : public MovingObject
         //Costruttore 3d
         Player(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth);
         //Costruttore 2d
-        Player(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth);
+        Player(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth);
 
         void HandleJump(float deltaTime, irrklang::ISoundEngine* engine);
 

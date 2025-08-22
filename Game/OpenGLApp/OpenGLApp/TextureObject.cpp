@@ -41,3 +41,18 @@ void TextureObject::LoadTexture(const char* path)
     }
     stbi_image_free(data);
 }
+glm::vec3 TextureObject::getSize() const
+{
+    //printf("%f %f\n", static_cast<float>(texture.Width), static_cast<float>(texture.Height));
+    return glm::vec3(static_cast<float>(Width), static_cast<float>(Height), 1.0f);
+}
+
+float TextureObject::getWidth() const
+{
+    return static_cast<float>(Width);
+}
+
+float TextureObject::getHeigth() const
+{
+    return static_cast<float>(Height);
+}

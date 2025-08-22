@@ -20,6 +20,10 @@ public:
 
     TextureObject(const char* path);
 
+    glm::vec3 getSize() const;
+    float getWidth() const;
+    float getHeigth() const;
+
 private:
     void LoadTexture(const char* path);
 };

@@ -4,6 +4,7 @@ unsigned int FlatMesh::VAO = 0;
 unsigned int FlatMesh::VBO = 0;
 bool FlatMesh::initialized = false;
 
+/*
 FlatMesh::FlatMesh(const char* path) : texture(path) {
     // now that we have all the required data, set the vertex buffers and its attribute pointers.
     if (!initialized)
@@ -11,13 +12,20 @@ FlatMesh::FlatMesh(const char* path) : texture(path) {
         setupMesh();
         initialized = true;
     }
+}*/
+FlatMesh::FlatMesh() {
+    if (!initialized)
+    {
+        setupMesh();
+        initialized = true;
+    }
 }
-
-void FlatMesh::Draw(const Shader& shader) const
+void FlatMesh::Draw(const Shader& shader, unsigned int textureID) const
 {
     glActiveTexture(GL_TEXTURE0);
     shader.setInt("ourTexture", 0);
-    glBindTexture(GL_TEXTURE_2D, texture.TextureID);
+    //glBindTexture(GL_TEXTURE_2D, texture.TextureID)
+    glBindTexture(GL_TEXTURE_2D, textureID);
 
     // draw mesh
     glBindVertexArray(VAO);
@@ -25,7 +33,7 @@ void FlatMesh::Draw(const Shader& shader) const
     glBindVertexArray(0);
 
     // always good practice to set everything back to defaults once configured.
-    glActiveTexture(GL_TEXTURE0);
+    //glActiveTexture(GL_TEXTURE0);
 }
 
 void FlatMesh::setupMesh()
@@ -61,13 +69,12 @@ void FlatMesh::setupMesh()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5*sizeof(float), (void*)(3 * sizeof(float)));
     glBindVertexArray(0);
 }
-
+/*
 glm::vec3 FlatMesh::getSize()
 {
     //printf("%f %f\n", static_cast<float>(texture.Width), static_cast<float>(texture.Height));
     return glm::vec3(static_cast<float>(texture.Width), static_cast<float>(texture.Height), 1.0f);
 }
-
 float FlatMesh::getWidth()
 {
     return static_cast<float>(texture.Width);
@@ -77,4 +84,4 @@ float FlatMesh::getHeigth()
 {
     return static_cast<float>(texture.Height);
 }
-
+*/

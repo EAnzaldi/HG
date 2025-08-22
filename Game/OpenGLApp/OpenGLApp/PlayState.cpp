@@ -88,8 +88,8 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pBackgroundModel = new Model("resources/models/background.obj");
 
     //caricamento modelli 2d
-    pCandiesMesh.emplace_back(new FlatMesh("resources/textures/candy1.png"));
-    pCandiesMesh.emplace_back(new FlatMesh("resources/textures/candy2.png"));
+    pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy1.png"));
+    pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy2.png"));
 
     for (int i = 0; i < 8; ++i)
     {

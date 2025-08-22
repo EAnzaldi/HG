@@ -5,8 +5,8 @@ MovingObject::MovingObject(glm::vec2 position, glm::vec3 size, Model* model, Tex
 {
     // flag specifica se si voglia scalare la texture (consigliato=1 per piattaforme)
 }
-MovingObject::MovingObject(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth, glm::vec2 velocity, bool moveRight)
-    : GameObject(position, size, fmesh, repeatWidth), velocity(velocity), lastDirectionRight(moveRight)
+MovingObject::MovingObject(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight)
+    : GameObject(position, size, texture, repeatWidth), velocity(velocity), lastDirectionRight(moveRight)
 {
     
 }
