@@ -29,10 +29,10 @@ public:
 
     //bool CheckCollision(GameObject other);
 
-    Collision CheckCollision(GameObject other);
+    Collision CheckCollision(GameObject* other);
 
-    void CheckCollisionWithSolids(const std::vector<GameObject>& solidObjects);
+    void CheckCollisionWithSolids(const std::vector<GameObject*>& solidObjects);
 
-    virtual void HandleCollisionWithSolid(GameObject solidObject);
+    virtual void HandleCollisionWithSolid(GameObject* solidObject);
 
 };

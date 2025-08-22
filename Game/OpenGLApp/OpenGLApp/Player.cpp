@@ -34,12 +34,11 @@ void Player::HandleJump(float deltaTime, irrklang::ISoundEngine* engine)
         }
     }
 }
-
 bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
 {
     if (!isInvincible)
     {
-        Collision collision = CheckCollision(*enemy);
+        Collision collision = CheckCollision(enemy);
 
         if (collision == Collision::Other) {
             engine->play2D("resources/sounds/damage.wav");
@@ -63,11 +62,19 @@ bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
     }
     return isDead;
 }
+void Player::CheckCandyCollision(Candy* candy, irrklang::ISoundEngine* engine)
+{
+    Collision collision = CheckCollision(candy);
 
-void Player::HandleCollisionWithSolid(GameObject solidObject)
+    if (collision != Collision::None) {
+        candy->Eat();
+        printf("Player ha mangiato una caramella misteriosa\n");
+    }
+}
+void Player::HandleCollisionWithSolid(GameObject* solidObject)
 {
     Hitbox playerHitbox = this->GetHitbox();
-    Hitbox solidHitbox = solidObject.GetHitbox();
+    Hitbox solidHitbox = solidObject->GetHitbox();
 
     float overlapX = std::min(playerHitbox.Max.x, solidHitbox.Max.x) - std::max(playerHitbox.Min.x, solidHitbox.Min.x);
     float overlapY = std::min(playerHitbox.Max.y, solidHitbox.Max.y) - std::max(playerHitbox.Min.y, solidHitbox.Min.y);
@@ -75,7 +82,7 @@ void Player::HandleCollisionWithSolid(GameObject solidObject)
     // Correggo l'overlap minore
     if (overlapX < overlapY) // Correggo sull'asse X
     {
-        if (this->Position.x < solidObject.Position.x) // Collisione a destra del player
+        if (this->Position.x < solidObject->Position.x) // Collisione a destra del player
         {
             this->Position.x -= overlapX;
         }
@@ -87,7 +94,7 @@ void Player::HandleCollisionWithSolid(GameObject solidObject)
     }
     else // Correggi sull'asse Y
     {
-        if (this->Position.y < solidObject.Position.y) // Collisione sopra il player
+        if (this->Position.y < solidObject->Position.y) // Collisione sopra il player
         {
             this->Position.y -= overlapY;
         }

@@ -63,10 +63,10 @@ void MovingObject::Move(float deltaTime)
         bounds1.Min.y <= bounds2.Max.y && bounds1.Max.y >= bounds2.Min.y);
 }*/
 
-MovingObject::Collision MovingObject::CheckCollision(GameObject other)
+MovingObject::Collision MovingObject::CheckCollision(GameObject* other)
 {
     Hitbox bounds1 = this->GetHitbox();
-    Hitbox bounds2 = other.GetHitbox();
+    Hitbox bounds2 = other->GetHitbox();
 
     bool isColliding = (bounds1.Min.x <= bounds2.Max.x && bounds1.Max.x >= bounds2.Min.x &&
         bounds1.Min.y <= bounds2.Max.y && bounds1.Max.y >= bounds2.Min.y);
@@ -81,11 +81,11 @@ MovingObject::Collision MovingObject::CheckCollision(GameObject other)
 
     return Collision::Other;
 }
-void MovingObject::CheckCollisionWithSolids(const std::vector<GameObject>& solidObjects)
+void MovingObject::CheckCollisionWithSolids(const std::vector<GameObject*>& solidObjects)
 {
     this->isOnGround = false;   // Considero l'oggetto a mezz'aria prima del controllo delle collisioni
 
-    for (const GameObject& solid : solidObjects)
+    for (GameObject* solid : solidObjects)
     {  
         if (CheckCollision(solid) != Collision::None)
         {
@@ -93,10 +93,10 @@ void MovingObject::CheckCollisionWithSolids(const std::vector<GameObject>& solid
         }
     }
 }
-void MovingObject::HandleCollisionWithSolid(GameObject solidObject)
+void MovingObject::HandleCollisionWithSolid(GameObject* solidObject)
 {
     Hitbox thisHitbox = this->GetHitbox();
-    Hitbox solidHitbox = solidObject.GetHitbox();
+    Hitbox solidHitbox = solidObject->GetHitbox();
 
     float overlapX = std::min(thisHitbox.Max.x, solidHitbox.Max.x) - std::max(thisHitbox.Min.x, solidHitbox.Min.x);
     float overlapY = std::min(thisHitbox.Max.y, solidHitbox.Max.y) - std::max(thisHitbox.Min.y, solidHitbox.Min.y);
@@ -104,7 +104,7 @@ void MovingObject::HandleCollisionWithSolid(GameObject solidObject)
     // Correggo l'overlap minore
     if (overlapX < overlapY) // Correggo sull'asse X
     {
-        if (this->Position.x < solidObject.Position.x) // Collisione a destra del MovingObject
+        if (this->Position.x < solidObject->Position.x) // Collisione a destra del MovingObject
         {
             this->Position.x -= overlapX;
         }
@@ -115,7 +115,7 @@ void MovingObject::HandleCollisionWithSolid(GameObject solidObject)
     }
     else // Correggi sull'asse Y
     {
-        if (this->Position.y < solidObject.Position.y) // Collisione sopra del MovingObject
+        if (this->Position.y < solidObject->Position.y) // Collisione sopra del MovingObject
         {
             this->Position.y -= overlapY;
         }

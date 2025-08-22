@@ -93,7 +93,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
     for (int i = 0; i < 8; ++i)
     {
-        platforms.emplace_back(positions[i], sizes[i], pCubeModel, pTexPlatforms, 1);
+        platforms.emplace_back(new GameObject(positions[i], sizes[i], pCubeModel, pTexPlatforms, 1));
     }
     /*
 
@@ -207,6 +207,7 @@ void PlayState::Reset()
 
     if(pPlayer != nullptr)
         delete pPlayer;
+    pPlayer = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexPlayer, 0);
 
     if (pEnemies.size() != 0)
         for (Enemy* pe : pEnemies)
@@ -214,18 +215,16 @@ void PlayState::Reset()
     pEnemies.clear();
     nEnemies = 0;
 
-    if(pCandies.size() != 0)
-        for (Candy* pc : pCandies)
-            delete pc;
-    pCandies.clear();
-
-    pPlayer = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexPlayer, 0);
-
     /*
     pEnemies.emplace_back(new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, glm::vec2(0.3f, 0.0f), true));
     pEnemies.emplace_back(new Enemy(glm::vec2(0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, glm::vec2(-0.3f, 0.0f), false));
     nEnemies++;
     nEnemies++;*/
+
+    if(pCandies.size() != 0)
+        for (Candy* pc : pCandies)
+            delete pc;
+    pCandies.clear();
 
     // musica di sottofondo
     Engine->play2D("resources/sounds/ost.wav", true);
@@ -300,6 +299,14 @@ void PlayState::ProcessInput()
         if (pPlayer->isOnGround)
         {
             pPlayer->isPastJumpPeak = true; // Se il tasto non è premuto, non si può più aumentare il salto
+        }
+    }
+
+    // raccolta caramelle
+    if (glfwGetKey(Window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    {
+        for (Candy* pc : pCandies) {
+            pPlayer->CheckCandyCollision(pc, Engine);
         }
     }
 
@@ -403,9 +410,9 @@ void PlayState::Render()
         object.RenderFlat(*pSpriteShader);
     }*/
 
-    for (const GameObject& object : platforms)
+    for (const GameObject* pp : platforms)
     {
-        object.Render(*pShader);
+        pp->Render(*pShader);
     }
 
     // disattiva depth buffer quando si disegnano oggetti trasparenti (interferisce con blending)

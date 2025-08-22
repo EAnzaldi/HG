@@ -2,6 +2,7 @@
 
 #include "MovingObject.h"
 #include "Enemy.h"
+#include "Candy.h"
 
 #include <irrKlang.h>
 
@@ -31,9 +32,11 @@ class Player : public MovingObject
 
         void HandleJump(float deltaTime, irrklang::ISoundEngine* engine);
 
-        void HandleCollisionWithSolid(GameObject solidObject) override;
+        void HandleCollisionWithSolid(GameObject* solidObject) override;
 
-        bool CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine);
+        bool CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine);   
+
+        void CheckCandyCollision(Candy* candy, irrklang::ISoundEngine* engine);
 
         void Update(float deltaTime); // Aggiorna lo stato del giocatore
         

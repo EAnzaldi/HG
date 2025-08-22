@@ -55,7 +55,7 @@ private:
 	//CTextControl* m_pLevelControl;
 	//CTextControl* m_pLinesControl;
 
-	std::vector<GameObject> platforms;
+	std::vector<GameObject*> platforms;
 	std::vector<Enemy*> pEnemies;
 	std::vector<GameObject*> pCauldrons;
 	std::vector<Candy*> pCandies;

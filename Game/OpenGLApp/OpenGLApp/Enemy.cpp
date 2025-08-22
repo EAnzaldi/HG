@@ -11,10 +11,10 @@ Enemy::Enemy(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWid
 {
 
 }
-void Enemy::HandleCollisionWithSolid(GameObject solidObject)
+void Enemy::HandleCollisionWithSolid(GameObject* solidObject)
 {
     Hitbox thisHitbox = this->GetHitbox();
-    Hitbox solidHitbox = solidObject.GetHitbox();
+    Hitbox solidHitbox = solidObject->GetHitbox();
 
     float overlapX = std::min(thisHitbox.Max.x, solidHitbox.Max.x) - std::max(thisHitbox.Min.x, solidHitbox.Min.x);
     float overlapY = std::min(thisHitbox.Max.y, solidHitbox.Max.y) - std::max(thisHitbox.Min.y, solidHitbox.Min.y);
@@ -22,7 +22,7 @@ void Enemy::HandleCollisionWithSolid(GameObject solidObject)
     // Correggo l'overlap minore
     if (overlapX < overlapY) // Correggo sull'asse X
     {
-        if (this->Position.x < solidObject.Position.x) // Collisione a destra del MovingObject
+        if (this->Position.x < solidObject->Position.x) // Collisione a destra del MovingObject
         {
             this->Position.x -= overlapX;
             this->velocity.x = -this->velocity.x;
@@ -35,7 +35,7 @@ void Enemy::HandleCollisionWithSolid(GameObject solidObject)
     }
     else // Correggi sull'asse Y
     {
-        if (this->Position.y < solidObject.Position.y) // Collisione sopra del MovingObject
+        if (this->Position.y < solidObject->Position.y) // Collisione sopra del MovingObject
         {
             this->Position.y -= overlapY;
         }

@@ -10,8 +10,6 @@ public:
     CandyType type;
     int duration; // seconds
 
-    bool Ate = false;
-
     bool IsAte() { return Ate; }
     void Eat() { Ate = true; }
 
@@ -19,6 +17,9 @@ public:
 
     void Move(float deltaTime) override;
     void Render(const Shader& Shader) const override;
+
+private:
+    bool Ate = false;
 };
 
 #endif
