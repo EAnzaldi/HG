@@ -64,7 +64,7 @@ void FlatMesh::setupMesh()
 
 glm::vec3 FlatMesh::getSize()
 {
-    printf("%f %f\n", static_cast<float>(texture.Width), static_cast<float>(texture.Height));
+    //printf("%f %f\n", static_cast<float>(texture.Width), static_cast<float>(texture.Height));
     return glm::vec3(static_cast<float>(texture.Width), static_cast<float>(texture.Height), 1.0f);
 }
 

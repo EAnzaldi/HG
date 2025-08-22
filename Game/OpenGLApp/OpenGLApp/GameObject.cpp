@@ -1,18 +1,24 @@
 #include "GameObject.h"
 
 GameObject::GameObject(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth)
-    : Position(position), Size(size), Rotation(0.0f), model(model), Texture(texture), fmesh(nullptr), RepeatWidth(repeatWidth), FlipX(1.0f)
+    : Position(position), Size(size), Rotation(0.0f), model(model), Texture(texture), fmesh(nullptr), RepeatWidth(repeatWidth), FlipX(1.0f), Dimension(DimensionType::ThreeD)
 {
     // flag specifica se si voglia scalare la texture (consigliato=1 per piattaforme)
 }
 
 GameObject::GameObject(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth)
-    : Position(position), Size(size), Rotation(0.0f), model(nullptr), Texture(nullptr), fmesh(fmesh), RepeatWidth(repeatWidth), FlipX(1.0f)
+    : Position(position), Size(size), Rotation(0.0f), model(nullptr), Texture(nullptr), fmesh(fmesh), RepeatWidth(repeatWidth), FlipX(1.0f), Dimension(DimensionType::TwoD)
 {
-    // flag specifica se si voglia scalare la texture (consigliato=1 per piattaforme)
-}
 
-void GameObject::Render(const Shader& shader) const 
+}
+void GameObject::Render(const Shader& shader) const
+{
+    if (Dimension == DimensionType::ThreeD)
+        Render3D(shader);
+    else if (Dimension == DimensionType::TwoD)
+        Render2D(shader);
+}
+void GameObject::Render3D(const Shader& shader) const 
 {
     shader.use();
 
@@ -41,12 +47,10 @@ void GameObject::Render(const Shader& shader) const
 
     shader.setMat4("model", model_mat);
 
-
-
     model->Draw(shader);
 }
 
-void GameObject::RenderFlat(const Shader& shader) const
+void GameObject::Render2D(const Shader& shader) const
 {
     shader.use();
 
@@ -74,9 +78,16 @@ void GameObject::RenderFlat(const Shader& shader) const
 
     fmesh->Draw(shader);
 }
-
 Hitbox GameObject::GetHitbox() const
 {
+    if (Dimension == DimensionType::ThreeD)
+        return GetHitbox3D();
+    else if(Dimension == DimensionType::TwoD)
+        return GetHitbox2D();
+}
+Hitbox GameObject::GetHitbox3D() const
+{
+
     glm::vec3 min_point = glm::vec3(FLT_MAX);  // Inizializza a un valore molto grande
     glm::vec3 max_point = glm::vec3(-FLT_MAX); // Inizializza a un valore molto piccolo
 
@@ -115,8 +126,7 @@ Hitbox GameObject::GetHitbox() const
 
     return Hitbox{ center - size / 2.0f, center + size / 2.0f }; // Restituisci la hitbox
 }
-
-Hitbox GameObject::GetHitboxFlat() const
+Hitbox GameObject::GetHitbox2D() const
 {
     glm::vec2 size = glm::vec2(Size.x, Size.y);
     return Hitbox{ Position - size / 2.0f, Position + size / 2.0f };
@@ -129,6 +139,8 @@ void GameObject::Print() const
     printf("Size:0.1f ", Size);
     printf("FlipX:0.1f ", FlipX);
     printf("RepeatWidth:%d ", RepeatWidth);
-    printf("Model? %s ", model != nullptr ? "true" : "false");
-    printf("Fmesh? %s\n", fmesh != nullptr ? "true" : "false");
+    if (Dimension == DimensionType::ThreeD)
+        printf("3D\n");
+    else if (Dimension == DimensionType::TwoD)
+        printf("2D\n");
 }

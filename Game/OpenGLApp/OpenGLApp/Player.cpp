@@ -1,10 +1,17 @@
 #include "Player.h"
 
 Player::Player(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth)
-    : MovingObject(position, size, model, texture, repeatWidth, velocity = glm::vec2(0.0f, 0.0f), true),
-    invincibilityDuration(1.0f), invincibilityTimer(0.0f), isInvincible(false) {
-}
+    : MovingObject(position, size, model, texture, repeatWidth, velocity = glm::vec2(0.0f, 0.0f), true), 
+    invincibilityDuration(1.0f), invincibilityTimer(0.0f), isInvincible(false)
+{
 
+}
+Player::Player(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth)
+    : MovingObject(position, size, fmesh, repeatWidth, velocity = glm::vec2(0.0f, 0.0f), true),
+        invincibilityDuration(1.0f), invincibilityTimer(0.0f), isInvincible(false)
+{
+
+}
 void Player::HandleJump(float deltaTime, irrklang::ISoundEngine* engine)
 {
     if (this->isOnGround)
@@ -50,7 +57,7 @@ bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
         }
         else if (collision == Collision::Top) {
 
-            std::cout << "Kill enemy" << std::endl;
+            //std::cout << "Kill enemy" << std::endl;
             enemy->kill();
         }
     }

@@ -24,7 +24,10 @@ class Player : public MovingObject
 
         glm::vec2 maxVelocity = glm::vec2(1.5f, 2.5f);
 
+        //Costruttore 3d
         Player(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth);
+        //Costruttore 2d
+        Player(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth);
 
         void HandleJump(float deltaTime, irrklang::ISoundEngine* engine);
 

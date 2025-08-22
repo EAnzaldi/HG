@@ -21,9 +21,17 @@ struct Hitbox
     glm::vec2 Max; // Punto in alto a destra
 };
 
-class GameObject 
+enum class DimensionType { TwoD, ThreeD };
+
+class GameObject
 {
 public:
+    DimensionType Dimension;
+
+    FlatMesh* fmesh;
+    Model* model;
+    TextureObject* Texture;
+
     glm::vec2 Position;
     glm::vec3 Size;
     float Rotation;
@@ -31,25 +39,23 @@ public:
 
     bool RepeatWidth;
 
-    Model* model;
-
-    FlatMesh* fmesh;
-
-    TextureObject* Texture;
-
     //Costruttore 3d
     GameObject(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth);
     //Costruttore 2d
     GameObject(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth);
 
-    virtual void Render(const Shader& shader) const;
+    void Render(const Shader& shader) const;
 
-    virtual void RenderFlat(const Shader& shader) const;
+    //virtual void RenderFlat(const Shader& shader) const;
 
     Hitbox GetHitbox() const;
 
-    Hitbox GetHitboxFlat() const;
+    //Hitbox GetHitboxFlat() const;
 
     void Print() const;
-
+protected:
+    void Render2D(const Shader& shader) const;
+    void Render3D(const Shader& shader) const;
+    Hitbox GetHitbox2D() const;
+    Hitbox GetHitbox3D() const;
 };

@@ -2,9 +2,15 @@
 #include <glm/glm.hpp>  // Per il calcolo dei vettori
 
 Enemy::Enemy(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight)
-    : MovingObject(position, size, model, texture, repeatWidth, velocity, moveRight), Dead(false) {
-}
+    : MovingObject(position, size, model, texture, repeatWidth, velocity, moveRight)
+{
 
+}
+Enemy::Enemy(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth, glm::vec2 velocity, bool moveRight)
+    : MovingObject(position, size, fmesh, repeatWidth, velocity, moveRight)
+{
+
+}
 void Enemy::HandleCollisionWithSolid(GameObject solidObject)
 {
     Hitbox thisHitbox = this->GetHitbox();

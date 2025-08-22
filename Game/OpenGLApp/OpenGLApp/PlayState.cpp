@@ -1,7 +1,7 @@
 #include "PlayState.h"
 
 #define NP 1
-#define SPAWN_MIN_E 2
+#define SPAWN_MIN_E 3
 #define SPAWN_MAX_E 6
 
 #define SPAWN_PROB_C 25 //percentuale di spawn delle caramelle (bonus e malus)
@@ -140,7 +140,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
     // Shader sprite
     pSpriteShader->use();
-    pSpriteShader->setMat4("projection", projectionPixels);
+    pSpriteShader->setMat4("projection", projectionNDC);
     pSpriteShader->setMat4("view", view);
 
     //Shader per materiale metallico
@@ -310,6 +310,7 @@ void PlayState::ProcessEvents() {
 
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
+    float aspect = (float)fbWidth/(float)fbHeight;
 
     if (pEnemies.size() < TOTENEM) {
         lastSpawnTime += deltaTime;
@@ -332,20 +333,26 @@ void PlayState::ProcessEvents() {
             }
             else if (pe->IsDead()) {//Se enemy muore
                 nEnemies--;
+                printf("Nemico morto a %f, %f\n", pe->Position.x, pe->Position.y);
                 if (nEnemies <= 0 && pEnemies.size() == TOTENEM) {
                     Status = GameStatus::Victory;
                 }
                 //spawn candy
                 if (DoAction(SPAWN_PROB_C)) {
-                    float pixelX = (pe->Position.x + 1.0f) * 0.5f * fbWidth;
-                    float pixelY = (pe->Position.y + 1.0f) * 0.5f * fbHeight;
-                    float scale = 0.05f;
+                    //Coordinate pixel
+                    //float pixelX = (pe->Position.x + 1.0f) * 0.5f * fbWidth;
+                    //float pixelY = (pe->Position.y + 1.0f) * 0.5f * fbHeight;
+                    //float scale = 0.05f;
                     /*
                     pixelY-=pe->Size.y;
                     pCandies.emplace_back(new GameObject(glm::vec2(pixelX, pixelY+pCandiesMesh[0]->getHeigth()*scale/2), pCandiesMesh[0]->getSize()*scale, pCandiesMesh[0], 0));
                     */
-                    pCandies.emplace_back(new Candy(glm::vec2(pixelX, pixelY), pCandiesMesh[0]->getSize() * scale, pCandiesMesh[0], 0));
-                    printf("Spawnata caramella in posizione %f %f", pixelX, pixelY);
+                    //pCandies.emplace_back(new Candy(glm::vec2(pixelX, pixelY), pCandiesMesh[0]->getSize() * scale, pCandiesMesh[0], 0));
+                    //Coordinate NDC
+                    float pixelX = pe->Position.x;
+                    float pixelY = pe->Position.y;
+                    pCandies.emplace_back(new Candy(glm::vec2(pixelX, pixelY), glm::vec3(0.07f, 0.07f * aspect, 0.1f), pCandiesMesh[0], 0));
+                    printf("Spawnata caramella in posizione %f %f\n", pixelX, pixelY);
                 }
 
             }
@@ -401,7 +408,7 @@ void PlayState::Render()
 
     if(pCandies.size() > 0){
         for (GameObject* pc : pCandies) {
-            pc->RenderFlat(*pSpriteShader);
+            pc->Render(*pSpriteShader);
         }
     }
 
@@ -419,7 +426,6 @@ void PlayState::Render()
     glDepthMask(GL_TRUE); // riattiva depth buffer
 
     glEnable(GL_DEPTH_TEST);
-
 
     for (GameObject* pc : pCauldrons)
         pc->Render(*pEnlightenedShader);

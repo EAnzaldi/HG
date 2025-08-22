@@ -1,13 +1,15 @@
 #include "MovingObject.h"
 
 MovingObject::MovingObject(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight)
-    : GameObject(position, size, model, texture, repeatWidth), velocity(velocity), lastDirectionRight(moveRight) {
+    : GameObject(position, size, model, texture, repeatWidth), velocity(velocity), lastDirectionRight(moveRight)
+{
+    // flag specifica se si voglia scalare la texture (consigliato=1 per piattaforme)
 }
-
 MovingObject::MovingObject(glm::vec2 position, glm::vec3 size, FlatMesh* fmesh, bool repeatWidth, glm::vec2 velocity, bool moveRight)
-    : GameObject(position, size, fmesh, repeatWidth), velocity(velocity), lastDirectionRight(moveRight) {
+    : GameObject(position, size, fmesh, repeatWidth), velocity(velocity), lastDirectionRight(moveRight)
+{
+    
 }
-
 void MovingObject::Move(float deltaTime)
 {
     if (!isOnGround)
@@ -79,7 +81,6 @@ MovingObject::Collision MovingObject::CheckCollision(GameObject other)
 
     return Collision::Other;
 }
-
 void MovingObject::CheckCollisionWithSolids(const std::vector<GameObject>& solidObjects)
 {
     this->isOnGround = false;   // Considero l'oggetto a mezz'aria prima del controllo delle collisioni
@@ -92,7 +93,6 @@ void MovingObject::CheckCollisionWithSolids(const std::vector<GameObject>& solid
         }
     }
 }
-
 void MovingObject::HandleCollisionWithSolid(GameObject solidObject)
 {
     Hitbox thisHitbox = this->GetHitbox();
@@ -127,7 +127,6 @@ void MovingObject::HandleCollisionWithSolid(GameObject solidObject)
         this->velocity.y = 0;
     }
 }
-
 void MovingObject::Render(const Shader& Shader) const
 {
     GameObject::Render(Shader);
@@ -143,7 +142,7 @@ void MovingObject::Render(const Shader& Shader) const
 
         Shader.setMat4("model", model_mat);
 
-        model->Draw(Shader);
+        this->model->Draw(Shader);
     }
 
     // Se l'oggetto si trova oltre il bordo a sinistra renderizzo la parte mancante a destra

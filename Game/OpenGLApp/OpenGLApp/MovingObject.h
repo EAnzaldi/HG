@@ -25,6 +25,8 @@ public:
 
     void Move(float deltaTime);
 
+    void Render(const Shader& Shader) const;
+
     //bool CheckCollision(GameObject other);
 
     Collision CheckCollision(GameObject other);
@@ -33,5 +35,4 @@ public:
 
     virtual void HandleCollisionWithSolid(GameObject solidObject);
 
-    void Render(const Shader& shader) const override;
 };

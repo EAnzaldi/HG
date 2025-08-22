@@ -12,7 +12,7 @@
 #include "Player.h"
 #include "Candy.h"
 
-#define TOTENEM 10
+#define TOTENEM 15
 
 class PlayState : public GameState
 {

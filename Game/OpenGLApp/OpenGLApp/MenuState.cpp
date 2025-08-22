@@ -124,7 +124,7 @@ void MenuState::MouseMoving(double xpos, double ypos)
 
 	//Controllare se il cursore sia su una delle box
 	for (int i = 0; i < 3; i++) {
-		Hitbox bounds = pMenuObj[i]->GetHitboxFlat();
+		Hitbox bounds = pMenuObj[i]->GetHitbox();
 		bool isColliding = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
 		//Se è su una box selezionarla
 		if (isColliding) {
@@ -144,7 +144,7 @@ void MenuState::MouseClick(int button, int action, int mods)
 		glfwGetCursorPos(Window, &xpos, &ypos);
 		glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
 		ypos = fbHeight - ypos;
-		Hitbox bounds = pMenuObj[CurrentSelection]->GetHitboxFlat();
+		Hitbox bounds = pMenuObj[CurrentSelection]->GetHitbox();
 		bool isColliding = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
 		//Se è sulla box scegliere la selezione
 		if (isColliding) {
@@ -167,17 +167,17 @@ void MenuState::Render()
 	//pTitle->Render(*pTextShader, "Hansel + Gretel", SCR_WIDTH / 8, 1000.0f, 3.0f, TitleColor);
 	//pTitleObj->Render(*pShader);
 
-	pBackgroundObj->RenderFlat(*pSpriteShader);
+	pBackgroundObj->Render(*pSpriteShader);
 
 	glDisable(GL_DEPTH_TEST);//evita di considerare la profondità delle sprite
 
 	for (int i = 0; i < 3; i++)
 		if (i == 1 && Status != GameStatus::Paused)
-			pMenuNoGameObj->RenderFlat(*pSpriteShader);
+			pMenuNoGameObj->Render(*pSpriteShader);
 		else if(CurrentSelection!=i)
-			pMenuObj[i]->RenderFlat(*pSpriteShader);
+			pMenuObj[i]->Render(*pSpriteShader);
 		else
-			pMenuSelObj[i]->RenderFlat(*pSpriteShader);
+			pMenuSelObj[i]->Render(*pSpriteShader);
 
 	//pTestObj->RenderFlat(*pSpriteShader);
 
