@@ -11,6 +11,7 @@
 #include "EndState.h"
 #include "Player.h"
 #include "Candy.h"
+#include <unordered_map>
 
 #define TOTENEM 15
 
@@ -74,6 +75,10 @@ private:
 	//std::vector<GameObject> tests;
 
 	std::vector<TextureObject*> pCandiesMesh;
+	//std::unordered_map<CandyType*, TextureObject*> typeToTextureMap;
+	std::vector<CandyType*> pCandyTypes;
+	std::vector<int> pProbabilities;
+
 	std::vector<TextureObject*> pBHeartsMesh;
 
 	glm::vec2 positions[8];

@@ -14,6 +14,9 @@ Player::Player(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool 
 }
 void Player::HandleJump(float deltaTime, irrklang::ISoundEngine* engine)
 {
+    if (disableJump)
+        if(isOnGround)
+            return;
     if (this->isOnGround)
     {
         this->isOnGround = false;
@@ -68,8 +71,30 @@ void Player::CheckCandyCollision(Candy* candy, irrklang::ISoundEngine* engine)
 
     if (collision != Collision::None) {
         candy->Eat();
+        EatCandy(candy->GetType());
         printf("Player ha mangiato una caramella misteriosa\n");
     }
+}
+void Player::EatCandy(CandyType type)
+{
+    switch (type.effect) {
+    case(EffectType::None): {} break;
+    case(EffectType::NoJump): disableJump = true; nNoJump++; break;
+    case(EffectType::Speed): maxVelocity *= type.value; break;
+    }
+    ActiveEffect* pe = new ActiveEffect(type);
+    pAEffects.emplace_back(pe);
+}
+void Player::DigestCandy(CandyType type)
+{
+    switch (type.effect) {
+    case(EffectType::None): {} break;
+    case(EffectType::NoJump): nNoJump--; break;
+    case(EffectType::Speed): maxVelocity /= type.value; break;
+    }
+
+    if (nNoJump <= 0)
+        disableJump = false;
 }
 void Player::HandleCollisionWithSolid(GameObject* solidObject)
 {
@@ -122,7 +147,23 @@ void Player::Update(float deltaTime)
         }
     }
 
-    // Altri aggiornamenti del giocatore
+    bool erase = false;
+    if (pAEffects.size() != 0) {
+        // Altri aggiornamenti del giocatore
+        for (ActiveEffect* pe : pAEffects) {
+            pe->remainingTime -= deltaTime;
+            if (pe->remainingTime <= 0) {
+                DigestCandy(pe->type);
+                erase = true;
+            }  
+        }
+        //Rimuove gli elementi nel vettore che soddisfano la condizione tempo restante <= 0
+        if(erase)
+            pAEffects.erase(std::remove_if(pAEffects.begin(), pAEffects.end(),
+                                        [](const ActiveEffect* pe) { return pe->remainingTime <= 0.0f; }),
+                        pAEffects.end());
+
+    }   
 }
 
 void Player::StartInvincibility()
@@ -130,3 +171,4 @@ void Player::StartInvincibility()
     isInvincible = true;
     invincibilityTimer = 0.0f; // Resetta il timer
 }
+

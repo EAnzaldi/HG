@@ -2,6 +2,7 @@
 
 #include<cstdlib>
 #include<ctime>
+#include <random>
 
 // screen's settings
 // const unsigned int SCR_WIDTH = 1600;
@@ -30,3 +31,11 @@ static bool DoAction(int probability) {
     printf("Percentuale estratta %d\n", n);
     return n < probability;
 }
+
+static std::random_device rd;
+static std::mt19937 gen(rd());
+
+/*
+static void RandomSetupAdvanced() {
+    std::mt19937 gen(rd());
+}*/

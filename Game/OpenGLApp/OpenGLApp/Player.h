@@ -6,6 +6,16 @@
 
 #include <irrKlang.h>
 
+struct ActiveEffect {
+    CandyType type;
+    float remainingTime;
+    bool active;
+
+    ActiveEffect(CandyType type)
+        : type(type), remainingTime(type.duration), active(true) {
+    }
+};
+
 class Player : public MovingObject
 {
     public:
@@ -25,6 +35,8 @@ class Player : public MovingObject
 
         glm::vec2 maxVelocity = glm::vec2(1.5f, 2.5f);
 
+        std::vector<ActiveEffect*> pAEffects;
+
         //Costruttore 3d
         Player(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth);
         //Costruttore 2d
@@ -42,5 +54,12 @@ class Player : public MovingObject
         
         void StartInvincibility();    // Avvia l'invincibilità
 
+        void EatCandy(CandyType type);
+
     private:
+        float disableJump = false;
+        int nNoJump = 0;
+
+        void DigestCandy(CandyType type);
+
 };

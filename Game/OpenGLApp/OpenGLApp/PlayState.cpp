@@ -4,7 +4,7 @@
 #define SPAWN_MIN_E 3
 #define SPAWN_MAX_E 6
 
-#define SPAWN_PROB_C 25 //percentuale di spawn delle caramelle (bonus e malus)
+#define SPAWN_PROB_C 100 //percentuale di spawn delle caramelle (bonus e malus)
 
 const glm::vec2 spawnPos[2] = { {-0.8f, 0.80f}, {0.8f, 0.80f} };
 const glm::vec2 velocity = { 0.3f, 0.0f };
@@ -91,12 +91,37 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy1.png"));
     pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy2.png"));
 
+    pCandyTypes.emplace_back(new CandyType(EffectType::NoJump, 10.0f));
+    pCandyTypes.emplace_back(new CandyType(EffectType::Speed, 1.5f, 10.0f));
+
+    pProbabilities.emplace_back(100);
+    pProbabilities.emplace_back(50);
+
+    //Associazione run-time tra texture ed effetto della caramella
+    std::shuffle(pCandiesMesh.begin(), pCandiesMesh.end(), rd);
+
+    printf("TAB CARAMELLE\n");
+    for(int i=0; i < std::min(pCandiesMesh.size(), pCandyTypes.size()); i++)
+        printf("%d\t%s\n", pCandyTypes[i]->effect, pCandiesMesh[i]->Path);
+
+    /*
+    for (int i = 0; i < std::min(pCandiesMesh.size(), pCandyTypes.size()); i++) {
+        typeToTextureMap.emplace(pCandyTypes[i], pCandiesMesh[i]);
+    }
+
+    for (auto& it : typeToTextureMap) {
+        CandyType* type = it.first;
+        TextureObject* texture = it.second;
+        printf("%s %d", texture->Path, type->effect);
+    }
+    printf("\n");*/
+
     for (int i = 0; i < 8; ++i)
     {
         platforms.emplace_back(new GameObject(positions[i], sizes[i], pCubeModel, pTexPlatforms, 1));
     }
-    /*
 
+    /*
     pTest = new FlatMesh("resources/textures/test.png");
 
     float l = fbWidth / 20;
@@ -171,7 +196,6 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     // cattura il tempo iniziale di gioco
     startTime = glfwGetTime();
 }
-
 PlayState::~PlayState() {
 
     delete pTexPlatforms;
@@ -192,7 +216,6 @@ PlayState::~PlayState() {
     //Distrugge FreeType
     FT_Done_FreeType(ft);
 }
-
 PlayState* PlayState::GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
 {
     static PlayState Instance(manager, window, engine);
@@ -306,7 +329,9 @@ void PlayState::ProcessInput()
     if (glfwGetKey(Window, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
         for (Candy* pc : pCandies) {
-            pPlayer->CheckCandyCollision(pc, Engine);
+            if (!pc->IsAte()) {
+                pPlayer->CheckCandyCollision(pc, Engine);
+            }
         }
     }
 
@@ -361,8 +386,13 @@ void PlayState::ProcessEvents() {
                     //Coordinate NDC
                     float pixelX = pe->Position.x;
                     float pixelY = pe->Position.y;
-                    pCandies.emplace_back(new Candy(glm::vec2(pixelX, pixelY), glm::vec3(0.07f, 0.07f * aspect, 0.1f), pCandiesMesh[0], 0));
-                    printf("Spawnata caramella in posizione %f %f\n", pixelX, pixelY);
+                    //Estrazione della pillola con probabilità pesate di pProbabilities
+                    std::discrete_distribution<> distCandies(pProbabilities.begin(), pProbabilities.end());
+                    int rdindex = distCandies(gen);
+                    CandyType* type = pCandyTypes[rdindex];
+                    TextureObject* texture = pCandiesMesh[rdindex];
+                    pCandies.emplace_back(new Candy(glm::vec2(pixelX, pixelY), glm::vec3(0.07f, 0.07f * aspect, 0.1f), texture, 0, *type));
+                    printf("Spawnata caramella in posizione %f %f con texture %s di tipo %d\n", pixelX, pixelY, texture->Path, type);
                 }
 
             }

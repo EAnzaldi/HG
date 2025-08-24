@@ -41,7 +41,8 @@ private:
 	// The player validated the current selection
 	void SelectionChosen();
 
-	// Index of the current selected menu item
+	// 
+	// of the current selected menu item
 	int CurrentSelection;
 
 	//FlatMesh* fmesh; //unica mesh quadrata per sprite
