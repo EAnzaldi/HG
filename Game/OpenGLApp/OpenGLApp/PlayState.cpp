@@ -6,20 +6,37 @@
 
 #define SPAWN_PROB_C 100 //percentuale di spawn delle caramelle (bonus e malus)
 
-const glm::vec2 spawnPos[2] = { {-0.8f, 0.80f}, {0.8f, 0.80f} };
+const glm::vec2 posSpawn[2] = { {-0.8f, 0.80f}, {0.8f, 0.80f} };
+const glm::vec2 posSpawn2[3] = { {-0.8f, 0.06f}, {0.2f, 0.06f}, {0.8f, -0.34f} };
 const glm::vec2 velocity = { 0.3f, 0.0f };
 const glm::vec2 velocities[2] = { velocity, -velocity };
+const glm::vec2 velocities2[3] = { velocity, -velocity, -velocity };
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
-    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), CurrentLevel(1)
+    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), CurrentLevel(2)
 {
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
 
+    pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f));
+
+    // build and compile our shader zprogram
+    // -------------------------------------
+    pShader = new Shader("shader.vs", "shader.fs");
+    pTextShader = new Shader("shader_text.vs", "shader_text.fs");
+    pEnlightenedShader = new Shader("enlightened_object_shader.vs", "enlightened_object_shader.fs");
+    //pEnlightenedTexturedShader = new Shader("enlightened_textured_shader.vs", "enlightened_textured_shader.fs");
+    pSpriteShader = new Shader("shader_sprite.vs", "shader_sprite.fs");
+
+    // Initializza FreeType
+    if (FT_Init_FreeType(&ft)) {
+        std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
+    }
+
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     glm::vec2 positions[8] = {
-       {0.0f, -0.95f},
+       {0.0f, -0.95f},//pavimento
        {-0.6f, -0.5f}, {0.6f, -0.5f},
        {-0.85f, -0.1f}, {0.85f, -0.1f},
        {0.0f, 0.0f},
@@ -34,7 +51,26 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
         {0.8f, 0.1f, 0.2f}, {0.8f, 0.1f, 0.2f}
     };
 
-    glm::vec3 sizesTest[8] = {
+    glm::vec2 positions2[6] = {
+       {0.0f, -0.95f},//pavimento
+       {-0.2f, -0.5f}, {0.8f, -0.5f},
+       {-0.8f, -0.1f}, {0.2f, -0.1f},
+       {0.0f, 0.5f}//soffitto
+    };
+
+    glm::vec3 sizes2[6] = {
+        {2.0f, 0.1f, 0.2f},
+        {0.4f, 0.1f, 0.2f}, {0.4f, 0.1f, 0.2f},
+        {0.4f, 0.1f, 0.2f}, {0.4f, 0.1f, 0.2f},
+        {2.0f, 0.1f, 0.2f}
+    };
+
+    glm::vec2 posCauldron[2] = { {0.89f, 0.64f}, {-0.89f, 0.64f} };
+    glm::vec2 posCauldron2[3] = { {-0.89f, 0.04f}, {0.29f, 0.04f}, {0.89f, -0.36f} };
+    glm::vec3 sizeCauldron = { 0.1f, 0.1f, 0.1f };
+
+    /*
+        glm::vec3 sizesTest[8] = {
         {0.3f, 0.1f, 0.1f},
         {0.3f, 0.1f, 0.1f}, {0.3f, 0.1f, 0.1f},
         {0.3f, 0.1f, 0.1f}, {0.3f, 0.1f, 0.1f},
@@ -42,7 +78,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
         {0.3f, 0.1f, 0.1f}, {0.3f, 0.1f, 0.1f}
     };
 
-    /*
+
 
     for (int i = 0; i < 8; i++) {
         float x_ndc, y_ndc, x_pixel, y_pixel;
@@ -63,21 +99,6 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pTexEnemy = new TextureObject("resources/textures/awesomeface.png");
     pTexSlime = new TextureObject("resources/textures/slime2-mod.png");
     pTexBackground = new TextureObject("resources/textures/dark_wood_background2.png");
-
-    pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f));
-
-    // build and compile our shader zprogram
-    // -------------------------------------
-    pShader = new Shader("shader.vs", "shader.fs");
-    pTextShader = new Shader("shader_text.vs", "shader_text.fs");
-    pEnlightenedShader = new Shader("enlightened_object_shader.vs", "enlightened_object_shader.fs");
-    //pEnlightenedTexturedShader = new Shader("enlightened_textured_shader.vs", "enlightened_textured_shader.fs");
-    pSpriteShader = new Shader("shader_sprite.vs", "shader_sprite.fs");
-
-    // Initializza FreeType
-    if (FT_Init_FreeType(&ft)) {
-        std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
-    }
 
     pText = new TextObject(ft, "resources/fonts/8-bit-operator/8bitOperatorPlus8-Regular.ttf");
 
@@ -101,7 +122,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     std::shuffle(pCandiesMesh.begin(), pCandiesMesh.end(), rd);
 
     printf("TAB CARAMELLE\n");
-    for(int i=0; i < std::min(pCandiesMesh.size(), pCandyTypes.size()); i++)
+    for (int i = 0; i < std::min(pCandiesMesh.size(), pCandyTypes.size()); i++)
         printf("%d\t%s\n", pCandyTypes[i]->effect, pCandiesMesh[i]->Path);
 
     /*
@@ -116,37 +137,55 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     }
     printf("\n");*/
 
-    for (int i = 0; i < 8; ++i)
-    {
-        platforms.emplace_back(new GameObject(positions[i], sizes[i], pCubeModel, pTexPlatforms, 1));
+    pBackground = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f), pBackgroundModel, pTexBackground, 0);
+
+    if (CurrentLevel == 1) {
+        // passo nullptr come texture per ora
+        //pCauldrons.emplace_back(new GameObject(glm::vec2(0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), pCauldronModel, nullptr, 0));
+        //pCauldrons.emplace_back(new GameObject(glm::vec2(-0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), pCauldronModel, nullptr, 0));
+
+        for (int i = 0; i < 2; i++)
+        {
+            pCauldrons.emplace_back(new GameObject(posCauldron[i], sizeCauldron, pCauldronModel, nullptr, 0));
+        }
+
+        for (int i = 0; i < 8; ++i)
+        {
+            platforms.emplace_back(new GameObject(positions[i], sizes[i], pCubeModel, pTexPlatforms, 1));
+        }
+
+        /*
+        pTest = new FlatMesh("resources/textures/test.png");
+
+        float l = fbWidth / 20;
+
+        tests.emplace_back(glm::vec2(fbWidth/ 2, l/2), glm::vec3(l*20.0f, l, 0.0f), pTest, 1);
+        tests.emplace_back(glm::vec2(fbWidth/5, 3*l + l/2), glm::vec3(l * 8.0f, l, 0.0f), pTest, 1);
+        tests.emplace_back(glm::vec2(fbWidth*4/5, 3*l +l/2), glm::vec3(l * 8.0f, l, 0.0f), pTest, 1);
+        tests.emplace_back(glm::vec2(fbWidth / 5, 3 * l + l / 2), glm::vec3(l * 3.0f, l, 0.0f), pTest, 1);
+        tests.emplace_back(glm::vec2(fbWidth * 4 / 5, 3 * l + l / 2), glm::vec3(l * 3.0f, l, 0.0f), pTest, 1);
+
+        for (const GameObject& object : tests)
+        {
+            object.Print();
+        }*/
+    }
+    else if (CurrentLevel == 2) {
+        //something
+
+        for (int i = 0; i < 3; i++)
+        {
+            pCauldrons.emplace_back(new GameObject(posCauldron2[i], sizeCauldron, pCauldronModel, nullptr, 0));
+        }
+
+        for (int i = 0; i < 6; ++i)
+        {
+            platforms.emplace_back(new GameObject(positions2[i], sizes2[i], pCubeModel, pTexPlatforms, 1));
+        }
     }
 
-    /*
-    pTest = new FlatMesh("resources/textures/test.png");
-
-    float l = fbWidth / 20;
-
-    tests.emplace_back(glm::vec2(fbWidth/ 2, l/2), glm::vec3(l*20.0f, l, 0.0f), pTest, 1);
-    tests.emplace_back(glm::vec2(fbWidth/5, 3*l + l/2), glm::vec3(l * 8.0f, l, 0.0f), pTest, 1);
-    tests.emplace_back(glm::vec2(fbWidth*4/5, 3*l +l/2), glm::vec3(l * 8.0f, l, 0.0f), pTest, 1);
-    tests.emplace_back(glm::vec2(fbWidth / 5, 3 * l + l / 2), glm::vec3(l * 3.0f, l, 0.0f), pTest, 1);
-    tests.emplace_back(glm::vec2(fbWidth * 4 / 5, 3 * l + l / 2), glm::vec3(l * 3.0f, l, 0.0f), pTest, 1);
-    
-
-
-    for (const GameObject& object : tests)
-    {
-        object.Print();
-    }*/
-
-    pBackground = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f), pBackgroundModel, pTexBackground, 0);
-    
-    // passo nullptr come texture per ora
-    pCauldrons.emplace_back(new GameObject(glm::vec2(0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), pCauldronModel, nullptr, 0));
-    pCauldrons.emplace_back(new GameObject(glm::vec2(-0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), pCauldronModel, nullptr, 0));
-
     glm::mat4 projection2 = glm::ortho(0.0f, static_cast<float>(fbWidth), 0.0f, static_cast<float>(fbHeight));//left, right, bottom, top
-    
+
     float left = -1.0f;   // Puoi modificare questi valori per adattarli alla tua scena
     float right = 1.0f;
     float bottom = -1.0f;
@@ -154,7 +193,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
     glm::mat4 projectionNDC = glm::ortho(left, right, bottom, top);
     glm::mat4 projectionPixels = glm::ortho(0.0f, static_cast<float>(fbWidth), 0.0f, static_cast<float>(fbHeight));//left, right, bottom, top
-    
+
     glm::mat4 view = pCamera->GetViewMatrix();
 
     // setup delle uniform delle shader che non cambieranno nel ciclo di rendering
@@ -228,7 +267,7 @@ void PlayState::Reset()
 
     Status = GameStatus::Playing;
 
-    if(pPlayer != nullptr)
+    if (pPlayer != nullptr)
         delete pPlayer;
     pPlayer = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexPlayer, 0);
 
@@ -244,7 +283,7 @@ void PlayState::Reset()
     nEnemies++;
     nEnemies++;*/
 
-    if(pCandies.size() != 0)
+    if (pCandies.size() != 0)
         for (Candy* pc : pCandies)
             delete pc;
     pCandies.clear();
@@ -267,7 +306,7 @@ void PlayState::Reset()
 
 void PlayState::ProcessInput()
 {
-  
+
     float currentFrame = static_cast<float>(glfwGetTime());
     deltaTime = currentFrame - lastFrame;
 
@@ -295,7 +334,7 @@ void PlayState::ProcessInput()
     // movimento orizzontale
     if (glfwGetKey(Window, GLFW_KEY_A) == GLFW_PRESS)
     {
-        if (pPlayer->velocity.x > - pPlayer->maxVelocity.x)
+        if (pPlayer->velocity.x > -pPlayer->maxVelocity.x)
         {
             pPlayer->velocity.x -= 0.01f;
         }
@@ -345,13 +384,16 @@ void PlayState::ProcessEvents() {
 
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
-    float aspect = (float)fbWidth/(float)fbHeight;
+    float aspect = (float)fbWidth / (float)fbHeight;
 
     if (pEnemies.size() < TOTENEM) {
         lastSpawnTime += deltaTime;
 
         if (lastSpawnTime >= spawnTime) {
-            pEnemies.emplace_back(new Enemy(spawnPos[spawnPlace], glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, velocities[spawnPlace], true));
+            if (CurrentLevel == 1)
+                pEnemies.emplace_back(new Enemy(posSpawn[spawnPlace], glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, velocities[spawnPlace], true));
+            else if (CurrentLevel == 2)
+                pEnemies.emplace_back(new Enemy(posSpawn2[spawnPlace], glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, velocities2[spawnPlace], true));
             nEnemies++;
             lastSpawnTime = 0.0f;
             spawnTime = RandomInt(SPAWN_MIN_E, SPAWN_MAX_E);
@@ -407,7 +449,7 @@ void PlayState::ProcessEvents() {
         for (Candy* pc : pCandies) {
             pc->CheckCollisionWithSolids(platforms);
             pc->Move(deltaTime);
-        }           
+        }
 
     if (Status == GameStatus::GameOver || Status == GameStatus::Victory) {
         //reset !
@@ -417,7 +459,7 @@ void PlayState::ProcessEvents() {
 
 void PlayState::UpdateTime(long currentTime)
 {
-	
+
 }
 
 void PlayState::Render()
@@ -448,7 +490,7 @@ void PlayState::Render()
     // disattiva depth buffer quando si disegnano oggetti trasparenti (interferisce con blending)
     glDepthMask(GL_FALSE);
 
-    if(pCandies.size() > 0){
+    if (pCandies.size() > 0) {
         for (Candy* pc : pCandies) {
             if (!pc->IsAte()) {
                 pc->Render(*pSpriteShader);
@@ -456,7 +498,7 @@ void PlayState::Render()
         }
     }
 
-    if(pEnemies.size() > 0) {
+    if (pEnemies.size() > 0) {
         for (Enemy* pe : pEnemies) {
             if (!pe->IsDead()) {
                 pe->Render(*pShader);
@@ -485,7 +527,7 @@ void PlayState::EnterState()
     // musica di sottofondo
     Engine->play2D("resources/sounds/ost.wav", true);
 
-    if(Status == GameStatus::Paused)//salta prima chiamata
+    if (Status == GameStatus::Paused)//salta prima chiamata
         totalPauseTime += glfwGetTime() - startPauseTime;
 
     Status = GameStatus::Playing;
@@ -523,7 +565,7 @@ void PlayState::RenderStats() {
     pText->Render(*pTextShader, lives, 960.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
 
     std::string level = "LEVEL " + std::to_string(CurrentLevel);
-    pText->Render(*pTextShader, level, fbWidth*0.4f, 880.0f, 1.3f, glm::vec3(255.0, 255.0, 255.0));
+    pText->Render(*pTextShader, level, fbWidth * 0.4f, 880.0f, 1.3f, glm::vec3(255.0, 255.0, 255.0));
 
 
 }
