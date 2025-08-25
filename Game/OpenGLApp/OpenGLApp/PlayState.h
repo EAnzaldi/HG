@@ -13,7 +13,7 @@
 #include "Candy.h"
 #include <unordered_map>
 
-#define TOTENEM 15
+#define TOTENEM 1
 
 class PlayState : public GameState
 {

@@ -6,14 +6,44 @@
 
 #define SPAWN_PROB_C 100 //percentuale di spawn delle caramelle (bonus e malus)
 
-const glm::vec2 posSpawn[2] = { {-0.8f, 0.80f}, {0.8f, 0.80f} };
-const glm::vec2 posSpawn2[3] = { {-0.8f, 0.06f}, {0.2f, 0.06f}, {0.8f, -0.34f} };
-const glm::vec2 velocity = { 0.3f, 0.0f };
-const glm::vec2 velocities[2] = { velocity, -velocity };
-const glm::vec2 velocities2[3] = { velocity, -velocity, -velocity };
+static glm::vec2 posSpawn[2] = { {-0.8f, 0.80f}, {0.8f, 0.80f} };
+static glm::vec2 posSpawn2[3] = { {-0.8f, 0.06f}, {0.2f, 0.06f}, {0.8f, -0.34f} };
+static glm::vec2 velocity = { 0.3f, 0.0f };
+static glm::vec2 velocities[2] = { velocity, -velocity };
+static glm::vec2 velocities2[3] = { velocity, -velocity, -velocity };
+/*
+static glm::vec2 positions[8] = {
+   {0.0f, -0.95f},//pavimento
+   {-0.6f, -0.5f}, {0.6f, -0.5f},
+   {-0.85f, -0.1f}, {0.85f, -0.1f},
+   {0.0f, 0.0f},
+   {-0.6f, 0.5f}, {0.6f, 0.5f}
+};
+static glm::vec3 sizes[8] = {
+    {2.0f, 0.1f, 0.2f},
+    {0.8f, 0.1f, 0.2f}, {0.8f, 0.1f, 0.2f},
+    {0.3f, 0.1f, 0.2f}, {0.3f, 0.1f, 0.2f},
+    {1.0f, 0.1f, 0.2f},
+    {0.8f, 0.1f, 0.2f}, {0.8f, 0.1f, 0.2f}
+};
+static glm::vec2 positions2[6] = {
+   {0.0f, -0.95f},//pavimento
+   {-0.2f, -0.5f}, {0.8f, -0.5f},
+   {-0.8f, -0.1f}, {0.2f, -0.1f},
+   {0.0f, 0.5f}//soffitto
+};
+static glm::vec3 sizes2[6] = {
+    {2.0f, 0.1f, 0.2f},
+    {0.4f, 0.1f, 0.2f}, {0.4f, 0.1f, 0.2f},
+    {0.4f, 0.1f, 0.2f}, {0.4f, 0.1f, 0.2f},
+    {2.0f, 0.1f, 0.2f}
+};
+static glm::vec2 posCauldron[2] = { {0.89f, 0.64f}, {-0.89f, 0.64f} };
+static glm::vec2 posCauldron2[3] = { {-0.89f, 0.04f}, {0.29f, 0.04f}, {0.89f, -0.36f} };
+static glm::vec3 sizeCauldron = { 0.1f, 0.1f, 0.1f };*/
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
-    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), CurrentLevel(2)
+    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), CurrentLevel(1)
 {
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
@@ -33,53 +63,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
         std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
     }
 
-    // set up vertex data (and buffer(s)) and configure vertex attributes
-    // ------------------------------------------------------------------
-    glm::vec2 positions[8] = {
-       {0.0f, -0.95f},//pavimento
-       {-0.6f, -0.5f}, {0.6f, -0.5f},
-       {-0.85f, -0.1f}, {0.85f, -0.1f},
-       {0.0f, 0.0f},
-       {-0.6f, 0.5f}, {0.6f, 0.5f}
-    };
-
-    glm::vec3 sizes[8] = {
-        {2.0f, 0.1f, 0.2f},
-        {0.8f, 0.1f, 0.2f}, {0.8f, 0.1f, 0.2f},
-        {0.3f, 0.1f, 0.2f}, {0.3f, 0.1f, 0.2f},
-        {1.0f, 0.1f, 0.2f},
-        {0.8f, 0.1f, 0.2f}, {0.8f, 0.1f, 0.2f}
-    };
-
-    glm::vec2 positions2[6] = {
-       {0.0f, -0.95f},//pavimento
-       {-0.2f, -0.5f}, {0.8f, -0.5f},
-       {-0.8f, -0.1f}, {0.2f, -0.1f},
-       {0.0f, 0.5f}//soffitto
-    };
-
-    glm::vec3 sizes2[6] = {
-        {2.0f, 0.1f, 0.2f},
-        {0.4f, 0.1f, 0.2f}, {0.4f, 0.1f, 0.2f},
-        {0.4f, 0.1f, 0.2f}, {0.4f, 0.1f, 0.2f},
-        {2.0f, 0.1f, 0.2f}
-    };
-
-    glm::vec2 posCauldron[2] = { {0.89f, 0.64f}, {-0.89f, 0.64f} };
-    glm::vec2 posCauldron2[3] = { {-0.89f, 0.04f}, {0.29f, 0.04f}, {0.89f, -0.36f} };
-    glm::vec3 sizeCauldron = { 0.1f, 0.1f, 0.1f };
-
     /*
-        glm::vec3 sizesTest[8] = {
-        {0.3f, 0.1f, 0.1f},
-        {0.3f, 0.1f, 0.1f}, {0.3f, 0.1f, 0.1f},
-        {0.3f, 0.1f, 0.1f}, {0.3f, 0.1f, 0.1f},
-        {0.3f, 0.1f, 0.1f},
-        {0.3f, 0.1f, 0.1f}, {0.3f, 0.1f, 0.1f}
-    };
-
-
-
     for (int i = 0; i < 8; i++) {
         float x_ndc, y_ndc, x_pixel, y_pixel;
         x_ndc = positions[i].x;
@@ -115,7 +99,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pCandyTypes.emplace_back(new CandyType(EffectType::NoJump, 10.0f));
     pCandyTypes.emplace_back(new CandyType(EffectType::Speed, 1.5f, 10.0f));
 
-    pProbabilities.emplace_back(100);
+    pProbabilities.emplace_back(50);
     pProbabilities.emplace_back(50);
 
     //Associazione run-time tra texture ed effetto della caramella
@@ -138,51 +122,6 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     printf("\n");*/
 
     pBackground = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f), pBackgroundModel, pTexBackground, 0);
-
-    if (CurrentLevel == 1) {
-        // passo nullptr come texture per ora
-        //pCauldrons.emplace_back(new GameObject(glm::vec2(0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), pCauldronModel, nullptr, 0));
-        //pCauldrons.emplace_back(new GameObject(glm::vec2(-0.89f, 0.64f), glm::vec3(0.1f, 0.1f, 0.1f), pCauldronModel, nullptr, 0));
-
-        for (int i = 0; i < 2; i++)
-        {
-            pCauldrons.emplace_back(new GameObject(posCauldron[i], sizeCauldron, pCauldronModel, nullptr, 0));
-        }
-
-        for (int i = 0; i < 8; ++i)
-        {
-            platforms.emplace_back(new GameObject(positions[i], sizes[i], pCubeModel, pTexPlatforms, 1));
-        }
-
-        /*
-        pTest = new FlatMesh("resources/textures/test.png");
-
-        float l = fbWidth / 20;
-
-        tests.emplace_back(glm::vec2(fbWidth/ 2, l/2), glm::vec3(l*20.0f, l, 0.0f), pTest, 1);
-        tests.emplace_back(glm::vec2(fbWidth/5, 3*l + l/2), glm::vec3(l * 8.0f, l, 0.0f), pTest, 1);
-        tests.emplace_back(glm::vec2(fbWidth*4/5, 3*l +l/2), glm::vec3(l * 8.0f, l, 0.0f), pTest, 1);
-        tests.emplace_back(glm::vec2(fbWidth / 5, 3 * l + l / 2), glm::vec3(l * 3.0f, l, 0.0f), pTest, 1);
-        tests.emplace_back(glm::vec2(fbWidth * 4 / 5, 3 * l + l / 2), glm::vec3(l * 3.0f, l, 0.0f), pTest, 1);
-
-        for (const GameObject& object : tests)
-        {
-            object.Print();
-        }*/
-    }
-    else if (CurrentLevel == 2) {
-        //something
-
-        for (int i = 0; i < 3; i++)
-        {
-            pCauldrons.emplace_back(new GameObject(posCauldron2[i], sizeCauldron, pCauldronModel, nullptr, 0));
-        }
-
-        for (int i = 0; i < 6; ++i)
-        {
-            platforms.emplace_back(new GameObject(positions2[i], sizes2[i], pCubeModel, pTexPlatforms, 1));
-        }
-    }
 
     glm::mat4 projection2 = glm::ortho(0.0f, static_cast<float>(fbWidth), 0.0f, static_cast<float>(fbHeight));//left, right, bottom, top
 
@@ -263,18 +202,91 @@ PlayState* PlayState::GetInstance(StateManager* manager, GLFWwindow* window, irr
 
 void PlayState::Reset()
 {
+    glm::vec2 positions[8] = {
+       {0.0f, -0.95f},//pavimento
+       {-0.6f, -0.5f}, {0.6f, -0.5f},
+       {-0.85f, -0.1f}, {0.85f, -0.1f},
+       {0.0f, 0.0f},
+       {-0.6f, 0.5f}, {0.6f, 0.5f}
+    };
+    glm::vec3 sizes[8] = {
+        {2.0f, 0.1f, 0.2f},
+        {0.8f, 0.1f, 0.2f}, {0.8f, 0.1f, 0.2f},
+        {0.3f, 0.1f, 0.2f}, {0.3f, 0.1f, 0.2f},
+        {1.0f, 0.1f, 0.2f},
+        {0.8f, 0.1f, 0.2f}, {0.8f, 0.1f, 0.2f}
+    };
+    glm::vec2 positions2[6] = {
+       {0.0f, -0.95f},//pavimento
+       {-0.2f, -0.5f}, {0.8f, -0.5f},
+       {-0.8f, -0.1f}, {0.2f, -0.1f},
+       {0.0f, 0.5f}//soffitto
+    };
+    glm::vec3 sizes2[6] = {
+        {2.0f, 0.1f, 0.2f},
+        {0.4f, 0.1f, 0.2f}, {0.4f, 0.1f, 0.2f},
+        {0.4f, 0.1f, 0.2f}, {0.4f, 0.1f, 0.2f},
+        {2.0f, 0.1f, 0.2f}
+    };
+    glm::vec2 posCauldron[2] = { {0.89f, 0.64f}, {-0.89f, 0.64f} };
+    glm::vec2 posCauldron2[3] = { {-0.89f, 0.04f}, {0.29f, 0.04f}, {0.89f, -0.36f} };
+    glm::vec3 sizeCauldron = { 0.1f, 0.1f, 0.1f };
+
     CurrentScore = 0;
 
     Status = GameStatus::Playing;
+
+    if (!pCauldrons.empty()) {
+        for (GameObject* pc : pCauldrons)
+            delete pc;
+        pCauldrons.clear();
+    }    
+    if (!platforms.empty()) {
+        for (GameObject* pp : platforms)
+            delete pp;
+        platforms.clear();
+    }
+    
+    if (CurrentLevel == 1) {
+        // passo nullptr come texture per ora
+        for (int i = 0; i < 2; i++)
+        {
+            pCauldrons.emplace_back(new GameObject(posCauldron[i], sizeCauldron, pCauldronModel, nullptr, 0));
+        }
+
+        for (int i = 0; i < 8; ++i)
+        {
+            platforms.emplace_back(new GameObject(positions[i], sizes[i], pCubeModel, pTexPlatforms, 1));
+        }
+        /*
+        float l = fbWidth / 20;
+        tests.emplace_back(glm::vec2(fbWidth/ 2, l/2), glm::vec3(l*20.0f, l, 0.0f), pTest, 1);
+        tests.emplace_back(glm::vec2(fbWidth/5, 3*l + l/2), glm::vec3(l * 8.0f, l, 0.0f), pTest, 1);
+        tests.emplace_back(glm::vec2(fbWidth*4/5, 3*l +l/2), glm::vec3(l * 8.0f, l, 0.0f), pTest, 1);
+        tests.emplace_back(glm::vec2(fbWidth / 5, 3 * l + l / 2), glm::vec3(l * 3.0f, l, 0.0f), pTest, 1);
+        tests.emplace_back(glm::vec2(fbWidth * 4 / 5, 3 * l + l / 2), glm::vec3(l * 3.0f, l, 0.0f), pTest, 1);
+        */
+    }
+    else if (CurrentLevel == 2) {
+        for (int i = 0; i < 3; i++)
+        {
+            pCauldrons.emplace_back(new GameObject(posCauldron2[i], sizeCauldron, pCauldronModel, nullptr, 0));
+        }
+        for (int i = 0; i < 6; ++i)
+        {
+            platforms.emplace_back(new GameObject(positions2[i], sizes2[i], pCubeModel, pTexPlatforms, 1));
+        }
+    }
 
     if (pPlayer != nullptr)
         delete pPlayer;
     pPlayer = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexPlayer, 0);
 
-    if (pEnemies.size() != 0)
+    if (!pEnemies.empty()) {
         for (Enemy* pe : pEnemies)
             delete pe;
-    pEnemies.clear();
+        pEnemies.clear();
+    }
     nEnemies = 0;
 
     /*
@@ -283,10 +295,11 @@ void PlayState::Reset()
     nEnemies++;
     nEnemies++;*/
 
-    if (pCandies.size() != 0)
+    if (!pCandies.empty()) {
         for (Candy* pc : pCandies)
             delete pc;
-    pCandies.clear();
+        pCandies.clear();
+    }
 
     // musica di sottofondo
     Engine->play2D("resources/sounds/ost.wav", true);
@@ -434,7 +447,7 @@ void PlayState::ProcessEvents() {
                     CandyType* type = pCandyTypes[rdindex];
                     TextureObject* texture = pCandiesMesh[rdindex];
                     pCandies.emplace_back(new Candy(glm::vec2(pixelX, pixelY), glm::vec3(0.07f, 0.07f * aspect, 0.1f), texture, 0, *type));
-                    printf("Spawnata caramella in posizione %f %f con texture %s di tipo %d\n", pixelX, pixelY, texture->Path, type);
+                    printf("Spawnata caramella in posizione %f %f con texture %s di tipo %d\n", pixelX, pixelY, texture->Path, type->effect);
                 }
 
             }
@@ -451,8 +464,12 @@ void PlayState::ProcessEvents() {
             pc->Move(deltaTime);
         }
 
-    if (Status == GameStatus::GameOver || Status == GameStatus::Victory) {
+    if (Status == GameStatus::GameOver) {
         //reset !
+        ChangeState(EndState::GetInstance(Manager, Window, Engine));
+    }
+    else if (Status == GameStatus::Victory) {
+        CurrentLevel++;
         ChangeState(EndState::GetInstance(Manager, Window, Engine));
     }
 }
@@ -483,14 +500,12 @@ void PlayState::Render()
     }*/
 
     for (const GameObject* pp : platforms)
-    {
         pp->Render(*pShader);
-    }
 
     // disattiva depth buffer quando si disegnano oggetti trasparenti (interferisce con blending)
     glDepthMask(GL_FALSE);
 
-    if (pCandies.size() > 0) {
+    if (!pCandies.empty()) {
         for (Candy* pc : pCandies) {
             if (!pc->IsAte()) {
                 pc->Render(*pSpriteShader);
@@ -498,7 +513,7 @@ void PlayState::Render()
         }
     }
 
-    if (pEnemies.size() > 0) {
+    if (!pEnemies.empty()) {
         for (Enemy* pe : pEnemies) {
             if (!pe->IsDead()) {
                 pe->Render(*pShader);
@@ -534,7 +549,8 @@ void PlayState::EnterState()
 }
 
 void PlayState::LeaveState() {
-    startPauseTime = glfwGetTime();
+    if(Status == GameStatus::Paused)
+        startPauseTime = glfwGetTime();
 }
 
 void PlayState::RenderStats() {

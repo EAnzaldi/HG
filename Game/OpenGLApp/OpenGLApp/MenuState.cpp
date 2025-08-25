@@ -172,7 +172,7 @@ void MenuState::Render()
 	glDisable(GL_DEPTH_TEST);//evita di considerare la profondità delle sprite
 
 	for (int i = 0; i < 3; i++)
-		if (i == 1 && Status != GameStatus::Paused)
+		if (i == 1 && Status == GameStatus::None)
 			pMenuNoGameObj->Render(*pSpriteShader);
 		else if(CurrentSelection!=i)
 			pMenuObj[i]->Render(*pSpriteShader);
@@ -234,7 +234,7 @@ void MenuState::SelectionUp()
 	
 	if(CurrentSelection > NEW)
 		CurrentSelection--;
-	if (CurrentSelection == RESUME && Status != GameStatus::Paused)//no game -> skip resume
+	if (CurrentSelection == RESUME && Status == GameStatus::None)//no game -> skip resume
 			CurrentSelection--;
 }
 
@@ -242,7 +242,7 @@ void MenuState::SelectionDown()
 {
 	if (CurrentSelection < EXIT)
 		CurrentSelection++;
-	if (CurrentSelection == RESUME && Status != GameStatus::Paused)//no game -> skip resume
+	if (CurrentSelection == RESUME && Status == GameStatus::None)//no game -> skip resume
 		CurrentSelection++;
 }
 
@@ -261,6 +261,10 @@ void MenuState::SelectionChosen()
 	case RESUME:
 		if (Status == GameStatus::Paused)
 			ChangeState(CurrentGame);
+		else if (Status == GameStatus::Victory) {
+			ChangeState(CurrentGame);
+			CurrentGame->Reset();//Inizia nuovo livello
+		}
 		break;
 
 	case EXIT:
