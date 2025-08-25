@@ -43,7 +43,7 @@ static glm::vec2 posCauldron2[3] = { {-0.89f, 0.04f}, {0.29f, 0.04f}, {0.89f, -0
 static glm::vec3 sizeCauldron = { 0.1f, 0.1f, 0.1f };*/
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
-    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), CurrentLevel(1)
+    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), CurrentLevel(2)
 {
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
@@ -93,7 +93,9 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pBackgroundModel = new Model("resources/models/background.obj");
 
     //caricamento modelli 2d
+    pKeyTex = new TextureObject("resources/textures/test.png");
     pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy1.png"));
+    pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy2.png"));
     pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy2.png"));
 
     pCandyTypes.emplace_back(new CandyType(EffectType::NoJump, 10.0f));
@@ -231,6 +233,8 @@ void PlayState::Reset()
     glm::vec2 posCauldron[2] = { {0.89f, 0.64f}, {-0.89f, 0.64f} };
     glm::vec2 posCauldron2[3] = { {-0.89f, 0.04f}, {0.29f, 0.04f}, {0.89f, -0.36f} };
     glm::vec3 sizeCauldron = { 0.1f, 0.1f, 0.1f };
+    glm::vec2 posKey = {0.0f, 0.64f};
+    glm::vec3 sizeKey = { 0.1f, 0.1f, 0.1f };
 
     CurrentScore = 0;
 
@@ -276,6 +280,8 @@ void PlayState::Reset()
         {
             platforms.emplace_back(new GameObject(positions2[i], sizes2[i], pCubeModel, pTexPlatforms, 1));
         }
+        if (pKey == nullptr)
+            pKey = new GameObject(posKey, sizeKey, pKeyTex, 0);
     }
 
     if (pPlayer != nullptr)
@@ -504,6 +510,9 @@ void PlayState::Render()
 
     // disattiva depth buffer quando si disegnano oggetti trasparenti (interferisce con blending)
     glDepthMask(GL_FALSE);
+
+    if (CurrentLevel == 2)
+        pKey->Render(*pSpriteShader);
 
     if (!pCandies.empty()) {
         for (Candy* pc : pCandies) {

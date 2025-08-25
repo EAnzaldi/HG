@@ -13,7 +13,7 @@
 #include "Candy.h"
 #include <unordered_map>
 
-#define TOTENEM 1
+#define TOTENEM 15
 
 class PlayState : public GameState
 {
@@ -60,6 +60,7 @@ private:
 	std::vector<Enemy*> pEnemies;
 	std::vector<GameObject*> pCauldrons;
 	std::vector<Candy*> pCandies;
+	GameObject* pKey;
 
 	int nEnemies;
 	int spawnPlace;
@@ -78,6 +79,8 @@ private:
 	//std::unordered_map<CandyType*, TextureObject*> typeToTextureMap;
 	std::vector<CandyType*> pCandyTypes;
 	std::vector<int> pProbabilities;
+
+	TextureObject* pKeyTex;
 
 	std::vector<TextureObject*> pBHeartsMesh;
 
