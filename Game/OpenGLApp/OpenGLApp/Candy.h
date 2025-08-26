@@ -2,7 +2,7 @@
 
 #include "MovingObject.h"
 
-enum class EffectType { None, Speed, NoJump, SpeedEnemy };
+enum class EffectType { None, Speed, NoJump, SpeedEnemy, Invincibility };
 
 //associata alla texture della caramella run time
 struct CandyType {

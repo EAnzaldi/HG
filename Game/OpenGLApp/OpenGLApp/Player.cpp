@@ -77,10 +77,12 @@ bool Player::CheckCandyCollision(Candy* candy, irrklang::ISoundEngine* engine)
 void Player::EatCandy(CandyType type)
 {
     switch (type.effect) {
-    case(EffectType::None): {} break;
-    case(EffectType::NoJump): disableJump = true; nNoJump++; break;
-    case(EffectType::Speed): maxVelocity *= type.value; break;
-    case(EffectType::SpeedEnemy): Enemy::SpeedUp(type.value);
+        case(EffectType::None): {} break;
+        case(EffectType::NoJump): disableJump = true; nNoJump++; break;
+        case(EffectType::Speed): maxVelocity *= type.value; break;
+        case(EffectType::SpeedEnemy): Enemy::SpeedUp(type.value); break;
+        case(EffectType::Invincibility): isInvincible = true; nInvincibility++; printf("INVINCIBLE!\n"); break;
+        default: return;
     }
     ActiveEffect* pe = new ActiveEffect(type);
     pAEffects.emplace_back(pe);
@@ -88,14 +90,20 @@ void Player::EatCandy(CandyType type)
 void Player::DigestCandy(CandyType type)
 {
     switch (type.effect) {
-    case(EffectType::None): {} break;
-    case(EffectType::NoJump): nNoJump--; break;
-    case(EffectType::Speed): maxVelocity /= type.value; break;
-    case(EffectType::SpeedEnemy): Enemy::SpeedDown(type.value);
+        case(EffectType::None): {} break;
+        case(EffectType::NoJump): nNoJump--; break;
+        case(EffectType::Speed): maxVelocity /= type.value; break;
+        case(EffectType::SpeedEnemy): Enemy::SpeedDown(type.value); break;
+        case(EffectType::Invincibility): nInvincibility--; break;
+        default: return;
     }
 
-    if (nNoJump <= 0)
+    if(nNoJump <= 0)
         disableJump = false;
+    if (nInvincibility <= 0) {
+        isInvincible = false;
+        printf("Invincibility ended\n");
+    }
 }
 void Player::HandleCollisionWithSolid(GameObject* solidObject)
 {
@@ -137,7 +145,7 @@ void Player::HandleCollisionWithSolid(GameObject* solidObject)
 void Player::Update(float deltaTime)
 {
     // Aggiorna il timer di invincibilità
-    if (isInvincible)
+    if (isInvincible && nInvincibility==0)
     {
         invincibilityTimer += deltaTime;
         if (invincibilityTimer >= invincibilityDuration)

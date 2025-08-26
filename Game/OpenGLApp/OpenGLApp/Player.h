@@ -59,6 +59,7 @@ class Player : public MovingObject
     private:
         float disableJump = false;
         int nNoJump = 0;
+        int nInvincibility = 0;
 
         void DigestCandy(CandyType type);
 

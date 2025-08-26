@@ -103,11 +103,12 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pCandyTypes.emplace_back(new CandyType(EffectType::NoJump, 10.0f));
     pCandyTypes.emplace_back(new CandyType(EffectType::Speed, 1.5f, 10.0f));
     pCandyTypes.emplace_back(new CandyType(EffectType::SpeedEnemy, 1.5f, 10.0f));
+    pCandyTypes.emplace_back(new CandyType(EffectType::Invincibility, 5.0f));
 
-    pProbabilities.emplace_back(0);
-    pProbabilities.emplace_back(0);
-    pProbabilities.emplace_back(50);
-    pProbabilities.emplace_back(0);
+    pProbabilities.emplace_back(25);
+    pProbabilities.emplace_back(25);
+    pProbabilities.emplace_back(25);
+    pProbabilities.emplace_back(25);
     pProbabilities.emplace_back(0);
 
     //Associazione run-time tra texture ed effetto della caramella
