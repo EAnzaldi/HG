@@ -47,3 +47,19 @@ void Enemy::HandleCollisionWithSolid(GameObject* solidObject)
         this->velocity.y = 0;
     }
 }
+static float speedBonus = 1.0f;
+void Enemy::Move(float deltaTime)
+{
+    float original = velocity.x;
+    velocity.x *= speedBonus;
+    MovingObject::Move(deltaTime);
+    velocity.x = original;
+}
+void Enemy::SpeedUp(float amount)
+{
+    speedBonus *= amount;
+}
+void Enemy::SpeedDown(float amount)
+{
+    speedBonus /= amount;
+}

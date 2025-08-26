@@ -80,6 +80,7 @@ void Player::EatCandy(CandyType type)
     case(EffectType::None): {} break;
     case(EffectType::NoJump): disableJump = true; nNoJump++; break;
     case(EffectType::Speed): maxVelocity *= type.value; break;
+    case(EffectType::SpeedEnemy): Enemy::SpeedUp(type.value);
     }
     ActiveEffect* pe = new ActiveEffect(type);
     pAEffects.emplace_back(pe);
@@ -90,6 +91,7 @@ void Player::DigestCandy(CandyType type)
     case(EffectType::None): {} break;
     case(EffectType::NoJump): nNoJump--; break;
     case(EffectType::Speed): maxVelocity /= type.value; break;
+    case(EffectType::SpeedEnemy): Enemy::SpeedDown(type.value);
     }
 
     if (nNoJump <= 0)

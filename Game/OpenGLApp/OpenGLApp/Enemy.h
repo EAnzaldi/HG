@@ -5,7 +5,6 @@
 
 class Enemy : public MovingObject {
 public:
-
     bool IsDead() { return Dead; }
     void kill() { Dead = true; }
   
@@ -17,6 +16,11 @@ public:
     void HandleCollisionWithSolid(GameObject* solidObject) override;
 
     bool Dead = false;
+
+    void Move(float deltaTime) override;
+
+    static void SpeedUp(float amount);
+    static void SpeedDown(float amount);
 
     private:
         

@@ -86,11 +86,11 @@ MenuState* MenuState::GetInstance(StateManager* manager, GLFWwindow* window, irr
 	static MenuState Instance(manager, window, engine);
 	return &Instance;
 }
+
 //DEBOUNCE: avoids that pressing key in other frames (or states) is considered in this frame (or state)
 bool canPressUp = true;
 bool canPressDown = true;
 bool canPressEnter = true;
-
 void MenuState::ProcessInput()
 {
 

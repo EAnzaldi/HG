@@ -102,10 +102,11 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
     pCandyTypes.emplace_back(new CandyType(EffectType::NoJump, 10.0f));
     pCandyTypes.emplace_back(new CandyType(EffectType::Speed, 1.5f, 10.0f));
+    pCandyTypes.emplace_back(new CandyType(EffectType::SpeedEnemy, 1.5f, 10.0f));
 
-    pProbabilities.emplace_back(50);
-    pProbabilities.emplace_back(50);
     pProbabilities.emplace_back(0);
+    pProbabilities.emplace_back(0);
+    pProbabilities.emplace_back(50);
     pProbabilities.emplace_back(0);
     pProbabilities.emplace_back(0);
 
@@ -300,12 +301,6 @@ void PlayState::Reset()
     }
     nEnemies = 0;
 
-    /*
-    pEnemies.emplace_back(new Enemy(glm::vec2(-0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, glm::vec2(0.3f, 0.0f), true));
-    pEnemies.emplace_back(new Enemy(glm::vec2(0.8f, 0.80f), glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, glm::vec2(-0.3f, 0.0f), false));
-    nEnemies++;
-    nEnemies++;*/
-
     if (!pCandies.empty()) {
         for (Candy* pc : pCandies)
             delete pc;
@@ -327,6 +322,7 @@ void PlayState::Reset()
         startTime = glfwGetTime();
     }
 }
+//DEBOUNCE: avoids that pressing key in other frames (or states) is considered in this frame (or state)
 bool canPressSpace = true;
 void PlayState::ProcessInput()
 {
@@ -614,6 +610,5 @@ void PlayState::RenderStats() {
 
     std::string level = "LEVEL " + std::to_string(CurrentLevel);
     pText->Render(*pTextShader, level, fbWidth * 0.4f, 880.0f, 1.3f, glm::vec3(255.0, 255.0, 255.0));
-
 
 }
