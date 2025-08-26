@@ -54,6 +54,9 @@ public:
     //Hitbox GetHitboxFlat() const;
 
     void Print() const;
+
+    float DistanceTo(GameObject* pObj) const;
+
 protected:
     void Render2D(const Shader& shader) const;
     void Render3D(const Shader& shader) const;

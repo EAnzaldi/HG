@@ -65,15 +65,14 @@ bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
     }
     return isDead;
 }
-void Player::CheckCandyCollision(Candy* candy, irrklang::ISoundEngine* engine)
+bool Player::CheckCandyCollision(Candy* candy, irrklang::ISoundEngine* engine)
 {
     Collision collision = CheckCollision(candy);
 
     if (collision != Collision::None) {
-        candy->Eat();
-        EatCandy(candy->GetType());
-        printf("Player ha mangiato una caramella misteriosa\n");
+        return true;
     }
+    return false;
 }
 void Player::EatCandy(CandyType type)
 {

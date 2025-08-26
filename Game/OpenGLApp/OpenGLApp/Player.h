@@ -48,7 +48,7 @@ class Player : public MovingObject
 
         bool CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine);   
 
-        void CheckCandyCollision(Candy* candy, irrklang::ISoundEngine* engine);
+        bool CheckCandyCollision(Candy* candy, irrklang::ISoundEngine* engine);
 
         void Update(float deltaTime); // Aggiorna lo stato del giocatore
         

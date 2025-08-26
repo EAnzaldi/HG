@@ -94,15 +94,20 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
     //caricamento modelli 2d
     pKeyTex = new TextureObject("resources/textures/test.png");
-    pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy1.png"));
-    pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy2.png"));
-    pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy2.png"));
+    pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_pink.png"));
+    pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_green.png"));
+    pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_blue.png"));
+    pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_orange.png"));
+    pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_violet.png"));
 
     pCandyTypes.emplace_back(new CandyType(EffectType::NoJump, 10.0f));
     pCandyTypes.emplace_back(new CandyType(EffectType::Speed, 1.5f, 10.0f));
 
     pProbabilities.emplace_back(50);
     pProbabilities.emplace_back(50);
+    pProbabilities.emplace_back(0);
+    pProbabilities.emplace_back(0);
+    pProbabilities.emplace_back(0);
 
     //Associazione run-time tra texture ed effetto della caramella
     std::shuffle(pCandiesMesh.begin(), pCandiesMesh.end(), rd);
@@ -322,7 +327,7 @@ void PlayState::Reset()
         startTime = glfwGetTime();
     }
 }
-
+bool canPressSpace = true;
 void PlayState::ProcessInput()
 {
 
@@ -384,14 +389,30 @@ void PlayState::ProcessInput()
     }
 
     // raccolta caramelle
-    if (glfwGetKey(Window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    if (glfwGetKey(Window, GLFW_KEY_SPACE) == GLFW_PRESS && canPressSpace)
     {
+        Candy* pCloser = nullptr;
+        float d_min = FLT_MAX;
+        //Cerca se esiste la caramella da mangiare a distanza minima
         for (Candy* pc : pCandies) {
-            if (!pc->IsAte()) {
-                pPlayer->CheckCandyCollision(pc, Engine);
+            if (!pc->IsEaten() && pPlayer->CheckCandyCollision(pc, Engine)) {
+                float d = pPlayer->DistanceTo(pc);
+                if (d < d_min) {
+                    d_min = d;
+                    pCloser = pc;
+                }
             }
         }
+
+        if (pCloser!=nullptr) {
+            pCloser->Eat();
+            pPlayer->EatCandy(pCloser->GetType());
+            printf("Player ha mangiato una caramella misteriosa\n");
+        }
+        canPressSpace = false;
     }
+    else if (glfwGetKey(Window, GLFW_KEY_SPACE) == GLFW_RELEASE)
+        canPressSpace = true;
 
     pPlayer->Move(deltaTime);
     pPlayer->CheckCollisionWithSolids(platforms);
@@ -466,8 +487,10 @@ void PlayState::ProcessEvents() {
 
     if (pCandies.size() != 0)
         for (Candy* pc : pCandies) {
-            pc->CheckCollisionWithSolids(platforms);
-            pc->Move(deltaTime);
+            if (!pc->IsEaten()) {
+                pc->CheckCollisionWithSolids(platforms);
+                pc->Move(deltaTime);
+            }
         }
 
     if (Status == GameStatus::GameOver) {
@@ -516,7 +539,7 @@ void PlayState::Render()
 
     if (!pCandies.empty()) {
         for (Candy* pc : pCandies) {
-            if (!pc->IsAte()) {
+            if (!pc->IsEaten()) {
                 pc->Render(*pSpriteShader);
             }
         }

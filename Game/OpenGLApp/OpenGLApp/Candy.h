@@ -17,7 +17,7 @@ struct CandyType {
 
 class Candy : public MovingObject {
 public:
-    bool IsAte() { return Ate; }
+    bool IsEaten() { return Ate; }
     void Eat() { Ate = true; }
     CandyType GetType() { return type; }
 

@@ -147,3 +147,10 @@ void GameObject::Print() const
     else if (Dimension == DimensionType::TwoD)
         printf("2D\n");
 }
+//Distanza euclidea da *pObj
+float GameObject::DistanceTo(GameObject* pObj) const
+{
+    float x2 = (Position.x - pObj->Position.x) * (Position.x - pObj->Position.x);
+    float y2 = (Position.y - pObj->Position.y) * (Position.y - pObj->Position.y);
+    return sqrt(x2 + y2);
+}
