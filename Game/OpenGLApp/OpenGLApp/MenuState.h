@@ -25,8 +25,8 @@ public:
 	void Render();
 	void EnterState();
 
-	void MouseMoving(double xpos, double ypos);
-	void MouseClick(int button, int action, int mods);
+	void MouseMoving(double xpos, double ypos) override;
+	void MouseClick(int button, int action, int mods) override;
 
 	// Returns the single instance (-> singleton)
 	static MenuState* GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);

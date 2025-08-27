@@ -82,6 +82,7 @@ void Player::EatCandy(CandyType type)
         case(EffectType::Speed): maxVelocity *= type.value; break;
         case(EffectType::SpeedEnemy): Enemy::SpeedUp(type.value); break;
         case(EffectType::Invincibility): isInvincible = true; nInvincibility++; printf("INVINCIBLE!\n"); break;
+        case(EffectType::Teleport): teleport = true; return;//non viene inserito nel vettore degli effetti
         default: return;
     }
     ActiveEffect* pe = new ActiveEffect(type);
@@ -95,15 +96,20 @@ void Player::DigestCandy(CandyType type)
         case(EffectType::Speed): maxVelocity /= type.value; break;
         case(EffectType::SpeedEnemy): Enemy::SpeedDown(type.value); break;
         case(EffectType::Invincibility): nInvincibility--; break;
+        case(EffectType::Teleport): {} break;
         default: return;
     }
-
+    //I flag non cumulabili vengono ripristinati solo quando tutti gli effetti che li alterano sono scaduti
     if(nNoJump <= 0)
         disableJump = false;
     if (nInvincibility <= 0) {
         isInvincible = false;
         printf("Invincibility ended\n");
     }
+}
+void Player::Teleport(glm::vec2 position) {
+    Position = position;
+    teleport = false;
 }
 void Player::HandleCollisionWithSolid(GameObject* solidObject)
 {

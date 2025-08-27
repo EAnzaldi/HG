@@ -25,10 +25,15 @@ public:
 	void ProcessEvents();
 	void UpdateTime(long currentTime);
 	void Render();
+
 	void EnterState();
 	void LeaveState();
 
+	void MouseMoving(double xpos, double ypos) override;
+	void MouseClick(int button, int action, int mods) override;
+
 	void Reset();
+	void ResetLevel() { CurrentLevel = StartLevel; };
 
 	const double start = 99;// tempo massimo per livello
 
@@ -94,8 +99,9 @@ private:
 	Player* pPlayer;
 	Enemy* pEnemy;
 
-	// The current level
-	int CurrentLevel;
+	int CurrentLevel;// The current level
+	int StartLevel = 2;// The initial level
+
 	// The current score
 	long CurrentScore;
 

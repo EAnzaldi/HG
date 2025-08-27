@@ -56,8 +56,11 @@ class Player : public MovingObject
 
         void EatCandy(CandyType type);
 
+        void Teleport(glm::vec2 position);
+        bool teleport = false;
+
     private:
-        float disableJump = false;
+        bool disableJump = false;
         int nNoJump = 0;
         int nInvincibility = 0;
 

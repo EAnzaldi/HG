@@ -43,7 +43,7 @@ static glm::vec2 posCauldron2[3] = { {-0.89f, 0.04f}, {0.29f, 0.04f}, {0.89f, -0
 static glm::vec3 sizeCauldron = { 0.1f, 0.1f, 0.1f };*/
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
-    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), CurrentLevel(2)
+    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), CurrentLevel(StartLevel)
 {
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
@@ -104,12 +104,13 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pCandyTypes.emplace_back(new CandyType(EffectType::Speed, 1.5f, 10.0f));
     pCandyTypes.emplace_back(new CandyType(EffectType::SpeedEnemy, 1.5f, 10.0f));
     pCandyTypes.emplace_back(new CandyType(EffectType::Invincibility, 5.0f));
+    pCandyTypes.emplace_back(new CandyType(EffectType::Teleport));
 
-    pProbabilities.emplace_back(25);
-    pProbabilities.emplace_back(25);
-    pProbabilities.emplace_back(25);
-    pProbabilities.emplace_back(25);
     pProbabilities.emplace_back(0);
+    pProbabilities.emplace_back(0);
+    pProbabilities.emplace_back(0);
+    pProbabilities.emplace_back(0);
+    pProbabilities.emplace_back(50);
 
     //Associazione run-time tra texture ed effetto della caramella
     std::shuffle(pCandiesMesh.begin(), pCandiesMesh.end(), rd);
@@ -211,6 +212,9 @@ PlayState* PlayState::GetInstance(StateManager* manager, GLFWwindow* window, irr
 
 void PlayState::Reset()
 {
+    if (CurrentLevel == 3)
+        return;
+
     glm::vec2 positions[8] = {
        {0.0f, -0.95f},//pavimento
        {-0.6f, -0.5f}, {0.6f, -0.5f},
@@ -244,8 +248,6 @@ void PlayState::Reset()
     glm::vec3 sizeKey = { 0.1f, 0.1f, 0.1f };
 
     CurrentScore = 0;
-
-    Status = GameStatus::Playing;
 
     if (!pCauldrons.empty()) {
         for (GameObject* pc : pCauldrons)
@@ -352,36 +354,40 @@ void PlayState::ProcessInput()
         Status = GameStatus::Paused;
         ChangeState(MenuState::GetInstance(Manager, Window, Engine));
     }
-    // movimento orizzontale
-    if (glfwGetKey(Window, GLFW_KEY_A) == GLFW_PRESS)
-    {
-        if (pPlayer->velocity.x > -pPlayer->maxVelocity.x)
-        {
-            pPlayer->velocity.x -= 0.01f;
-        }
-    }
-    else if (glfwGetKey(Window, GLFW_KEY_D) == GLFW_PRESS)
-    {
-        if (pPlayer->velocity.x < pPlayer->maxVelocity.x)
-        {
-            pPlayer->velocity.x += 0.01f;
-        }
-    }
-    else
-    {
-        pPlayer->velocity.x = 0.0f;
-    }
 
-    // salto
-    if (glfwGetKey(Window, GLFW_KEY_W) == GLFW_PRESS)
-    {
-        pPlayer->HandleJump(deltaTime, Engine);
-    }
-    else
-    {
-        if (pPlayer->isOnGround)
+    if (pPlayer->teleport == false) {
+
+        // movimento orizzontale
+        if (glfwGetKey(Window, GLFW_KEY_A) == GLFW_PRESS)
         {
-            pPlayer->isPastJumpPeak = true; // Se il tasto non è premuto, non si può più aumentare il salto
+            if (pPlayer->velocity.x > -pPlayer->maxVelocity.x)
+            {
+                pPlayer->velocity.x -= 0.01f;
+            }
+        }
+        else if (glfwGetKey(Window, GLFW_KEY_D) == GLFW_PRESS)
+        {
+            if (pPlayer->velocity.x < pPlayer->maxVelocity.x)
+            {
+                pPlayer->velocity.x += 0.01f;
+            }
+        }
+        else
+        {
+            pPlayer->velocity.x = 0.0f;
+        }
+
+        // salto
+        if (glfwGetKey(Window, GLFW_KEY_W) == GLFW_PRESS)
+        {
+            pPlayer->HandleJump(deltaTime, Engine);
+        }
+        else
+        {
+            if (pPlayer->isOnGround)
+            {
+                pPlayer->isPastJumpPeak = true; // Se il tasto non è premuto, non si può più aumentare il salto
+            }
         }
     }
 
@@ -413,6 +419,9 @@ void PlayState::ProcessInput()
 
     pPlayer->Move(deltaTime);
     pPlayer->CheckCollisionWithSolids(platforms);
+    if (CurrentLevel==2 && pPlayer->CheckCollision(pKey) != MovingObject::Collision::None) {
+        Status = GameStatus::Victory;
+    }
 
     pPlayer->Update(deltaTime); // Aggiorna lo stato del giocatore
 }
@@ -448,7 +457,7 @@ void PlayState::ProcessEvents() {
             else if (pe->IsDead()) {//Se enemy muore
                 nEnemies--;
                 printf("Nemico morto a %f, %f\n", pe->Position.x, pe->Position.y);
-                if (nEnemies <= 0 && pEnemies.size() == TOTENEM) {
+                if (CurrentLevel==1 && nEnemies <= 0 && pEnemies.size() == TOTENEM) {
                     Status = GameStatus::Victory;
                 }
                 //spawn candy
@@ -565,9 +574,51 @@ void PlayState::Render()
 
     RenderStats();
 }
+void PlayState::MouseMoving(double xpos, double ypos)
+{
 
+}
+void PlayState::MouseClick(int button, int action, int mods)
+{
+    if (pPlayer->teleport && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        //Ottiene coordinate pixel
+        double xpos, ypos;
+        int fbWidth, fbHeight;
+        glfwGetCursorPos(Window, &xpos, &ypos);
+        glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
+        ypos = fbHeight - ypos;
+        //Controlla se stia teleportando fuori schermo
+        if (xpos <= 0 || xpos > fbWidth || ypos <= 0 || ypos > fbHeight) {
+            printf("Coordinate fuori schermo -> RIPROVARE\n");
+            return;
+        }
+        //Trasforma in coordinate NDC
+        //xpos = (xpos + 1.0f) * 0.5f * fbWidth;
+        //ypos = (ypos + 1.0f) * 0.5f * fbHeight;
+        xpos = 2*xpos / fbWidth - 1.0f;
+        ypos = 2*ypos / fbHeight - 1.0f;
+        //Controlla se stia teleportando in area vietata
+        for (GameObject* pp : platforms) {
+            Hitbox bounds = pp->GetHitbox();
+            bool isColliding = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
+            if (isColliding) {
+                printf("Coordinate collidono con ostacoli -> RIPROVARE\n");
+                return;
+            }
+        }
+        //Se le coordinate sono corrette teleporta
+        pPlayer->Teleport(glm::vec2(xpos,ypos));
+        printf("Teleport effettuato\n");
+    }
+}
 void PlayState::EnterState()
 {
+    //End of the game
+    if (CurrentLevel == 3) {
+        ChangeState(EndState::GetInstance(Manager, Window, Engine));
+        return;
+    }
+        
     // musica di sottofondo
     Engine->play2D("resources/sounds/ost.wav", true);
 

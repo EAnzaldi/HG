@@ -254,6 +254,7 @@ void MenuState::SelectionChosen()
 		if (Status == GameStatus::None) {
 			CurrentGame = PlayState::GetInstance(Manager, Window, Engine);
 		}	
+		CurrentGame->ResetLevel();
 		ChangeState(CurrentGame);
 		CurrentGame->Reset();
 		break;
