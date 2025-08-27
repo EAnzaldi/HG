@@ -50,6 +50,7 @@ protected:
 
 private:
 	void RenderStats();
+	void ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned int DOWN, unsigned int LEFT, unsigned int RIGHT);
 
 	// The blocks matrix class
 	//CBlocksMatrix* m_pMatrix;
@@ -100,11 +101,11 @@ private:
 	glm::vec2 sizesTest[8];
 
 	// Pointer to the current player
-	Player* pPlayer;
-	Enemy* pEnemy;
-
+	Player* pGretel;
+	Player* pHansel;
+	
 	int CurrentLevel;// The current level
-	int StartLevel = 2;// The initial level
+	int StartLevel = 1;// The initial level
 
 	// The current score
 	long CurrentScore;

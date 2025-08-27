@@ -199,7 +199,7 @@ PlayState::~PlayState() {
     delete pText;
     delete pCubeModel;
     delete pCauldronModel;
-    delete pPlayer;
+    delete pGretel;
     //delete pEnemy;
     //delete pCauldron_right;
     //delete pCauldron_left;
@@ -252,6 +252,10 @@ void PlayState::Reset()
 
     CurrentScore = 0;
 
+    if (pGretel != nullptr)
+        delete pGretel;
+    if (pHansel != nullptr)
+        delete pHansel;
     if (!pCauldrons.empty()) {
         for (GameObject* pc : pCauldrons)
             delete pc;
@@ -262,7 +266,22 @@ void PlayState::Reset()
             delete pp;
         platforms.clear();
     }
-    
+    if (!pEnemies.empty()) {
+        for (Enemy* pe : pEnemies)
+            delete pe;
+        pEnemies.clear();
+    }
+    nEnemies = 0;
+    if (!pCandies.empty()) {
+        for (Candy* pc : pCandies)
+            delete pc;
+        pCandies.clear();
+    }
+
+    pGretel = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexPlayer, 0, PlayerName::Gretel);
+    if(Multiplayer)
+        pHansel = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexPlayer, 0, PlayerName::Hansel);
+
     if (CurrentLevel == 1) {
         // passo nullptr come texture per ora
         for (int i = 0; i < 2; i++)
@@ -296,23 +315,6 @@ void PlayState::Reset()
             pKey = new GameObject(posKey, sizeKey, pKeyTex, 0);
     }
 
-    if (pPlayer != nullptr)
-        delete pPlayer;
-    pPlayer = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexPlayer, 0);
-
-    if (!pEnemies.empty()) {
-        for (Enemy* pe : pEnemies)
-            delete pe;
-        pEnemies.clear();
-    }
-    nEnemies = 0;
-
-    if (!pCandies.empty()) {
-        for (Candy* pc : pCandies)
-            delete pc;
-        pCandies.clear();
-    }
-
     // musica di sottofondo
     Engine->play2D("resources/sounds/ost.wav", true);
 
@@ -329,28 +331,26 @@ void PlayState::Reset()
     }
 }
 //DEBOUNCE: avoids that pressing key in other frames (or states) is considered in this frame (or state)
-bool canPressSpace = true;
+bool canPressDOWN = true;
 void PlayState::ProcessInput()
 {
-
     float currentFrame = static_cast<float>(glfwGetTime());
     deltaTime = currentFrame - lastFrame;
 
-    if (deltaTime > 0.1f) { // Ignora delta troppo grandi
+    if (deltaTime > 0.1f)// Ignora delta troppo grandi
         deltaTime = 0.0f;
-    }
 
     lastFrame = currentFrame;
 
     // debug
     if (glfwGetKey(Window, GLFW_KEY_C) == GLFW_PRESS)
     {
-        std::cout << ((pPlayer->isOnGround == true) ? "A terra" : "In aria") << std::endl;
-        std::cout << "Velocity: " << pPlayer->velocity.x << ", " << pPlayer->velocity.y << std::endl;
-        std::cout << "Bottom-Left: " << pPlayer->Position.x - (pPlayer->Size.x / 2) << ", " << pPlayer->Position.y - (pPlayer->Size.y / 2) << std::endl;
-        std::cout << "HB-Bottom-Left: " << pPlayer->GetHitbox().Min.x << ", " << pPlayer->GetHitbox().Min.y << std::endl;
-        std::cout << "HB-Top-Right: " << pPlayer->GetHitbox().Max.x << ", " << pPlayer->GetHitbox().Max.y << std::endl;
-        std::cout << "Position-X: " << pPlayer->Position.x << std::endl;
+        std::cout << ((pGretel->isOnGround == true) ? "A terra" : "In aria") << std::endl;
+        std::cout << "Velocity: " << pGretel->velocity.x << ", " << pGretel->velocity.y << std::endl;
+        std::cout << "Bottom-Left: " << pGretel->Position.x - (pGretel->Size.x / 2) << ", " << pGretel->Position.y - (pGretel->Size.y / 2) << std::endl;
+        std::cout << "HB-Bottom-Left: " << pGretel->GetHitbox().Min.x << ", " << pGretel->GetHitbox().Min.y << std::endl;
+        std::cout << "HB-Top-Right: " << pGretel->GetHitbox().Max.x << ", " << pGretel->GetHitbox().Max.y << std::endl;
+        std::cout << "Position-X: " << pGretel->Position.x << std::endl;
     }
 
     if (glfwGetKey(Window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -358,44 +358,43 @@ void PlayState::ProcessInput()
         ChangeState(MenuState::GetInstance(Manager, Window, Engine));
     }
 
-    if (pPlayer->teleport == false) {
+    ProcessInputPlayer(pGretel, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_A, GLFW_KEY_D);
+    if(Multiplayer)
+        ProcessInputPlayer(pHansel, GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_LEFT, GLFW_KEY_RIGHT);
 
-        // movimento orizzontale
-        if (glfwGetKey(Window, GLFW_KEY_A) == GLFW_PRESS)
-        {
-            if (pPlayer->velocity.x > -pPlayer->maxVelocity.x)
-            {
-                pPlayer->velocity.x -= 0.01f;
-            }
-        }
-        else if (glfwGetKey(Window, GLFW_KEY_D) == GLFW_PRESS)
-        {
-            if (pPlayer->velocity.x < pPlayer->maxVelocity.x)
-            {
-                pPlayer->velocity.x += 0.01f;
-            }
-        }
-        else
-        {
-            pPlayer->velocity.x = 0.0f;
-        }
+}
+void PlayState::ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned int DOWN, unsigned int LEFT, unsigned int RIGHT)
+{
+    if (pPlayer->teleport)
+        return;
 
-        // salto
-        if (glfwGetKey(Window, GLFW_KEY_W) == GLFW_PRESS)
-        {
-            pPlayer->HandleJump(deltaTime, Engine);
-        }
-        else
-        {
-            if (pPlayer->isOnGround)
-            {
-                pPlayer->isPastJumpPeak = true; // Se il tasto non è premuto, non si può più aumentare il salto
-            }
-        }
+    // movimento orizzontale
+    if (glfwGetKey(Window, LEFT) == GLFW_PRESS)
+    {
+        if (pPlayer->velocity.x > -pPlayer->maxVelocity.x)
+            pPlayer->velocity.x -= 0.01f;
+    }
+    else if (glfwGetKey(Window, RIGHT) == GLFW_PRESS)
+    {
+        if (pPlayer->velocity.x < pPlayer->maxVelocity.x)
+            pPlayer->velocity.x += 0.01f;
+    }
+    else
+        pPlayer->velocity.x = 0.0f;
+
+    // salto
+    if (glfwGetKey(Window, UP) == GLFW_PRESS)
+    {
+        pPlayer->HandleJump(deltaTime, Engine);
+    }
+    else
+    {
+        if (pPlayer->isOnGround)
+            pPlayer->isPastJumpPeak = true; // Se il tasto non è premuto, non si può più aumentare il salto
     }
 
     // raccolta caramelle
-    if (glfwGetKey(Window, GLFW_KEY_SPACE) == GLFW_PRESS && canPressSpace)
+    if (glfwGetKey(Window, DOWN) == GLFW_PRESS && canPressDOWN)
     {
         Candy* pCloser = nullptr;
         float d_min = FLT_MAX;
@@ -410,25 +409,24 @@ void PlayState::ProcessInput()
             }
         }
 
-        if (pCloser!=nullptr) {
+        if (pCloser != nullptr) {
             pCloser->Eat();
             pPlayer->EatCandy(pCloser->GetType());
             printf("Player ha mangiato una caramella misteriosa\n");
         }
-        canPressSpace = false;
+        canPressDOWN = false;
     }
-    else if (glfwGetKey(Window, GLFW_KEY_SPACE) == GLFW_RELEASE)
-        canPressSpace = true;
+    else if (glfwGetKey(Window, DOWN) == GLFW_RELEASE)
+        canPressDOWN = true;
 
     pPlayer->Move(deltaTime);
     pPlayer->CheckCollisionWithSolids(platforms);
-    if (CurrentLevel==2 && pPlayer->CheckCollision(pKey) != MovingObject::Collision::None) {
+
+    if (CurrentLevel == 2 && pPlayer->CheckCollision(pKey) != MovingObject::Collision::None)
         Status = GameStatus::Victory;
-    }
 
     pPlayer->Update(deltaTime); // Aggiorna lo stato del giocatore
 }
-
 void PlayState::ProcessEvents() {
 
     int fbWidth, fbHeight;
@@ -454,7 +452,7 @@ void PlayState::ProcessEvents() {
     for (Enemy* pe : pEnemies) {
         if (pe->IsDead() == false) {
 
-            if (pPlayer->CheckEnemyCollision(pe, Engine)) {//Se player muore
+            if (pGretel->CheckEnemyCollision(pe, Engine) || (Multiplayer && pHansel->CheckEnemyCollision(pe, Engine))) {//Se un player muore
                 Status = GameStatus::GameOver;
             }
             else if (pe->IsDead()) {//Se enemy muore
@@ -519,8 +517,6 @@ void PlayState::UpdateTime(long currentTime)
 
 void PlayState::Render()
 {
-    //std::cout << "Rendering PlayState" << std::endl;
-
     //Aggiunte le seguenti due righe per gestire correttamente la trasparenza
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -563,7 +559,9 @@ void PlayState::Render()
         }
     }
 
-    pPlayer->Render(*pShader);
+    pGretel->Render(*pShader);
+    if(Multiplayer)
+        pHansel->Render(*pShader);
 
     glDepthMask(GL_TRUE); // riattiva depth buffer
 
@@ -573,8 +571,6 @@ void PlayState::Render()
         pc->Render(*pEnlightenedShader);
 
     // render testo per ultimo per essere davanti a tutto
-    // --------------------------------------------------
-
     RenderStats();
 }
 void PlayState::MouseMoving(double xpos, double ypos)
@@ -583,7 +579,7 @@ void PlayState::MouseMoving(double xpos, double ypos)
 }
 void PlayState::MouseClick(int button, int action, int mods)
 {
-    if (pPlayer->teleport && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+    if (pGretel->teleport && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         //Ottiene coordinate pixel
         double xpos, ypos;
         int fbWidth, fbHeight;
@@ -610,7 +606,7 @@ void PlayState::MouseClick(int button, int action, int mods)
             }
         }
         //Se le coordinate sono corrette teleporta
-        pPlayer->Teleport(glm::vec2(xpos,ypos));
+        pGretel->Teleport(glm::vec2(xpos,ypos));
         printf("Teleport effettuato\n");
     }
 }
@@ -660,7 +656,7 @@ void PlayState::RenderStats() {
     std::string time = "TIME: " + std::to_string(remainingTime);
     pText->Render(*pTextShader, time, 160.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
 
-    std::string lives = "LIVES: " + std::to_string(pPlayer->lives);
+    std::string lives = "LIVES: " + std::to_string(pGretel->lives);
     pText->Render(*pTextShader, lives, 960.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
 
     std::string level = "LEVEL " + std::to_string(CurrentLevel);

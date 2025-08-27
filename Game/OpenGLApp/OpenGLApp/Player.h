@@ -16,9 +16,13 @@ struct ActiveEffect {
     }
 };
 
+enum class PlayerName { Gretel, Hansel };
+
 class Player : public MovingObject
 {
     public:
+        PlayerName name;
+
         bool isInvincible;           // Flag per indicare se il giocatore è invincibile
         float invincibilityDuration; // Durata dell'invincibilità (in secondi)
         float invincibilityTimer;    // Timer corrente per l'invincibilità
@@ -38,9 +42,9 @@ class Player : public MovingObject
         std::vector<ActiveEffect*> pAEffects;
 
         //Costruttore 3d
-        Player(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth);
+        Player(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth, PlayerName name);
         //Costruttore 2d
-        Player(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth);
+        Player(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, PlayerName name);
 
         void HandleJump(float deltaTime, irrklang::ISoundEngine* engine);
 
