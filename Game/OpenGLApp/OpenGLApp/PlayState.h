@@ -35,6 +35,10 @@ public:
 	void Reset();
 	void ResetLevel() { CurrentLevel = StartLevel; };
 
+	static void SwitchMode() { Multiplayer = !Multiplayer; };
+	static bool IsMultiplayer() { return Multiplayer; };
+	static bool IsMultiplayerUnlocked() { return MultiplayerUnlocked; };
+
 	const double start = 99;// tempo massimo per livello
 
 	// Returns the single instance (-> singleton)
@@ -139,7 +143,6 @@ private:
 	int spawnTime;
 	double lastSpawnTime;
 
-	//Store time per enemies' spawn
-	
-
+	static bool Multiplayer;
+	static bool MultiplayerUnlocked;
 };

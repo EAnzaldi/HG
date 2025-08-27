@@ -60,11 +60,17 @@ private:
 
 	// The menu images
 	TextureObject* pMenu[3];
-	GameObject* pMenuObj[3];
 	TextureObject* pMenuSel[3];
-	GameObject* pMenuSelObj[3];
 	TextureObject* pMenuNoGame;
+	TextureObject* pMenuMod[2];
+
+	GameObject* pMenuObj[3];
+	GameObject* pMenuSelObj[3];
 	GameObject* pMenuNoGameObj;
+	GameObject* pMenuModObj[2];
+
+	TextureObject* pArrow;
+	GameObject* pArrowObj[2];
 
 	/*
 	FlatMesh* pTest;

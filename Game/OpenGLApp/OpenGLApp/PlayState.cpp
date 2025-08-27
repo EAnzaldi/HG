@@ -6,6 +6,9 @@
 
 #define SPAWN_PROB_C 100 //percentuale di spawn delle caramelle (bonus e malus)
 
+bool PlayState::Multiplayer = false;
+bool PlayState::MultiplayerUnlocked = true;
+
 static glm::vec2 posSpawn[2] = { {-0.8f, 0.80f}, {0.8f, 0.80f} };
 static glm::vec2 posSpawn2[3] = { {-0.8f, 0.06f}, {0.2f, 0.06f}, {0.8f, -0.34f} };
 static glm::vec2 velocity = { 0.3f, 0.0f };
