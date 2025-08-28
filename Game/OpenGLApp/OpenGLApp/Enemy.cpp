@@ -1,8 +1,8 @@
 #include "Enemy.h"
 #include <glm/glm.hpp>  // Per il calcolo dei vettori
 
-Enemy::Enemy(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight)
-    : MovingObject(position, size, model, texture, repeatWidth, velocity, moveRight)
+Enemy::Enemy(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, glm::vec2 velocity, bool moveRight)
+    : MovingObject(position, size, model, repeatWidth, velocity, moveRight)
 {
 
 }

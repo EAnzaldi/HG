@@ -1,7 +1,7 @@
 #include "MovingObject.h"
 
-MovingObject::MovingObject(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight)
-    : GameObject(position, size, model, texture, repeatWidth), velocity(velocity), lastDirectionRight(moveRight)
+MovingObject::MovingObject(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, glm::vec2 velocity, bool moveRight)
+    : GameObject(position, size, model, repeatWidth), velocity(velocity), lastDirectionRight(moveRight)
 {
     // flag specifica se si voglia scalare la texture (consigliato=1 per piattaforme)
 }

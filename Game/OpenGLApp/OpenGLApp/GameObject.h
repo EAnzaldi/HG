@@ -41,7 +41,7 @@ public:
     bool RepeatWidth;
 
     //Costruttore 3d
-    GameObject(glm::vec2 position, glm::vec3 size, Model* model, TextureObject* texture, bool repeatWidth);
+    GameObject(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth);
     //Costruttore 2d
     GameObject(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth);
 

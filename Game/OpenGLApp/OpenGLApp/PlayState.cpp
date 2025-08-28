@@ -53,7 +53,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
 
-    pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f));
+    pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.5f));
 
     // build and compile our shader zprogram
     // -------------------------------------
@@ -138,7 +138,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     }
     printf("\n");*/
 
-    pBackground = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f), pBackgroundModel, pTexBackground, 0);
+    pBackground = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f), pTexBackground, 0);
 
     glm::mat4 projection2 = glm::ortho(0.0f, static_cast<float>(fbWidth), 0.0f, static_cast<float>(fbHeight));//left, right, bottom, top
 
@@ -296,7 +296,7 @@ void PlayState::Reset()
         // passo nullptr come texture per ora
         for (int i = 0; i < 2; i++)
         {
-            pCauldrons.emplace_back(new GameObject(posCauldron[i], sizeCauldron, pCauldronModel, nullptr, 0));
+            pCauldrons.emplace_back(new GameObject(posCauldron[i], sizeCauldron, pCauldronModel, 0));
         }
 
         for (int i = 0; i < 8; ++i)
@@ -304,7 +304,7 @@ void PlayState::Reset()
 #if FLAT
             platforms.emplace_back(new GameObject(positions[i], sizes[i], pTexPlatforms, 1));
 #else
-            platforms.emplace_back(new GameObject(positions[i], sizes[i], pCubeModel, pTexPlatforms, 1));
+            platforms.emplace_back(new GameObject(positions[i], sizes[i], pCubeModel, 1));
 #endif
         }
         /*
@@ -319,11 +319,15 @@ void PlayState::Reset()
     else if (CurrentLevel == 2) {
         for (int i = 0; i < 3; i++)
         {
-            pCauldrons.emplace_back(new GameObject(posCauldron2[i], sizeCauldron, pCauldronModel, nullptr, 0));
+            pCauldrons.emplace_back(new GameObject(posCauldron2[i], sizeCauldron, pCauldronModel, 0));
         }
         for (int i = 0; i < 6; ++i)
         {
-            platforms.emplace_back(new GameObject(positions2[i], sizes2[i], pCubeModel, pTexPlatforms, 1));
+#if FLAT
+            platforms.emplace_back(new GameObject(positions2[i], sizes2[i], pTexPlatforms, 1));
+#else
+            platforms.emplace_back(new GameObject(positions2[i], sizes2[i], pCubeModel, 1));
+#endif
         }
         if (pKey == nullptr)
             pKey = new GameObject(posKey, sizeKey, pKeyTex, 0);
@@ -570,7 +574,6 @@ void PlayState::Render()
             }
         }
     }
-
   
     if (!pEnemies.empty()) {
         for (Enemy* pe : pEnemies) {
@@ -590,7 +593,6 @@ void PlayState::Render()
         pHansel->Render(*pSpriteShader);
 
     glDepthMask(GL_TRUE); // riattiva depth buffer
-
     glEnable(GL_DEPTH_TEST);
 
     for (GameObject* pc : pCauldrons)

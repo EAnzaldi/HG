@@ -1,82 +1,16 @@
-﻿  Candy.cpp
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
-  (compilazione del file di origine 'Candy.cpp')
-  
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
-  (compilazione del file di origine 'Candy.cpp')
-  
-  EndState.cpp
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
-  (compilazione del file di origine 'EndState.cpp')
-  
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
-  (compilazione del file di origine 'EndState.cpp')
-  
-  Enemy.cpp
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
-  (compilazione del file di origine 'Enemy.cpp')
-  
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
-  (compilazione del file di origine 'Enemy.cpp')
-  
-  GameObject.cpp
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
-  (compilazione del file di origine 'GameObject.cpp')
-  
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
-  (compilazione del file di origine 'GameObject.cpp')
-  
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\GameObject.cpp(117,26): warning C4474: 'printf': sono stati passati troppi argomenti per la stringa di formato
-      D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\GameObject.cpp(117,26):
-      con i segnaposto e i relativi parametri sono previsti argomenti variadic 0, ma sono stati specificati quelli 1
-  
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\GameObject.cpp(118,27): warning C4474: 'printf': sono stati passati troppi argomenti per la stringa di formato
-      D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\GameObject.cpp(118,27):
-      con i segnaposto e i relativi parametri sono previsti argomenti variadic 0, ma sono stati specificati quelli 1
-  
-  Main.cpp
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
-  (compilazione del file di origine 'Main.cpp')
-  
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
-  (compilazione del file di origine 'Main.cpp')
-  
-  MenuState.cpp
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
-  (compilazione del file di origine 'MenuState.cpp')
-  
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
-  (compilazione del file di origine 'MenuState.cpp')
-  
-  MovingObject.cpp
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
-  (compilazione del file di origine 'MovingObject.cpp')
-  
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
-  (compilazione del file di origine 'MovingObject.cpp')
-  
-  PlayState.cpp
+﻿  PlayState.cpp
 D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
   (compilazione del file di origine 'PlayState.cpp')
   
 D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
   (compilazione del file di origine 'PlayState.cpp')
   
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(337,49): warning C4267: 'argomento': conversione da 'size_t' a 'int'. Possibile perdita di dati.
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(402,29): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(436,19): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(442,21): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(464,57): warning C4267: 'argomento': conversione da 'size_t' a 'int'. Possibile perdita di dati.
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(506,26): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(516,26): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(667,23): warning C4244: 'inizializzazione': conversione da 'double' a 'int'. Possibile perdita di dati.
-  Player.cpp
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
-  (compilazione del file di origine 'Player.cpp')
-  
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
-  (compilazione del file di origine 'Player.cpp')
-  
-  Generazione del codice in corso...
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\GameObject.cpp(65,1): warning C4715: 'GameObject::GetHitbox': non tutti i percorsi di controllo restituiscono un valore
+D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(341,49): warning C4267: 'argomento': conversione da 'size_t' a 'int'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(406,29): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(440,19): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(446,21): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(468,57): warning C4267: 'argomento': conversione da 'size_t' a 'int'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(510,26): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(520,26): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(669,23): warning C4244: 'inizializzazione': conversione da 'double' a 'int'. Possibile perdita di dati.
   OpenGLApp.vcxproj -> D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\x64\Debug\OpenGLApp.exe
