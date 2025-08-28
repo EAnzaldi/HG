@@ -57,7 +57,7 @@ void GameObject::Render2D(const Shader& shader) const
 {
     shader.use();
 
-    if (RepeatWidth)
+    if (this->Texture && RepeatWidth)
         shader.setVec2("textureReps", glm::vec2(Size.x * 10.0f, 1.0f));
     else
         shader.setVec2("textureReps", glm::vec2(1.0f, 1.0f));

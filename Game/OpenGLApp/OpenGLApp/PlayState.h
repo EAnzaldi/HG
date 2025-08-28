@@ -101,11 +101,16 @@ private:
 	glm::vec2 sizesTest[8];
 
 	// Pointer to the current player
+	TextureObject* pTexGretel;
+	TextureObject* pTexHansel;
 	Player* pGretel;
 	Player* pHansel;
 	
 	int CurrentLevel;// The current level
 	int StartLevel = 1;// The initial level
+
+	static bool Multiplayer;
+	static bool MultiplayerUnlocked;
 
 	// The current score
 	long CurrentScore;
@@ -143,7 +148,4 @@ private:
 	double startPauseTime;
 	int spawnTime;
 	double lastSpawnTime;
-
-	static bool Multiplayer;
-	static bool MultiplayerUnlocked;
 };

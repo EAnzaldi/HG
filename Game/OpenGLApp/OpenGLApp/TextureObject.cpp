@@ -56,3 +56,7 @@ float TextureObject::getHeigth() const
 {
     return static_cast<float>(Height);
 }
+float TextureObject::getAspect() const
+{
+    return (float) Width / (float) Height;
+}

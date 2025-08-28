@@ -142,7 +142,10 @@ void MovingObject::Render(const Shader& Shader) const
 
         Shader.setMat4("model", model_mat);
 
-        this->model->Draw(Shader);
+        if (Dimension == DimensionType::ThreeD)
+            model->Draw(Shader);
+        else if (Dimension == DimensionType::TwoD)
+            fmesh->Draw(Shader, Texture->TextureID);
     }
 
     // Se l'oggetto si trova oltre il bordo a sinistra renderizzo la parte mancante a destra
@@ -156,6 +159,9 @@ void MovingObject::Render(const Shader& Shader) const
 
         Shader.setMat4("model", model_mat);
 
-        model->Draw(Shader);
+        if (Dimension == DimensionType::ThreeD)
+            model->Draw(Shader);
+        else if (Dimension == DimensionType::TwoD)
+            fmesh->Draw(Shader, Texture->TextureID);
     }
 }

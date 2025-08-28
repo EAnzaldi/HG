@@ -82,7 +82,9 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     }*/
 
     pTexPlatforms = new TextureObject("resources/textures/donut_block.jpg");
-    pTexPlayer = new TextureObject("resources/textures/ice_cream_block.jpg");
+    //pTexPlayer = new TextureObject("resources/textures/ice_cream_block.jpg");
+    pTexGretel = new TextureObject("resources/textures/gretel.png");
+    pTexHansel = new TextureObject("resources/textures/hansel.png");
     pTexEnemy = new TextureObject("resources/textures/awesomeface.png");
     pTexSlime = new TextureObject("resources/textures/slime2-mod.png");
     pTexBackground = new TextureObject("resources/textures/dark_wood_background2.png");
@@ -278,9 +280,15 @@ void PlayState::Reset()
         pCandies.clear();
     }
 
+    /*
     pGretel = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexPlayer, 0, PlayerName::Gretel);
     if(Multiplayer)
         pHansel = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexPlayer, 0, PlayerName::Hansel);
+    */
+
+    pGretel = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexHansel->getAspect(), 0.1f), pTexGretel, 0, PlayerName::Gretel);
+    if (Multiplayer)
+        pHansel = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexHansel->getAspect(), 0.1f), pTexHansel, 0, PlayerName::Hansel);
 
     if (CurrentLevel == 1) {
         // passo nullptr come texture per ora
@@ -429,10 +437,6 @@ void PlayState::ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned in
 }
 void PlayState::ProcessEvents() {
 
-    int fbWidth, fbHeight;
-    glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
-    float aspect = (float)fbWidth / (float)fbHeight;
-
     if (pEnemies.size() < TOTENEM) {
         lastSpawnTime += deltaTime;
 
@@ -480,7 +484,7 @@ void PlayState::ProcessEvents() {
                     int rdindex = distCandies(gen);
                     CandyType* type = pCandyTypes[rdindex];
                     TextureObject* texture = pCandiesMesh[rdindex];
-                    pCandies.emplace_back(new Candy(glm::vec2(pixelX, pixelY), glm::vec3(0.07f, 0.07f * aspect, 0.1f), texture, 0, *type));
+                    pCandies.emplace_back(new Candy(glm::vec2(pixelX, pixelY), glm::vec3(0.07f, 0.07f * getAspect(Window) * texture->getAspect(), 0.1f), texture, 0, *type));
                     printf("Spawnata caramella in posizione %f %f con texture %s di tipo %d\n", pixelX, pixelY, texture->Path, type->effect);
                 }
 
@@ -559,9 +563,9 @@ void PlayState::Render()
         }
     }
 
-    pGretel->Render(*pShader);
+    pGretel->Render(*pSpriteShader);
     if(Multiplayer)
-        pHansel->Render(*pShader);
+        pHansel->Render(*pSpriteShader);
 
     glDepthMask(GL_TRUE); // riattiva depth buffer
 

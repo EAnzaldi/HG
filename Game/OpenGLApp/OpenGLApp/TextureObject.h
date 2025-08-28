@@ -23,6 +23,7 @@ public:
     glm::vec3 getSize() const;
     float getWidth() const;
     float getHeigth() const;
+    float getAspect() const;
 
 private:
     void LoadTexture(const char* path);
