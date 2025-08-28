@@ -140,12 +140,7 @@ void MovingObject::Render(const Shader& Shader) const
         //model_mat = glm::scale(model_mat, this->Size);
         model_mat = glm::scale(model_mat, glm::vec3(FlipX * this->Size.x, this->Size.y, 1.0f));
 
-        Shader.setMat4("model", model_mat);
-
-        if (Dimension == DimensionType::ThreeD)
-            model->Draw(Shader);
-        else if (Dimension == DimensionType::TwoD)
-            fmesh->Draw(Shader, Texture->TextureID);
+        GameObject::Render(Shader, model_mat);
     }
 
     // Se l'oggetto si trova oltre il bordo a sinistra renderizzo la parte mancante a destra
@@ -157,11 +152,6 @@ void MovingObject::Render(const Shader& Shader) const
         //model_mat = glm::scale(model_mat, this->Size);
         model_mat = glm::scale(model_mat, glm::vec3(FlipX * this->Size.x, this->Size.y, 1.0f));
 
-        Shader.setMat4("model", model_mat);
-
-        if (Dimension == DimensionType::ThreeD)
-            model->Draw(Shader);
-        else if (Dimension == DimensionType::TwoD)
-            fmesh->Draw(Shader, Texture->TextureID);
+        GameObject::Render(Shader, model_mat);
     }
 }

@@ -16,68 +16,43 @@ GameObject::GameObject(glm::vec2 position, glm::vec3 size, TextureObject* textur
 }
 void GameObject::Render(const Shader& shader) const
 {
+    shader.use();
+
+    // Modifico model altrimenti disegnerei un quadrato in posizione 0,0
+    glm::mat4 model_mat = glm::mat4(1.0f);
+
+    // Posizione
+    model_mat = glm::translate(model_mat, glm::vec3(this->Position, 0.0f));
+
+    // Rotazione
+    model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), glm::vec3(0.0f, 1.0f, 0.0f)); // Ruota attorno all'asse Z
+
+    // Scalamento
+    //model_mat = glm::scale(model_mat, this->Size);
+    model_mat = glm::scale(model_mat, glm::vec3(FlipX * this->Size.x, this->Size.y, 1.0f));
+
+    Render(shader, model_mat);
+}
+void GameObject::Render(const Shader& shader, const glm::mat4 model_mat) const {
+    shader.setMat4("model", model_mat);
+
     if (Dimension == DimensionType::ThreeD)
         Render3D(shader);
     else if (Dimension == DimensionType::TwoD)
         Render2D(shader);
 }
+
 void GameObject::Render3D(const Shader& shader) const 
 {
-    shader.use();
-
-    if (this->Texture) {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, this->Texture->TextureID);
-        if(RepeatWidth)
-            shader.setVec2("textureReps", glm::vec2(Size.x * 10.0f, 1.0f));
-        else
-            shader.setVec2("textureReps", glm::vec2(1.0f, 1.0f));
-    }
-
-    // Modifico model altrimenti disegnerei un quadrato in posizione 0,0
-    glm::mat4 model_mat = glm::mat4(1.0f);
-
-    // Posizione
-    model_mat = glm::translate(model_mat, glm::vec3(this->Position, 0.0f));
-
-    // Rotazione
-    model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), glm::vec3(0.0f, 1.0f, 0.0f)); // Ruota attorno all'asse Z
-
-    // Scalamento
-    //model_mat = glm::scale(model_mat, this->Size);
-    model_mat = glm::scale(model_mat, glm::vec3(FlipX * this->Size.x, this->Size.y, 1.0f));
-
-
-    shader.setMat4("model", model_mat);
-
     model->Draw(shader);
 }
 
 void GameObject::Render2D(const Shader& shader) const
 {
-    shader.use();
-
-    if (this->Texture && RepeatWidth)
+    if (RepeatWidth)
         shader.setVec2("textureReps", glm::vec2(Size.x * 10.0f, 1.0f));
     else
         shader.setVec2("textureReps", glm::vec2(1.0f, 1.0f));
-
-    // Modifico model altrimenti disegnerei un quadrato in posizione 0,0
-    glm::mat4 model_mat = glm::mat4(1.0f);
-
-    // Posizione
-    model_mat = glm::translate(model_mat, glm::vec3(this->Position, 0.0f));
-
-    // Rotazione
-    model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), glm::vec3(0.0f, 1.0f, 0.0f)); // Ruota attorno all'asse Z
-
-    // Scalamento
-    //model_mat = glm::scale(model_mat, this->Size);
-    model_mat = glm::scale(model_mat, glm::vec3(FlipX * this->Size.x, this->Size.y, 1.0f));
-
-    shader.setMat4("model", model_mat);
-
-    //this->Print();
 
     fmesh->Draw(shader, Texture->TextureID);
 }

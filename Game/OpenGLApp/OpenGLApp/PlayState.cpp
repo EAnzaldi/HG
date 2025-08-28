@@ -6,6 +6,8 @@
 
 #define SPAWN_PROB_C 100 //percentuale di spawn delle caramelle (bonus e malus)
 
+#define FLAT 1
+
 bool PlayState::Multiplayer = false;
 bool PlayState::MultiplayerUnlocked = true;
 
@@ -286,9 +288,9 @@ void PlayState::Reset()
         pHansel = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexPlayer, 0, PlayerName::Hansel);
     */
 
-    pGretel = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexHansel->getAspect(), 0.1f), pTexGretel, 0, PlayerName::Gretel);
+    pGretel = new Player(glm::vec2(0.0f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexHansel->getAspect(), 0.1f), pTexGretel, 0, PlayerName::Gretel);
     if (Multiplayer)
-        pHansel = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexHansel->getAspect(), 0.1f), pTexHansel, 0, PlayerName::Hansel);
+        pHansel = new Player(glm::vec2(0.0f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexHansel->getAspect(), 0.1f), pTexHansel, 0, PlayerName::Hansel);
 
     if (CurrentLevel == 1) {
         // passo nullptr come texture per ora
@@ -299,7 +301,11 @@ void PlayState::Reset()
 
         for (int i = 0; i < 8; ++i)
         {
+#if FLAT
+            platforms.emplace_back(new GameObject(positions[i], sizes[i], pTexPlatforms, 1));
+#else
             platforms.emplace_back(new GameObject(positions[i], sizes[i], pCubeModel, pTexPlatforms, 1));
+#endif
         }
         /*
         float l = fbWidth / 20;
@@ -441,10 +447,17 @@ void PlayState::ProcessEvents() {
         lastSpawnTime += deltaTime;
 
         if (lastSpawnTime >= spawnTime) {
+#if FLAT
+            if (CurrentLevel == 1)
+                pEnemies.emplace_back(new Enemy(posSpawn[spawnPlace], glm::vec3(0.13f * pTexSlime->getAspect(), 0.13f , 0.1f), pTexSlime, 0, velocities[spawnPlace], true));
+            else if (CurrentLevel == 2)
+                pEnemies.emplace_back(new Enemy(posSpawn2[spawnPlace], glm::vec3(0.13f * pTexSlime->getAspect(), 0.13f, 0.1f), pTexSlime, 0, velocities2[spawnPlace], true));
+#else
             if (CurrentLevel == 1)
                 pEnemies.emplace_back(new Enemy(posSpawn[spawnPlace], glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, velocities[spawnPlace], true));
             else if (CurrentLevel == 2)
                 pEnemies.emplace_back(new Enemy(posSpawn2[spawnPlace], glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, velocities2[spawnPlace], true));
+#endif
             nEnemies++;
             lastSpawnTime = 0.0f;
             spawnTime = RandomInt(SPAWN_MIN_E, SPAWN_MAX_E);
@@ -538,7 +551,11 @@ void PlayState::Render()
     }*/
 
     for (const GameObject* pp : platforms)
+#if FLAT
+        pp->Render(*pSpriteShader);
+#else
         pp->Render(*pShader);
+#endif
 
     // disattiva depth buffer quando si disegnano oggetti trasparenti (interferisce con blending)
     glDepthMask(GL_FALSE);
@@ -554,10 +571,15 @@ void PlayState::Render()
         }
     }
 
+  
     if (!pEnemies.empty()) {
         for (Enemy* pe : pEnemies) {
             if (!pe->IsDead()) {
+  #if FLAT
+                pe->Render(*pSpriteShader);
+#else
                 pe->Render(*pShader);
+#endif
                 //printf("Renderizzo nemico %d, morto? %d\n", i + 1, pEnemies[i]->IsDead());
             }
         }

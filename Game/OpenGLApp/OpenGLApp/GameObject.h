@@ -52,12 +52,12 @@ public:
     Hitbox GetHitbox() const;
 
     //Hitbox GetHitboxFlat() const;
-
     void Print() const;
 
     float DistanceTo(GameObject* pObj) const;
 
 protected:
+    void Render(const Shader& shader, const glm::mat4 model_mat) const;
     void Render2D(const Shader& shader) const;
     void Render3D(const Shader& shader) const;
     Hitbox GetHitbox2D() const;
