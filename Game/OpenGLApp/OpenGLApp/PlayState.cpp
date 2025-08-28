@@ -170,6 +170,16 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
     pEnlightenedShader->setVec3("viewPos", pCamera->Position);
 
+    
+    glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+    glm::vec3 lightPosition(0.0f, -0.0f, 2.0f);
+    //glm::vec3 lightPosition(0.0f, -0.75f, 1.2f);
+
+   
+    ShaderManager::SetMaterial(*pEnlightenedShader, ShaderManager::Silver);
+    ShaderManager::SetLight(*pEnlightenedShader, lightPosition, lightColor);
+   
+    /*
     // valori per materiale dorato
     pEnlightenedShader->setVec3("material.ambient", glm::vec3(0.24725f, 0.1995f, 0.0745f));
     pEnlightenedShader->setVec3("material.diffuse", glm::vec3(0.75164f, 0.60648f, 0.22648f));
@@ -177,13 +187,15 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pEnlightenedShader->setFloat("material.shininess", 128.0f * 0.4f);
 
     // posizione fonte di luce
-    pEnlightenedShader->setVec3("light.position", glm::vec3(0.0f, -0.75f, 1.2f));
+    pEnlightenedShader->setVec3("light.position", lightPosition);
 
     // parametri luce
-    glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
     pEnlightenedShader->setVec3("light.ambient", lightColor * glm::vec3(0.3f));
     pEnlightenedShader->setVec3("light.diffuse", lightColor * glm::vec3(0.6f));
-    pEnlightenedShader->setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+    pEnlightenedShader->setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f)); */
+    
+    ShaderManager::PrintMaterialUniforms(*pEnlightenedShader);
+    ShaderManager::PrintLightUniforms(*pEnlightenedShader);
 
     // musica di sottofondo
     engine->play2D("resources/sounds/ost.wav", true);

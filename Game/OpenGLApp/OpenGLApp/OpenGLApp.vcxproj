@@ -151,6 +151,7 @@
     <ClCompile Include="MovingObject.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayState.cpp" />
+    <ClCompile Include="ShaderManager.cpp" />
     <ClCompile Include="StateManager.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="TextObject.cpp" />
@@ -159,6 +160,7 @@
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="Candy.h" />
+    <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="FlatMesh.h" />
