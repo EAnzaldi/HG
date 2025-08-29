@@ -160,6 +160,7 @@
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="Candy.h" />
+    <ClInclude Include="MouseObject.h" />
     <ClInclude Include="ShaderManager.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="Enemy.h" />

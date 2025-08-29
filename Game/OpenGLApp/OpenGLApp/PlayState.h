@@ -117,14 +117,6 @@ private:
 
 	Camera* pCamera;
 
-	// build and compile our shader zprogram
-	// -------------------------------------
-	Shader* pShader;
-	Shader* pTextShader;
-	Shader* pEnlightenedShader;
-	Shader* pEnlightenedTexturedShader;
-	Shader* pSpriteShader;
-
 	// The background image
 	//TImagePtr m_pBackgroundImg;
 

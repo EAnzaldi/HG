@@ -50,10 +50,6 @@ private:
 	// A pointer to the current active game (if any).
 	PlayState* CurrentGame;
 
-	Shader* pShader;
-	Shader* pTextShader;
-	Shader* pSpriteShader;
-
 	// The background image
 	TextureObject* pBackground;
 	GameObject* pBackgroundObj;

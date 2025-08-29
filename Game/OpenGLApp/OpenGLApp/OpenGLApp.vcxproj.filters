@@ -128,6 +128,9 @@
     <ClInclude Include="ShaderManager.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="MouseObject.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shader.vs">

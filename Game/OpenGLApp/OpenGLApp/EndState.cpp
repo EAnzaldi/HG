@@ -13,11 +13,6 @@ EndState::EndState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEn
     }
 
     pTextNormal = new TextObject(ft, "resources/fonts/8-bit-operator/8bitOperatorPlus8-Regular.ttf");
-
-    pShader = new Shader("shader.vs", "shader.fs");
-    pTextShader = new Shader("shader_text.vs", "shader_text.fs");
-
-    pShader->use();
 }
 
 

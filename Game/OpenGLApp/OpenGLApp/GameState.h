@@ -1,9 +1,13 @@
 #pragma once
 
+#include <glm/glm.hpp>
 #include <glad\glad.h>
 #include <GLFW/glfw3.h>
+#include <iostream>
 #include <irrKlang.h>
 #include "ShaderManager.h"
+#include "MouseObject.h"
+#include "TextureObject.h"
 
 // forward declaration per evitare inclusioni circolari
 class StateManager;
@@ -37,6 +41,13 @@ public:
 	virtual void EnterState() { }
 	virtual void LeaveState() { }
 
+	// Shaders
+	Shader* pShader;
+	Shader* pTextShader;
+	Shader* pEnlightenedShader;
+	//Shader* pEnlightenedTexturedShader;
+	Shader* pSpriteShader;
+
 protected:
 	// Helper function to switch to a new active state
 	void ChangeState(GameState* newState);
@@ -45,4 +56,6 @@ protected:
 	GLFWwindow* Window;	// The window manager
 	irrklang::ISoundEngine* Engine;	// The sound manager
 
+	MouseObject* Mouse;
+	//GameObject* Mouse;
 };

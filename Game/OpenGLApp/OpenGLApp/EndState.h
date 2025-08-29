@@ -37,7 +37,4 @@ private:
     TextObject* pTextRenderer;
     TextObject* pTextNormal;
 
-    Shader* pTextShader;
-    Shader* pShader;
-
 };

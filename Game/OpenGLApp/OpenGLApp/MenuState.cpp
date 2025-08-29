@@ -9,12 +9,6 @@
 MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
 	: GameState(manager, window, engine), CurrentSelection(NEW), CurrentGame(NULL)
 {
-    // build and compile our shader zprogram
-    // -------------------------------------
-    pShader = new Shader("shader.vs", "shader.fs");
-    pTextShader = new Shader("shader_text.vs", "shader_text.fs");
-	pSpriteShader = new Shader("shader_sprite.vs", "shader_sprite.fs");
-
     // Initializza FreeType
     if (FT_Init_FreeType(&ft)) {
         std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
@@ -82,7 +76,7 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 	float bottom = -1.0f;
 	float top = 1.0f;
 
-	pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.0f));
+	pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.5f));
 
 	glm::mat4 projectionNDC = glm::ortho(left, right, bottom, top);
 	/*glm::mat4 projection = glm::ortho(0.0f, SCR_WIDTH_F, 0.0f, SCR_HEIGHT_F);//left, right, bottom, top*/
@@ -93,7 +87,7 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 	// setup delle uniform delle shader che non cambieranno nel ciclo di rendering
 	// Shader base
 	pShader->use();
-	pShader->setMat4("projection", projectionNDC);
+	pShader->setMat4("projection", projectionPixels);
 	pShader->setMat4("view", view);
 
 	pSpriteShader->use();
@@ -164,6 +158,8 @@ void MenuState::MouseMoving(double xpos, double ypos)
 	int fbWidth, fbHeight;
 	glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
 	ypos = fbHeight - ypos; //OpenGL ha coordinata y Invertita rispetto a GLFW
+/*
+	Mouse->Move(xpos, ypos);*/
 
 	//Controllare se il cursore sia su una delle box
 	for (int i = 0; i < 3; i++) {
@@ -239,7 +235,11 @@ void MenuState::Render()
 
 	//pTestObj->RenderFlat(*pSpriteShader);
 
+	//Mouse->Move();
+	//Mouse->Render(*pShader);
+
 	glEnable(GL_DEPTH_TEST);
+
 
 
 	/*if (Status != GameStatus::Paused)

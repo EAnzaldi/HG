@@ -55,14 +55,6 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
     pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.5f));
 
-    // build and compile our shader zprogram
-    // -------------------------------------
-    pShader = new Shader("shader.vs", "shader.fs");
-    pTextShader = new Shader("shader_text.vs", "shader_text.fs");
-    pEnlightenedShader = new Shader("enlightened_object_shader.vs", "enlightened_object_shader.fs");
-    //pEnlightenedTexturedShader = new Shader("enlightened_textured_shader.vs", "enlightened_textured_shader.fs");
-    pSpriteShader = new Shader("shader_sprite.vs", "shader_sprite.fs");
-
     // Initializza FreeType
     if (FT_Init_FreeType(&ft)) {
         std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
@@ -155,7 +147,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     // setup delle uniform delle shader che non cambieranno nel ciclo di rendering
     // Shader base
     pShader->use();
-    pShader->setMat4("projection", projectionNDC);
+    pShader->setMat4("projection", projectionPixels);
     pShader->setMat4("view", view);
 
     // Shader sprite
@@ -444,6 +436,12 @@ void PlayState::ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned in
             pPlayer->EatCandy(pCloser->GetType());
             printf("Player ha mangiato una caramella misteriosa\n");
         }
+
+        /*
+        if(pPlayer->teleport)
+            Mouse->Show();
+        */
+
         canPressDOWN = false;
     }
     else if (glfwGetKey(Window, DOWN) == GLFW_RELEASE)
@@ -604,6 +602,11 @@ void PlayState::Render()
     if(Multiplayer)
         pHansel->Render(*pSpriteShader);
 
+    if (pGretel->teleport) {
+        Mouse->Move();
+        Mouse->Render(*pShader);
+    }
+
     glDepthMask(GL_TRUE); // riattiva depth buffer
     glEnable(GL_DEPTH_TEST);
 
@@ -646,6 +649,7 @@ void PlayState::MouseClick(int button, int action, int mods)
             }
         }
         //Se le coordinate sono corrette teleporta
+        //Mouse->Hide();
         pGretel->Teleport(glm::vec2(xpos,ypos));
         printf("Teleport effettuato\n");
     }
@@ -661,6 +665,8 @@ void PlayState::EnterState()
     // musica di sottofondo
     Engine->play2D("resources/sounds/ost.wav", true);
 
+    Mouse->Hide();
+
     if (Status == GameStatus::Paused)//salta prima chiamata
         totalPauseTime += glfwGetTime() - startPauseTime;
 
@@ -668,6 +674,7 @@ void PlayState::EnterState()
 }
 
 void PlayState::LeaveState() {
+    Mouse->Show();
     if(Status == GameStatus::Paused)
         startPauseTime = glfwGetTime();
 }
