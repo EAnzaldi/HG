@@ -140,4 +140,7 @@ private:
 	double startPauseTime;
 	int spawnTime;
 	double lastSpawnTime;
+
+	//Sound
+	irrklang::ISound* ost;
 };

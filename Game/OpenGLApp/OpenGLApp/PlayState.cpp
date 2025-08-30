@@ -189,9 +189,6 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     ShaderManager::PrintMaterialUniforms(*pEnlightenedShader);
     ShaderManager::PrintLightUniforms(*pEnlightenedShader);
 
-    // musica di sottofondo
-    engine->play2D("resources/sounds/ost.wav", true);
-
     // cattura il tempo iniziale di gioco
     startTime = glfwGetTime();
 }
@@ -211,6 +208,8 @@ PlayState::~PlayState() {
     //delete pEnemy;
     //delete pCauldron_right;
     //delete pCauldron_left;
+
+    ost->drop();
 
     //Distrugge FreeType
     FT_Done_FreeType(ft);
@@ -337,9 +336,6 @@ void PlayState::Reset()
             pKey = new GameObject(posKey, sizeKey, pKeyTex, 0);
     }
 
-    // musica di sottofondo
-    Engine->play2D("resources/sounds/ost.wav", true);
-
     lastSpawnTime = 0.0f;
     spawnTime = 0;
     spawnPlace = RandomInt(0, pCauldrons.size() - 1);
@@ -433,7 +429,7 @@ void PlayState::ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned in
 
         if (pCloser != nullptr) {
             pCloser->Eat();
-            pPlayer->EatCandy(pCloser->GetType());
+            pPlayer->EatCandy(pCloser->GetType(), Engine);
             printf("Player ha mangiato una caramella misteriosa\n");
         }
 
@@ -476,6 +472,7 @@ void PlayState::ProcessEvents() {
             lastSpawnTime = 0.0f;
             spawnTime = RandomInt(SPAWN_MIN_E, SPAWN_MAX_E);
             spawnPlace = RandomInt(0, pCauldrons.size() - 1);
+            Engine->play2D("resources/sounds/bubbles.wav");
             printf("Prossimo spawn tra %d s nel calderone %d\n", spawnTime, spawnPlace);
         }
     }
@@ -650,7 +647,7 @@ void PlayState::MouseClick(int button, int action, int mods)
         }
         //Se le coordinate sono corrette teleporta
         //Mouse->Hide();
-        pGretel->Teleport(glm::vec2(xpos,ypos));
+        pGretel->Teleport(glm::vec2(xpos,ypos), Engine);
         printf("Teleport effettuato\n");
     }
 }
@@ -662,10 +659,10 @@ void PlayState::EnterState()
         return;
     }
         
-    // musica di sottofondo
-    Engine->play2D("resources/sounds/ost.wav", true);
-
     Mouse->Hide();
+
+    // musica di sottofondo
+    ost = Engine->play2D("resources/sounds/kim_lightyear_angel_eyes_piano_version.wav", true, false, true);
 
     if (Status == GameStatus::Paused)//salta prima chiamata
         totalPauseTime += glfwGetTime() - startPauseTime;
@@ -675,6 +672,9 @@ void PlayState::EnterState()
 
 void PlayState::LeaveState() {
     Mouse->Show();
+
+    ost->stop();
+
     if(Status == GameStatus::Paused)
         startPauseTime = glfwGetTime();
 }

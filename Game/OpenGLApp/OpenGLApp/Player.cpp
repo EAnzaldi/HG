@@ -60,6 +60,7 @@ bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
         else if (collision == Collision::Top) {
 
             //std::cout << "Kill enemy" << std::endl;
+            engine->play2D("resources/sounds/kill_slime.wav");
             enemy->kill();
         }
     }
@@ -74,8 +75,9 @@ bool Player::CheckCandyCollision(Candy* candy, irrklang::ISoundEngine* engine)
     }
     return false;
 }
-void Player::EatCandy(CandyType type)
+void Player::EatCandy(CandyType type, irrklang::ISoundEngine* engine)
 {
+    engine->play2D("resources/sounds/crunch2.ogg");
     switch (type.effect) {
         case(EffectType::None): {} break;
         case(EffectType::NoJump): disableJump = true; nNoJump++; break;
@@ -107,9 +109,10 @@ void Player::DigestCandy(CandyType type)
         printf("Invincibility ended\n");
     }
 }
-void Player::Teleport(glm::vec2 position) {
+void Player::Teleport(glm::vec2 position, irrklang::ISoundEngine* engine) {
     Position = position;
     teleport = false;
+    engine->play2D("resources/sounds/teleport.wav");
 }
 void Player::HandleCollisionWithSolid(GameObject* solidObject)
 {

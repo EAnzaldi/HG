@@ -23,7 +23,9 @@ public:
 
 	void ProcessInput();
 	void Render();
+
 	void EnterState();
+	void LeaveState();
 
 	void MouseMoving(double xpos, double ypos) override;
 	void MouseClick(int button, int action, int mods) override;
@@ -78,6 +80,9 @@ private:
 	TextObject* pTextNormal;
 	TextObject* pTitle;
 	*/
+
+	//Sound
+	irrklang::ISound* ost;
 
 	FT_Library ft;
 

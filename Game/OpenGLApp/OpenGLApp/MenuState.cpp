@@ -97,7 +97,7 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 }
 
 MenuState::~MenuState() {
-
+	ost->drop();
 }
 
 MenuState* MenuState::GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
@@ -163,10 +163,14 @@ void MenuState::MouseMoving(double xpos, double ypos)
 
 	//Controllare se il cursore sia su una delle box
 	for (int i = 0; i < 3; i++) {
+		if (i==1 && Status == GameStatus::None)//no game -> skip resume
+			i++;
 		Hitbox bounds = pMenuObj[i]->GetHitbox();
 		bool isColliding = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
 		//Se è su una box selezionarla
 		if (isColliding) {
+			if(i!=CurrentSelection)
+				Engine->play2D("resources/sounds/click.wav");
 			CurrentSelection = i;
 			//printf("x:%lf, y:%lf, select:%d\n", xpos, ypos, CurrentSelection);
 			break;
@@ -196,6 +200,7 @@ void MenuState::MouseClick(int button, int action, int mods)
 		bounds = pMenuModObj[CurrentGame->IsMultiplayer()]->GetHitbox();
 		isColliding = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
 		if (isColliding) {
+			Engine->play2D("resources/sounds/click.wav");
 			PlayState::SwitchMode();
 		}
 	}
@@ -284,16 +289,18 @@ void MenuState::EnterState()
 	canPressEnter = false;
 
 	// musica di sottofondo
-	Engine->play2D("resources/sounds/ost.wav", true);
+	ost = Engine->play2D("resources/sounds/ost.wav", true, false, true);
 }
-
+void MenuState::LeaveState() {
+	ost->stop();
+}
 void MenuState::SelectionUp()
 {
-	
 	if(CurrentSelection > NEW)
 		CurrentSelection--;
 	if (CurrentSelection == RESUME && Status == GameStatus::None)//no game -> skip resume
 			CurrentSelection--;
+	Engine->play2D("resources/sounds/click.wav");
 }
 
 void MenuState::SelectionDown()
@@ -302,10 +309,12 @@ void MenuState::SelectionDown()
 		CurrentSelection++;
 	if (CurrentSelection == RESUME && Status == GameStatus::None)//no game -> skip resume
 		CurrentSelection++;
+	Engine->play2D("resources/sounds/click.wav");
 }
 
 void MenuState::SelectionChosen()
 {
+	Engine->play2D("resources/sounds/click.wav");
 	switch (CurrentSelection)
 	{
 	case NEW:

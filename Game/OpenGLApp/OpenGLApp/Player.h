@@ -58,9 +58,9 @@ class Player : public MovingObject
         
         void StartInvincibility();    // Avvia l'invincibilità
 
-        void EatCandy(CandyType type);
+        void EatCandy(CandyType type, irrklang::ISoundEngine* engine);
 
-        void Teleport(glm::vec2 position);
+        void Teleport(glm::vec2 position, irrklang::ISoundEngine* engine);
         bool teleport = false;
 
     private:
