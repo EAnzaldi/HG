@@ -65,7 +65,7 @@ void TextObject::LoadFont()
         glBindVertexArray(0);
  }
  // Renderizza il testo
- void TextObject::Render(Shader& shader, std::string text, float x, float y, float scale, glm::vec3 color){
+ void TextObject::Render(Shader& shader, std::string text, float x, float y, float scale, glm::vec3 color, Alignment alignment){
      if (x >= static_cast<float>(SCR_WIDTH) || y >= static_cast<float>(SCR_HEIGHT)) {
          std::cout << "ERROR::FREETYPE: Out of range coordinates" << std::endl;
      }
@@ -84,6 +84,22 @@ void TextObject::LoadFont()
 
      glActiveTexture(GL_TEXTURE0);
      glBindVertexArray(this->VAO);
+
+     if (alignment != Alignment::Left) {
+         float text_width = 0.0f;
+         //Calcola offset
+         for (char c : text) {
+             auto iterator = this->Characters.find(c);
+             if (iterator != this->Characters.end()) {
+                 Character ch = iterator->second;
+                 text_width += (ch.Advance >> 6) * scale;
+             }
+         }
+         if (alignment == Alignment::Center)
+             x -= text_width / 2.0f;
+         else if (alignment == Alignment::Right)
+             x -= text_width;
+     }
 
      // Itera su ogni carattere
      for (char c : text) {

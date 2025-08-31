@@ -701,12 +701,13 @@ void PlayState::RenderStats() {
     pText->Render(*pTextShader, lives, 1200.0f, 1100.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));*/
 
     std::string time = "TIME: " + std::to_string(remainingTime);
-    pText->Render(*pTextShader, time, 160.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
+    pText->Render(*pTextShader, time, 160.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0), Alignment::Left);
 
     std::string lives = "LIVES: " + std::to_string(pGretel->lives);
-    pText->Render(*pTextShader, lives, 960.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
+    pText->Render(*pTextShader, lives, 960.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0), Alignment::Left);
 
     std::string level = "LEVEL " + std::to_string(CurrentLevel);
-    pText->Render(*pTextShader, level, fbWidth * 0.4f, 880.0f, 1.3f, glm::vec3(255.0, 255.0, 255.0));
+    //pText->Render(*pTextShader, level, fbWidth * 0.4f, 880.0f, 1.3f, glm::vec3(255.0, 255.0, 255.0), Alignment::Left);
+    pText->Render(*pTextShader, level, fbWidth/2.0f, 880.0f, 1.3f, glm::vec3(255.0, 255.0, 255.0), Alignment::Right);
 
 }

@@ -70,9 +70,9 @@ void EndState::Render()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         TextColor = { 255.0f, 255.0f, 255.0f };
         // "Game Over" centrato e in alto
-        pTextNormal->Render(*pTextShader, "Game Over", SCR_WIDTH / 2 - 300.0f, SCR_HEIGHT / 2 + 100.0f, 2.0f, TextColor);
+        pTextNormal->Render(*pTextShader, "Game Over", SCR_WIDTH / 2 - 300.0f, SCR_HEIGHT / 2 + 100.0f, 2.0f, TextColor, Alignment::Left);
         // "Premi INVIO per ricominciare" centrato sotto
-        pTextNormal->Render(*pTextShader, "Premi INVIO per ricominciare", SCR_WIDTH / 2 - 300.0f, SCR_HEIGHT / 2 - 50.0f, 1.2f, TextColor);
+        pTextNormal->Render(*pTextShader, "Premi INVIO per ricominciare", SCR_WIDTH / 2 - 300.0f, SCR_HEIGHT / 2 - 50.0f, 1.2f, TextColor, Alignment::Left);
     }
     else if (Status == GameStatus::Victory) {
         // Pulisce lo schermo
@@ -80,9 +80,9 @@ void EndState::Render()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         TextColor = { 0.0f, 0.0f, 0.0f };
         // "Victory" centrato e in alto
-        pTextNormal->Render(*pTextShader, "Victory", SCR_WIDTH / 2 - 300.0f, SCR_HEIGHT / 2 + 100.0f, 2.0f, TextColor);
+        pTextNormal->Render(*pTextShader, "Victory", SCR_WIDTH / 2 - 300.0f, SCR_HEIGHT / 2 + 100.0f, 2.0f, TextColor, Alignment::Left);
         // "Premi INVIO per ricominciare" centrato sotto
-        pTextNormal->Render(*pTextShader, "Premi INVIO per ricominciare", SCR_WIDTH / 2 - 300.0f, SCR_HEIGHT / 2 - 50.0f, 1.2f, TextColor);
+        pTextNormal->Render(*pTextShader, "Premi INVIO per ricominciare", SCR_WIDTH / 2 - 300.0f, SCR_HEIGHT / 2 - 50.0f, 1.2f, TextColor, Alignment::Left);
     }    
 
 }

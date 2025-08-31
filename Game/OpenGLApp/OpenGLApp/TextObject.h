@@ -17,6 +17,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+enum class Alignment { Left, Center, Right };
+
 struct Character
 {
     unsigned int TextureID; // ID handle of the glyph texture
@@ -34,7 +36,7 @@ public:
 
     TextObject(FT_Library ft, const char* path);
     
-    void Render(Shader& shader, std::string text, float x, float y, float scale, glm::vec3 color);
+    void Render(Shader& shader, std::string text, float x, float y, float scale, glm::vec3 color, Alignment alignment);
 
 private:
     unsigned int VAO, VBO;
