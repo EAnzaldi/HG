@@ -688,8 +688,9 @@ void PlayState::MouseClick(int button, int action, int mods)
             }
         }
         //Se le coordinate sono corrette teleporta
-        //Mouse->Hide();
-        pGretel->Teleport(glm::vec2(xpos,ypos), Engine);
+        pGretel->Teleport(glm::vec2(xpos - 0.05f,ypos), Engine);
+        if(Multiplayer)
+            pHansel->Teleport(glm::vec2(xpos + 0.05f, ypos), Engine);
         printf("Teleport effettuato\n");
     }
 }
