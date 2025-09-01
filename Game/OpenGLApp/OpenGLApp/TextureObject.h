@@ -22,7 +22,7 @@ public:
 
     glm::vec3 getSize() const;
     float getWidth() const;
-    float getHeigth() const;
+    float getHeight() const;
     float getAspect() const;
 
 private:

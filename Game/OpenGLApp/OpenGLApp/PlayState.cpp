@@ -1,5 +1,8 @@
 #include "PlayState.h"
 
+#define G_LIVES 3
+#define H_LIVES 2
+
 #define NP 1
 #define SPAWN_MIN_E 3
 #define SPAWN_MAX_E 6
@@ -92,12 +95,19 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pBackgroundModel = new Model("resources/models/background.obj");
 
     //caricamento modelli 2d
+    pHeartsTex[0] = new TextureObject("resources/textures/black_heart.png");
+    pHeartsTex[1] = new TextureObject("resources/textures/golden_heart.png");
     pKeyTex = new TextureObject("resources/textures/test.png");
     pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_pink.png"));
     pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_green.png"));
     pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_blue.png"));
     pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_orange.png"));
     pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_violet.png"));
+
+    //Creazione oggetti vite
+    pHearts[0] = new GameObject(glm::vec2(fbWidth * 0.05f, 895.0f), pHeartsTex[0]->getSize() / 8.0f, pHeartsTex[0], 0);
+    pHearts[1] = new GameObject(glm::vec2(fbWidth * 0.2f, 895.0f), pHeartsTex[1]->getSize() / 8.0f, pHeartsTex[1], 0);
+    //pHearts[1] = new GameObject(glm::vec2(fbWidth * 0.1f, pHearts[0]->Position.y - pHearts[0]->Size.y - 10.0f), pHeartsTex[1]->getSize() / 8.0f, pHeartsTex[1], 0);
 
     pCandyTypes.emplace_back(new CandyType(EffectType::NoJump, 10.0f));
     pCandyTypes.emplace_back(new CandyType(EffectType::Speed, 1.5f, 10.0f));
@@ -291,9 +301,11 @@ void PlayState::Reset()
         pHansel = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexPlayer, 0, PlayerName::Hansel);
     */
 
-    pGretel = new Player(glm::vec2(0.0f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexHansel->getAspect(), 0.1f), pTexGretel, 0, PlayerName::Gretel);
-    if (Multiplayer)
-        pHansel = new Player(glm::vec2(0.0f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexHansel->getAspect(), 0.1f), pTexHansel, 0, PlayerName::Hansel);
+    pGretel = new Player(glm::vec2(0.0f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexHansel->getAspect(), 0.1f), pTexGretel, 0, PlayerName::Gretel, G_LIVES);
+    if (Multiplayer) {
+        pGretel = new Player(glm::vec2(-0.05f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexHansel->getAspect(), 0.1f), pTexGretel, 0, PlayerName::Gretel, H_LIVES);
+        pHansel = new Player(glm::vec2(0.05f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexHansel->getAspect(), 0.1f), pTexHansel, 0, PlayerName::Hansel, H_LIVES);
+    }
 
     if (CurrentLevel == 1) {
         // passo nullptr come texture per ora
@@ -554,6 +566,11 @@ void PlayState::Render()
 
     glDisable(GL_DEPTH_TEST);
 
+    //Oggetti con coordinate NDC
+    //--------------------------------------------------------------------------------
+
+    ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::NDC);
+
     //pBackground->Render(*pShader);
     /*
     for (const GameObject& object : tests)
@@ -607,10 +624,35 @@ void PlayState::Render()
     glDepthMask(GL_TRUE); // riattiva depth buffer
     glEnable(GL_DEPTH_TEST);
 
+    //Oggetti 3D
+    //--------------------------------------------------------------------------------
+
     for (GameObject* pc : pCauldrons)
         pc->Render(*pEnlightenedShader);
 
-    // render testo per ultimo per essere davanti a tutto
+    //Oggetti con coordinate pixel
+    //--------------------------------------------------------------------------------
+    ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::Pixels);
+
+    float xstart = pHearts[0]->Position.x;
+
+    for (int i = 0; i < pGretel->lives; i++) {
+        pHearts[0]->Position.x = pHearts[0]->Position.x + pHearts[0]->Size.x + 10.0f;
+        pHearts[0]->Render(*pSpriteShader);
+    }
+    pHearts[0]->Position.x = xstart;
+
+    if (Multiplayer) {
+        xstart = pHearts[1]->Position.x;
+        for (int i = 0; i < pHansel->lives; i++) {
+            pHearts[1]->Position.x = pHearts[1]->Position.x + pHearts[1]->Size.x + 10.0f;
+            pHearts[1]->Render(*pSpriteShader);
+        }
+        pHearts[1]->Position.x = xstart;
+    }
+
+    //Testo (per ultimo per essere davanti a tutto)
+    //--------------------------------------------------------------------------------
     RenderStats();
 }
 void PlayState::MouseMoving(double xpos, double ypos)
@@ -701,13 +743,17 @@ void PlayState::RenderStats() {
     pText->Render(*pTextShader, lives, 1200.0f, 1100.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));*/
 
     std::string time = "TIME: " + std::to_string(remainingTime);
-    pText->Render(*pTextShader, time, 160.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0), Alignment::Left);
+    //pText->Render(*pTextShader, time, 160.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0), Alignment::Left);
+    pText->Render(*pTextShader, time, fbWidth * 0.8f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0), Alignment::Center);
 
-    std::string lives = "LIVES: " + std::to_string(pGretel->lives);
-    pText->Render(*pTextShader, lives, 960.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0), Alignment::Left);
+    //std::string lives = "LIVES: " + std::to_string(pGretel->lives);
+    //pText->Render(*pTextShader, lives, 960.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0), Alignment::Left);
+    //pText->Render(*pTextShader, lives, fbWidth * 0.2f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0), Alignment::Center);
 
     std::string level = "LEVEL " + std::to_string(CurrentLevel);
     //pText->Render(*pTextShader, level, fbWidth * 0.4f, 880.0f, 1.3f, glm::vec3(255.0, 255.0, 255.0), Alignment::Left);
-    pText->Render(*pTextShader, level, fbWidth/2.0f, 880.0f, 1.3f, glm::vec3(255.0, 255.0, 255.0), Alignment::Right);
+    pText->Render(*pTextShader, level, fbWidth * 0.5f, 880.0f, 1.3f, glm::vec3(255.0, 255.0, 255.0), Alignment::Center);
+
+    pText->Render(*pTextShader, "SCORE: XXXX", fbWidth * 0.5f, 840.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0), Alignment::Center);
 
 }

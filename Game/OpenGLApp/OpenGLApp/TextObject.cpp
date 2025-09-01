@@ -86,8 +86,8 @@ void TextObject::LoadFont()
      glBindVertexArray(this->VAO);
 
      if (alignment != Alignment::Left) {
+         //Calcola dimensione del testo per ricavare l'offset per l'allineamento
          float text_width = 0.0f;
-         //Calcola offset
          for (char c : text) {
              auto iterator = this->Characters.find(c);
              if (iterator != this->Characters.end()) {

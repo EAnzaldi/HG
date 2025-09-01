@@ -71,6 +71,7 @@ private:
 	std::vector<GameObject*> pCauldrons;
 	std::vector<Candy*> pCandies;
 	GameObject* pKey;
+	GameObject* pHearts[2];
 
 	int nEnemies;
 	int spawnPlace;
@@ -92,7 +93,7 @@ private:
 
 	TextureObject* pKeyTex;
 
-	std::vector<TextureObject*> pBHeartsMesh;
+	TextureObject* pHeartsTex[2];
 
 	glm::vec2 positions[8];
 	glm::vec3 sizes[8];
@@ -116,9 +117,6 @@ private:
 	long CurrentScore;
 
 	Camera* pCamera;
-
-	// The background image
-	//TImagePtr m_pBackgroundImg;
 
 	TextureObject* pTexPlatforms;
 	TextureObject* pTexPlayer;

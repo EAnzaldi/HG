@@ -2,6 +2,8 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <GLFW/glfw3.h>
+#include <glm/gtc/matrix_transform.hpp>
 #include "shader_s.h"
 
 class MaterialType {
@@ -17,16 +19,23 @@ public:
 	};
 };
 
+enum class ProjectionType {NDC, Pixels};
+
 class ShaderManager {
 public:
 	static const MaterialType Gold;
 	static const MaterialType Silver;
-
+	
+	static void SetProjection(const Shader& shader, GLFWwindow* window, ProjectionType type);
 	static void SetMaterial(const Shader& shader, const MaterialType& material);
 	static void SetLight(const Shader& shader, glm::vec3 position, glm::vec3 color);
 
 	static void PrintMaterialUniforms(const Shader& shader);
 	static void PrintLightUniforms(const Shader& shader);
+
+	private:
+	static const glm::mat4 projectionNDC;
+
 
 };
 

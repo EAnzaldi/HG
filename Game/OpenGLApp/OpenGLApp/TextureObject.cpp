@@ -52,7 +52,7 @@ float TextureObject::getWidth() const
     return static_cast<float>(Width);
 }
 
-float TextureObject::getHeigth() const
+float TextureObject::getHeight() const
 {
     return static_cast<float>(Height);
 }

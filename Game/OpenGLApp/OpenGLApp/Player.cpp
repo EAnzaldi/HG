@@ -1,14 +1,14 @@
 #include "Player.h"
 
-Player::Player(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, PlayerName name)
+Player::Player(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, PlayerName name, int lives)
     : MovingObject(position, size, model, repeatWidth, velocity = glm::vec2(0.0f, 0.0f), true), 
-    invincibilityDuration(1.0f), invincibilityTimer(0.0f), isInvincible(false), name(name)
+    invincibilityDuration(1.0f), invincibilityTimer(0.0f), isInvincible(false), name(name), lives(lives)
 {
 
 }
-Player::Player(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, PlayerName name)
+Player::Player(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, PlayerName name, int lives)
     : MovingObject(position, size, texture, repeatWidth, velocity = glm::vec2(0.0f, 0.0f), true),
-        invincibilityDuration(1.0f), invincibilityTimer(0.0f), isInvincible(false), name(name)
+        invincibilityDuration(1.0f), invincibilityTimer(0.0f), isInvincible(false), name(name), lives(lives)
 {
 
 }

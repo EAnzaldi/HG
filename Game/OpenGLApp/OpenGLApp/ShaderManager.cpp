@@ -14,6 +14,20 @@ const MaterialType ShaderManager::Silver(
 	128.0f * 0.4f
 );
 
+const glm::mat4 ShaderManager::projectionNDC = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f);
+
+void ShaderManager::SetProjection(const Shader& shader, GLFWwindow* window, ProjectionType type) {
+    shader.use();
+    if (type == ProjectionType::NDC) {
+        shader.setMat4("projection", projectionNDC);
+    }
+    else if (type == ProjectionType::Pixels) {
+        int fbWidth, fbHeight;
+        glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+        glm::mat4 projectionPixels = glm::ortho(0.0f, static_cast<float>(fbWidth), 0.0f, static_cast<float>(fbHeight));
+        shader.setMat4("projection", projectionPixels);
+    }
+}
 void ShaderManager::SetMaterial(const Shader& shader, const MaterialType& material) {
 	shader.use();
 	shader.setVec3("material.ambient", material.ambient);

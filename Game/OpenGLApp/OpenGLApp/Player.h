@@ -28,7 +28,7 @@ class Player : public MovingObject
         float invincibilityTimer;    // Timer corrente per l'invincibilità
 
         bool isDead = false;    //Player inizia vivo
-        int lives = 3;          //Player inizia con 3 vite
+        int lives;          //Player inizia con 3 vite
 
         float baseJumpForce = 1.5f;         // Forza iniziale del salto
 
@@ -42,9 +42,9 @@ class Player : public MovingObject
         std::vector<ActiveEffect*> pAEffects;
 
         //Costruttore 3d
-        Player(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, PlayerName name);
+        Player(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, PlayerName name, int lives);
         //Costruttore 2d
-        Player(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, PlayerName name);
+        Player(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, PlayerName name, int lives);
 
         void HandleJump(float deltaTime, irrklang::ISoundEngine* engine);
 
