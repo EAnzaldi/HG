@@ -21,6 +21,7 @@ public:
     bool IsEaten() { return Ate; }
     void Eat() { Ate = true; }
     CandyType GetType() { return type; }
+    EffectType GetEffect() { return type.effect; }
 
     Candy(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, CandyType type);
 

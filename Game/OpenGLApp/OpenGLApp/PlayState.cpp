@@ -266,7 +266,6 @@ void PlayState::Reset()
     glm::vec2 posCauldron2[3] = { {-0.89f, 0.04f}, {0.29f, 0.04f}, {0.89f, -0.36f} };
     glm::vec3 sizeCauldron = { 0.1f, 0.1f, 0.1f };
     
-
     CurrentScore = 0;
 
     if (pGretel != nullptr)
@@ -445,6 +444,14 @@ void PlayState::ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned in
         if (pCloser != nullptr) {
             pCloser->Eat();
             pPlayer->EatCandy(pCloser->GetType(), Engine);
+            EffectType effect = pCloser->GetEffect();
+            //Add score
+            if(effect == EffectType::NoJump || effect == EffectType::SpeedEnemy)
+                CurrentScore += scoreMalus;
+            else if (effect == EffectType::Speed || effect == EffectType::Invincibility)
+                CurrentScore += scoreBonus;
+            else if (effect == EffectType::Teleport)
+                CurrentScore += scoreTelep;
             printf("Player ha mangiato una caramella misteriosa\n");
         }
 
@@ -500,6 +507,7 @@ void PlayState::ProcessEvents() {
             }
             else if (pe->IsDead()) {//Se enemy muore
                 nEnemies--;
+                CurrentScore += scoreEnemy;
                 printf("Nemico morto a %f, %f\n", pe->Position.x, pe->Position.y);
                 if (CurrentLevel==1 && nEnemies <= 0 && pEnemies.size() == TOTENEM) {
                     Status = GameStatus::Victory;
@@ -589,7 +597,7 @@ void PlayState::Render()
 #endif
 
     // disattiva depth buffer quando si disegnano oggetti trasparenti (interferisce con blending)
-    glDepthMask(GL_FALSE);
+    //glDepthMask(GL_FALSE);
 
     if (CurrentLevel == 2)
         pKeys[Multiplayer]->Render(*pSpriteShader);
@@ -624,7 +632,7 @@ void PlayState::Render()
         Mouse->Render(*pShader);
     }
 
-    glDepthMask(GL_TRUE); // riattiva depth buffer
+    //glDepthMask(GL_TRUE); // riattiva depth buffer
     glEnable(GL_DEPTH_TEST);
 
     //Oggetti 3D
@@ -739,6 +747,9 @@ void PlayState::RenderStats() {
         Status = GameStatus::GameOver;
     }
 
+    char buf[100];
+    glm::vec3 color = { 255.0, 255.0, 255.0 };
+
     /*
     std::string time = "TIME: " + std::to_string(remainingTime);
     pText->Render(*pTextShader, time, 200.0f, 1100.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));
@@ -746,9 +757,11 @@ void PlayState::RenderStats() {
     std::string lives = "LIVES: " + std::to_string(pPlayer->lives);
     pText->Render(*pTextShader, lives, 1200.0f, 1100.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));*/
 
-    std::string time = "TIME: " + std::to_string(remainingTime);
+    //std::string time = "TIME: " + std::to_string(remainingTime);
+    snprintf(buf, 100, "TIME:%02d", remainingTime);
+    std::string time = buf;
     //pText->Render(*pTextShader, time, 160.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0), Alignment::Left);
-    pText->Render(*pTextShader, time, fbWidth * 0.8f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0), Alignment::Center);
+    pText->Render(*pTextShader, time, fbWidth * 0.8f, 880.0f, 1.0f, color, Alignment::Center);
 
     //std::string lives = "LIVES: " + std::to_string(pGretel->lives);
     //pText->Render(*pTextShader, lives, 960.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0), Alignment::Left);
@@ -756,8 +769,10 @@ void PlayState::RenderStats() {
 
     std::string level = "LEVEL " + std::to_string(CurrentLevel);
     //pText->Render(*pTextShader, level, fbWidth * 0.4f, 880.0f, 1.3f, glm::vec3(255.0, 255.0, 255.0), Alignment::Left);
-    pText->Render(*pTextShader, level, fbWidth * 0.5f, 880.0f, 1.3f, glm::vec3(255.0, 255.0, 255.0), Alignment::Center);
+    pText->Render(*pTextShader, level, fbWidth * 0.5f, 880.0f, 1.3f, color, Alignment::Center);
 
-    pText->Render(*pTextShader, "SCORE: XXXX", fbWidth * 0.5f, 840.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0), Alignment::Center);
+    snprintf(buf, 100, "SCORE:%04d", CurrentScore);
+    std::string score = buf;
+    pText->Render(*pTextShader, score, fbWidth * 0.5f, 840.0f, 0.9f, color, Alignment::Center);
 
 }

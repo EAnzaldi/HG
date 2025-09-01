@@ -2,6 +2,9 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <unordered_map>
+#include <iomanip>
+
 #include "Camera.h"
 #include "TextObject.h"
 #include "TextureObject.h"
@@ -11,7 +14,6 @@
 #include "EndState.h"
 #include "Player.h"
 #include "Candy.h"
-#include <unordered_map>
 
 #define TOTENEM 15
 
@@ -40,6 +42,13 @@ public:
 	static bool IsMultiplayerUnlocked() { return MultiplayerUnlocked; };
 
 	const double start = 99;// tempo massimo per livello
+
+	static const int scoreMalus = 10;
+	static const int scoreEnemy = 50;
+	static const int scoreBonus = 60;
+	static const int scoreTelep = 100;
+
+	void AddScore(int score) { CurrentScore += score; };
 
 	// Returns the single instance (-> singleton)
 	static PlayState* GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
