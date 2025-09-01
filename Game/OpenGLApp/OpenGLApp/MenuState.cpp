@@ -158,8 +158,6 @@ void MenuState::MouseMoving(double xpos, double ypos)
 	int fbWidth, fbHeight;
 	glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
 	ypos = fbHeight - ypos; //OpenGL ha coordinata y Invertita rispetto a GLFW
-/*
-	Mouse->Move(xpos, ypos);*/
 
 	//Controllare se il cursore sia su una delle box
 	for (int i = 0; i < 3; i++) {
@@ -198,8 +196,10 @@ void MenuState::MouseClick(int button, int action, int mods)
 		if (PlayState::IsMultiplayerUnlocked() == false)
 			return;
 		bounds = pMenuModObj[CurrentGame->IsMultiplayer()]->GetHitbox();
-		isColliding = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
-		if (isColliding) {
+		bool isCollidingText = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
+		bounds = pArrowObj[CurrentGame->IsMultiplayer()]->GetHitbox();
+		bool isCollidingArrow = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
+		if (isCollidingText || isCollidingArrow) {
 			Engine->play2D("resources/sounds/click.wav");
 			PlayState::SwitchMode();
 		}
