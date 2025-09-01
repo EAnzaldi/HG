@@ -70,7 +70,7 @@ private:
 	std::vector<Enemy*> pEnemies;
 	std::vector<GameObject*> pCauldrons;
 	std::vector<Candy*> pCandies;
-	GameObject* pKey;
+	GameObject* pKeys[2];
 	GameObject* pHearts[2];
 
 	int nEnemies;
@@ -91,7 +91,7 @@ private:
 	std::vector<CandyType*> pCandyTypes;
 	std::vector<int> pProbabilities;
 
-	TextureObject* pKeyTex;
+	TextureObject* pKeysTex[2];
 
 	TextureObject* pHeartsTex[2];
 
@@ -108,7 +108,7 @@ private:
 	Player* pHansel;
 	
 	int CurrentLevel;// The current level
-	int StartLevel = 1;// The initial level
+	int StartLevel = 2;// The initial level
 
 	static bool Multiplayer;
 	static bool MultiplayerUnlocked;

@@ -97,7 +97,8 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     //caricamento modelli 2d
     pHeartsTex[0] = new TextureObject("resources/textures/black_heart.png");
     pHeartsTex[1] = new TextureObject("resources/textures/golden_heart.png");
-    pKeyTex = new TextureObject("resources/textures/test.png");
+    pKeysTex[0] = new TextureObject("resources/textures/key1.png");
+    pKeysTex[1] = new TextureObject("resources/textures/key2.png");
     pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_pink.png"));
     pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_green.png"));
     pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_blue.png"));
@@ -264,8 +265,7 @@ void PlayState::Reset()
     glm::vec2 posCauldron[2] = { {0.89f, 0.64f}, {-0.89f, 0.64f} };
     glm::vec2 posCauldron2[3] = { {-0.89f, 0.04f}, {0.29f, 0.04f}, {0.89f, -0.36f} };
     glm::vec3 sizeCauldron = { 0.1f, 0.1f, 0.1f };
-    glm::vec2 posKey = {0.0f, 0.64f};
-    glm::vec3 sizeKey = { 0.1f, 0.1f, 0.1f };
+    
 
     CurrentScore = 0;
 
@@ -344,8 +344,11 @@ void PlayState::Reset()
             platforms.emplace_back(new GameObject(positions2[i], sizes2[i], pCubeModel, 1));
 #endif
         }
-        if (pKey == nullptr)
-            pKey = new GameObject(posKey, sizeKey, pKeyTex, 0);
+
+        if (pKeys[Multiplayer] == nullptr)
+            pKeys[Multiplayer] = new GameObject(glm::vec2(0.0f, 0.61f),
+                                                glm::vec3(0.09f * pKeysTex[Multiplayer]->getAspect(), 0.09f * getAspect(Window), 0.1f),
+                                                pKeysTex[Multiplayer], 0);
     }
 
     lastSpawnTime = 0.0f;
@@ -458,7 +461,7 @@ void PlayState::ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned in
     pPlayer->Move(deltaTime);
     pPlayer->CheckCollisionWithSolids(platforms);
 
-    if (CurrentLevel == 2 && pPlayer->CheckCollision(pKey) != MovingObject::Collision::None)
+    if (CurrentLevel == 2 && pPlayer->CheckCollision(pKeys[Multiplayer]) != MovingObject::Collision::None)
         Status = GameStatus::Victory;
 
     pPlayer->Update(deltaTime); // Aggiorna lo stato del giocatore
@@ -589,7 +592,7 @@ void PlayState::Render()
     glDepthMask(GL_FALSE);
 
     if (CurrentLevel == 2)
-        pKey->Render(*pSpriteShader);
+        pKeys[Multiplayer]->Render(*pSpriteShader);
 
     if (!pCandies.empty()) {
         for (Candy* pc : pCandies) {
