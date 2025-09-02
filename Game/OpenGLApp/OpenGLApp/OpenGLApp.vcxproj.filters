@@ -66,6 +66,9 @@
     <ClCompile Include="ShaderManager.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="ScoreState.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shader_s.h">
@@ -129,6 +132,9 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="MouseObject.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="ScoreState.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>

@@ -110,6 +110,8 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pHearts[1] = new GameObject(glm::vec2(fbWidth * 0.2f, 895.0f), pHeartsTex[1]->getSize() / 8.0f, pHeartsTex[1], 0);
     //pHearts[1] = new GameObject(glm::vec2(fbWidth * 0.1f, pHearts[0]->Position.y - pHearts[0]->Size.y - 10.0f), pHeartsTex[1]->getSize() / 8.0f, pHeartsTex[1], 0);
 
+    candySize = glm::vec3(0.07f, 0.07f * getAspect(Window), 0.1f);
+
     pCandyTypes.emplace_back(new CandyType(EffectType::NoJump, 10.0f));
     pCandyTypes.emplace_back(new CandyType(EffectType::Speed, 1.5f, 10.0f));
     pCandyTypes.emplace_back(new CandyType(EffectType::SpeedEnemy, 1.5f, 10.0f));
@@ -128,12 +130,12 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     printf("TAB CARAMELLE\n");
     for (int i = 0; i < std::min(pCandiesMesh.size(), pCandyTypes.size()); i++)
         printf("%d\t%s\n", pCandyTypes[i]->effect, pCandiesMesh[i]->Path);
-
+ 
     /*
     for (int i = 0; i < std::min(pCandiesMesh.size(), pCandyTypes.size()); i++) {
         typeToTextureMap.emplace(pCandyTypes[i], pCandiesMesh[i]);
     }
-
+   
     for (auto& it : typeToTextureMap) {
         CandyType* type = it.first;
         TextureObject* texture = it.second;
@@ -390,8 +392,9 @@ void PlayState::ProcessInput()
         ChangeState(MenuState::GetInstance(Manager, Window, Engine));
     }
 
-    ProcessInputPlayer(pGretel, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_A, GLFW_KEY_D);
-    if(Multiplayer)
+    if(!pGretel->isDead)
+        ProcessInputPlayer(pGretel, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_A, GLFW_KEY_D);
+    if(Multiplayer && !pHansel->isDead)
         ProcessInputPlayer(pHansel, GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_LEFT, GLFW_KEY_RIGHT);
 
 }
@@ -501,7 +504,6 @@ void PlayState::ProcessEvents() {
 
     for (Enemy* pe : pEnemies) {
         if (pe->IsDead() == false) {
-
             if (pGretel->CheckEnemyCollision(pe, Engine) || (Multiplayer && pHansel->CheckEnemyCollision(pe, Engine))) {//Se un player muore
                 Status = GameStatus::GameOver;
             }
@@ -510,6 +512,7 @@ void PlayState::ProcessEvents() {
                 CurrentScore += scoreEnemy;
                 printf("Nemico morto a %f, %f\n", pe->Position.x, pe->Position.y);
                 if (CurrentLevel==1 && nEnemies <= 0 && pEnemies.size() == TOTENEM) {
+                    CurrentScore += remainingTime * scoreTime;
                     Status = GameStatus::Victory;
                 }
                 //spawn candy
@@ -531,7 +534,7 @@ void PlayState::ProcessEvents() {
                     int rdindex = distCandies(gen);
                     CandyType* type = pCandyTypes[rdindex];
                     TextureObject* texture = pCandiesMesh[rdindex];
-                    pCandies.emplace_back(new Candy(glm::vec2(pixelX, pixelY), glm::vec3(0.07f, 0.07f * getAspect(Window) * texture->getAspect(), 0.1f), texture, 0, *type));
+                    pCandies.emplace_back(new Candy(glm::vec2(pixelX, pixelY), candySize, texture, 0, *type));
                     printf("Spawnata caramella in posizione %f %f con texture %s di tipo %d\n", pixelX, pixelY, texture->Path, type->effect);
                 }
 
@@ -551,16 +554,35 @@ void PlayState::ProcessEvents() {
             }
         }
 
+    
     if (Status == GameStatus::GameOver) {
         //reset !
         ChangeState(EndState::GetInstance(Manager, Window, Engine));
     }
     else if (Status == GameStatus::Victory) {
-        CurrentLevel++;
-        ChangeState(EndState::GetInstance(Manager, Window, Engine));
+        //Aggiorna statiche di fine partita
+        pGretel->GetStats(pCandyTypes, GretelCandyStats, GretelKills);
+        if(Multiplayer)
+            pHansel->GetStats(pCandyTypes, HanselCandyStats, HanselKills);
+        ChangeState(ScoreState::GetInstance(Manager, Window, Engine));
     }
-}
 
+    // Aggiorna il timer fine gioco
+    /*
+    if (Status == GameStatus::GameOver || Status == GameStatus::Victory)
+    {
+        endingTimer += deltaTime;
+        isEnding = true;
+        if (endingTimer >= endingDuration)
+        {
+            endingTimer = 0.0f;
+            if (Status == GameStatus::Victory) {
+                CurrentLevel++;
+                ChangeState(EndState::GetInstance(Manager, Window, Engine));
+            }
+        }
+    }*/
+}
 void PlayState::UpdateTime(long currentTime)
 {
 
@@ -623,11 +645,12 @@ void PlayState::Render()
         }
     }
 
-    pGretel->Render(*pSpriteShader);
-    if(Multiplayer)
+    if(!pGretel->isDead)
+        pGretel->Render(*pSpriteShader);
+    if(Multiplayer && !pHansel->isDead)
         pHansel->Render(*pSpriteShader);
 
-    if (pGretel->teleport) {
+    if (!isEnding && Player::teleport) {
         Mouse->Move();
         Mouse->Render(*pShader);
     }
@@ -672,7 +695,7 @@ void PlayState::MouseMoving(double xpos, double ypos)
 }
 void PlayState::MouseClick(int button, int action, int mods)
 {
-    if (pGretel->teleport && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+    if (!isEnding && Player::teleport && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         //Ottiene coordinate pixel
         double xpos, ypos;
         int fbWidth, fbHeight;
@@ -739,7 +762,7 @@ void PlayState::RenderStats() {
 
     currentTime = static_cast<int>((glfwGetTime() - startTime) - totalPauseTime);
 
-    int remainingTime = start - currentTime;
+    remainingTime = start - currentTime;
 
     // se scade il tempo perdo e chiudo il gioco
     if (remainingTime <= 0)

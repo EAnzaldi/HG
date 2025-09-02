@@ -1,5 +1,7 @@
 #include "Player.h"
 
+bool Player::teleport = false;
+
 Player::Player(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, PlayerName name, int lives)
     : MovingObject(position, size, model, repeatWidth, velocity = glm::vec2(0.0f, 0.0f), true), 
     invincibilityDuration(1.0f), invincibilityTimer(0.0f), isInvincible(false), name(name), lives(lives)
@@ -49,7 +51,7 @@ bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
             {
                 lives--; // Perde una vita
                 std::cout << "Lives left: " << lives << std::endl;
-                StartInvincibility(); // Inizia l'invincibilità
+                StartTempInvincibility(); // Inizia l'invincibilità
             }
             else
             {
@@ -62,6 +64,7 @@ bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
             //std::cout << "Kill enemy" << std::endl;
             engine->play2D("resources/sounds/kill_slime.wav");
             enemy->kill();
+            nKills++;
         }
     }
     return isDead;
@@ -80,11 +83,23 @@ void Player::EatCandy(CandyType type, irrklang::ISoundEngine* engine)
     engine->play2D("resources/sounds/crunch2.ogg");
     switch (type.effect) {
         case(EffectType::None): {} break;
-        case(EffectType::NoJump): disableJump = true; nNoJump++; break;
-        case(EffectType::Speed): maxVelocity *= type.value; break;
-        case(EffectType::SpeedEnemy): Enemy::SpeedUp(type.value); break;
-        case(EffectType::Invincibility): isInvincible = true; nInvincibility++; printf("INVINCIBLE!\n"); break;
-        case(EffectType::Teleport): teleport = true; return;//non viene inserito nel vettore degli effetti
+        case(EffectType::NoJump):       disableJump = true;
+                                        nNoJump++;
+                                        nNoJumpEaten++; //Aggiorna statistica
+                                        break;
+        case(EffectType::Speed):        maxVelocity *= type.value;
+                                        nSpeedEaten++;  //Aggiorna statistica
+                                        break;
+        case(EffectType::SpeedEnemy):   Enemy::SpeedUp(type.value);
+                                        nSpeedEnemyEaten++; //Aggiorna statistica
+                                        break;
+        case(EffectType::Invincibility):isInvincible = true;
+                                        nInvincibility++;
+                                        nInvincibilityEaten++; //Aggiorna statistica
+                                        break;
+        case(EffectType::Teleport):     teleport = true;
+                                        nTeleportEaten++; //Aggiorna statistica
+                                        return;//non viene inserito nel vettore degli effetti ma gestito separatamente
         default: return;
     }
     ActiveEffect* pe = new ActiveEffect(type);
@@ -108,6 +123,23 @@ void Player::DigestCandy(CandyType type)
         isInvincible = false;
         printf("Invincibility ended\n");
     }
+}
+void Player::GetStats(std::vector<CandyType*> pCandyTypes, std::vector<int>& candyStats, int& kills) {
+
+    candyStats.resize(pCandyTypes.size());
+
+    for (int i = 0; i < pCandyTypes.size(); i++) {
+        switch (pCandyTypes[i]->effect){
+            case(EffectType::NoJump):           candyStats[i] = nNoJumpEaten; break;
+            case(EffectType::Speed):            candyStats[i] = nSpeedEaten; break;
+            case(EffectType::SpeedEnemy):       candyStats[i] = nSpeedEnemyEaten; break;
+            case(EffectType::Invincibility):    candyStats[i] = nInvincibilityEaten; break;
+            case(EffectType::Teleport):         candyStats[i] = nTeleportEaten; break;
+            default:                            candyStats[i] = 0;
+        }
+    }
+
+    kills = nKills;
 }
 void Player::Teleport(glm::vec2 position, irrklang::ISoundEngine* engine) {
     Position = position;
@@ -184,9 +216,14 @@ void Player::Update(float deltaTime)
     }   
 }
 
-void Player::StartInvincibility()
+void Player::StartTempInvincibility()
 {
     isInvincible = true;
     invincibilityTimer = 0.0f; // Resetta il timer
 }
-
+void Player::StartInvincibility() {
+    isInvincible = true;
+}
+void Player::EndInvincibility() {
+    isInvincible = false;
+}

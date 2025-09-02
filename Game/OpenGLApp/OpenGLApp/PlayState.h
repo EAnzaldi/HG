@@ -14,8 +14,9 @@
 #include "EndState.h"
 #include "Player.h"
 #include "Candy.h"
+#include "ScoreState.h"
 
-#define TOTENEM 15
+#define TOTENEM 1
 
 class PlayState : public GameState
 {
@@ -43,12 +44,30 @@ public:
 
 	const double start = 99;// tempo massimo per livello
 
-	static const int scoreMalus = 10;
-	static const int scoreEnemy = 50;
-	static const int scoreBonus = 60;
-	static const int scoreTelep = 100;
+	static const int scoreMalus = 100;
+	static const int scoreEnemy = 500;
+	static const int scoreBonus = 600;
+	static const int scoreTelep = 1000;
+	static const int scoreTime = 50; //50 pt x sec rimasto
 
 	void AddScore(int score) { CurrentScore += score; };
+
+	std::vector<TextureObject*> pCandiesMesh;
+	//std::unordered_map<CandyType*, TextureObject*> typeToTextureMap;
+	std::vector<CandyType*> pCandyTypes;
+	std::vector<int> pProbabilities;
+
+	std::vector<int> GretelCandyStats;
+	std::vector<int> HanselCandyStats;
+	int GretelKills;
+	int HanselKills;
+
+	glm::vec3 candySize;
+
+	int remainingTime;//countdown
+
+	int CurrentLevel;// The current level
+	int StartLevel = 2;// The initial level
 
 	// Returns the single instance (-> singleton)
 	static PlayState* GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
@@ -95,11 +114,6 @@ private:
 	//FlatMesh* pTest;
 	//std::vector<GameObject> tests;
 
-	std::vector<TextureObject*> pCandiesMesh;
-	//std::unordered_map<CandyType*, TextureObject*> typeToTextureMap;
-	std::vector<CandyType*> pCandyTypes;
-	std::vector<int> pProbabilities;
-
 	TextureObject* pKeysTex[2];
 
 	TextureObject* pHeartsTex[2];
@@ -115,9 +129,6 @@ private:
 	TextureObject* pTexHansel;
 	Player* pGretel;
 	Player* pHansel;
-	
-	int CurrentLevel;// The current level
-	int StartLevel = 2;// The initial level
 
 	static bool Multiplayer;
 	static bool MultiplayerUnlocked;
@@ -141,12 +152,16 @@ private:
 	double deltaTime;
 
 	//Store time when game pauses
-	int currentTime;//countdown
+	int currentTime;//count-up
 	double startTime;
 	double totalPauseTime;
 	double startPauseTime;
 	int spawnTime;
 	double lastSpawnTime;
+
+	const float endingDuration = 10.0f;	// Durata timer fine gioco
+	float endingTimer = 0.0f;			// Timer dopo il fine gioco
+	bool isEnding = false;
 
 	//Sound
 	irrklang::ISound* ost;

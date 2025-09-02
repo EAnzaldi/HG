@@ -1,12 +1,13 @@
 #pragma once
 
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
+#include "shader_s.h"
 #include "GameState.h"
 #include "MenuState.h"
 #include "TextObject.h"
 #include "TextureObject.h"
-#include "shader_s.h"
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 // Ex GameOverState
 // Specializzazione di EndState per lo stato di fine partita (Game Over - Victory)

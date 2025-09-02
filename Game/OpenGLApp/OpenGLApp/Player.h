@@ -56,17 +56,30 @@ class Player : public MovingObject
 
         void Update(float deltaTime); // Aggiorna lo stato del giocatore
         
-        void StartInvincibility();    // Avvia l'invincibilità
+        // Avviano l'invincibilità
+        void StartTempInvincibility(); 
+        void StartInvincibility();
+        void EndInvincibility();
 
         void EatCandy(CandyType type, irrklang::ISoundEngine* engine);
 
+        void GetStats(std::vector<CandyType*> pCandyTypes, std::vector<int>& candyStats, int& kills);
+
         void Teleport(glm::vec2 position, irrklang::ISoundEngine* engine);
-        bool teleport = false;
+        static bool teleport;
 
     private:
         bool disableJump = false;
         int nNoJump = 0;
         int nInvincibility = 0;
+
+        int nNoJumpEaten = 0;
+        int nSpeedEaten = 0;
+        int nSpeedEnemyEaten = 0;
+        int nInvincibilityEaten = 0;
+        int nTeleportEaten = 0;
+
+        int nKills = 0;
 
         void DigestCandy(CandyType type);
 
