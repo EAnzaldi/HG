@@ -32,6 +32,9 @@ protected:
 
 
 private:
+
+    void ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned int DOWN, unsigned int LEFT, unsigned int RIGHT);
+
     FT_Library ft;
 
     // A pointer to the current active game (if any).
@@ -40,6 +43,24 @@ private:
     TextObject* pTextNormal;
 
     GameObject* pCandy;
+    GameObject* pSlime;
+
+    TextureObject* pLevelsCompletedTex[2];
+    GameObject* pLevelsCompleted[2];
+
+    GameObject* pFloor;
+    std::vector<GameObject*> solidsGretel;
+    std::vector<GameObject*> solidsHansel;
+
+    Player* pGretel;
+    Player* pHansel;
+
+    // Gestione frame
+    double lastFrame;
+    double deltaTime;
+
+    Model* pCageModel;
+    GameObject* pCage;
 
     Camera* pCamera;
 };

@@ -23,5 +23,6 @@ public:
     static void SpeedDown(float amount);
 
     private:
-        
+
+    static float speedBonus;  
 };

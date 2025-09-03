@@ -1,5 +1,7 @@
 #include "PlayState.h"
 
+#define TOTENEM 2
+
 #define G_LIVES 3
 #define H_LIVES 2
 
@@ -82,7 +84,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     //pTexPlayer = new TextureObject("resources/textures/ice_cream_block.jpg");
     pTexGretel = new TextureObject("resources/textures/gretel.png");
     pTexHansel = new TextureObject("resources/textures/hansel.png");
-    pTexEnemy = new TextureObject("resources/textures/awesomeface.png");
+    //pTexEnemy = new TextureObject("resources/textures/awesomeface.png");
     pTexSlime = new TextureObject("resources/textures/slime2-mod.png");
     pTexBackground = new TextureObject("resources/textures/dark_wood_background2.png");
 
@@ -118,11 +120,11 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pCandyTypes.emplace_back(new CandyType(EffectType::Invincibility, 5.0f));
     pCandyTypes.emplace_back(new CandyType(EffectType::Teleport));
 
-    pProbabilities.emplace_back(0);
-    pProbabilities.emplace_back(0);
-    pProbabilities.emplace_back(0);
-    pProbabilities.emplace_back(0);
-    pProbabilities.emplace_back(50);
+    pProbabilities.emplace_back(20);
+    pProbabilities.emplace_back(20);
+    pProbabilities.emplace_back(20);
+    pProbabilities.emplace_back(20);
+    pProbabilities.emplace_back(20);
 
     //Associazione run-time tra texture ed effetto della caramella
     std::shuffle(pCandiesMesh.begin(), pCandiesMesh.end(), rd);
@@ -208,8 +210,8 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 PlayState::~PlayState() {
 
     delete pTexPlatforms;
-    delete pTexPlayer;
-    delete pTexEnemy;
+    //delete pTexPlayer;
+    //delete pTexEnemy;
     delete pCamera;
     delete pShader;
     delete pTextShader;
@@ -302,9 +304,9 @@ void PlayState::Reset()
         pHansel = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexPlayer, 0, PlayerName::Hansel);
     */
 
-    pGretel = new Player(glm::vec2(0.0f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexHansel->getAspect(), 0.1f), pTexGretel, 0, PlayerName::Gretel, G_LIVES);
+    pGretel = new Player(glm::vec2(0.0f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexGretel->getAspect(), 0.1f), pTexGretel, 0, PlayerName::Gretel, G_LIVES);
     if (Multiplayer) {
-        pGretel = new Player(glm::vec2(-0.05f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexHansel->getAspect(), 0.1f), pTexGretel, 0, PlayerName::Gretel, H_LIVES);
+        pGretel = new Player(glm::vec2(-0.05f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexGretel->getAspect(), 0.1f), pTexGretel, 0, PlayerName::Gretel, H_LIVES);
         pHansel = new Player(glm::vec2(0.05f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexHansel->getAspect(), 0.1f), pTexHansel, 0, PlayerName::Hansel, H_LIVES);
     }
 

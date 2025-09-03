@@ -11,6 +11,7 @@ Enemy::Enemy(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool re
 {
 
 }
+float Enemy::speedBonus = 1.0f;
 void Enemy::HandleCollisionWithSolid(GameObject* solidObject)
 {
     Hitbox thisHitbox = this->GetHitbox();
@@ -47,7 +48,6 @@ void Enemy::HandleCollisionWithSolid(GameObject* solidObject)
         this->velocity.y = 0;
     }
 }
-static float speedBonus = 1.0f;
 void Enemy::Move(float deltaTime)
 {
     float original = velocity.x;

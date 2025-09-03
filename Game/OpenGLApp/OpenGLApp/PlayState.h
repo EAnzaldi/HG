@@ -16,8 +16,6 @@
 #include "Candy.h"
 #include "ScoreState.h"
 
-#define TOTENEM 1
-
 class PlayState : public GameState
 {
 public:
@@ -50,12 +48,19 @@ public:
 	static const int scoreTelep = 1000;
 	static const int scoreTime = 50; //50 pt x sec rimasto
 
+	// The current score
+	long CurrentScore;
 	void AddScore(int score) { CurrentScore += score; };
 
 	std::vector<TextureObject*> pCandiesMesh;
 	//std::unordered_map<CandyType*, TextureObject*> typeToTextureMap;
 	std::vector<CandyType*> pCandyTypes;
 	std::vector<int> pProbabilities;
+
+	TextureObject* pTexGretel;
+	TextureObject* pTexHansel;
+	TextureObject* pTexPlatforms;
+	TextureObject* pTexSlime;
 
 	std::vector<int> GretelCandyStats;
 	std::vector<int> HanselCandyStats;
@@ -67,7 +72,7 @@ public:
 	int remainingTime;//countdown
 
 	int CurrentLevel;// The current level
-	int StartLevel = 2;// The initial level
+	int StartLevel = 1;// The initial level
 
 	// Returns the single instance (-> singleton)
 	static PlayState* GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
@@ -125,23 +130,16 @@ private:
 	glm::vec2 sizesTest[8];
 
 	// Pointer to the current player
-	TextureObject* pTexGretel;
-	TextureObject* pTexHansel;
 	Player* pGretel;
 	Player* pHansel;
 
 	static bool Multiplayer;
 	static bool MultiplayerUnlocked;
 
-	// The current score
-	long CurrentScore;
-
 	Camera* pCamera;
 
-	TextureObject* pTexPlatforms;
-	TextureObject* pTexPlayer;
-	TextureObject* pTexEnemy;
-	TextureObject* pTexSlime;
+	//TextureObject* pTexPlayer;
+	//TextureObject* pTexEnemy;
 	TextureObject* pTexBackground;
 
 	FT_Library ft;

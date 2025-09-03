@@ -14,6 +14,15 @@ Player::Player(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool 
 {
 
 }
+Player::~Player() {
+    //Dealloca e annulla effetti attivi delle caramelle mangiate
+    if (pAEffects.size() != 0) {
+        for (ActiveEffect* pe : pAEffects) {
+            DigestCandy(pe->type);
+            delete pe;
+        }
+    }
+}
 void Player::HandleJump(float deltaTime, irrklang::ISoundEngine* engine)
 {
     if (disableJump)
@@ -198,24 +207,26 @@ void Player::Update(float deltaTime)
     }
 
     bool erase = false;
-    if (pAEffects.size() != 0) {
-        // Altri aggiornamenti del giocatore
-        for (ActiveEffect* pe : pAEffects) {
-            pe->remainingTime -= deltaTime;
-            if (pe->remainingTime <= 0) {
-                DigestCandy(pe->type);
-                erase = true;
-            }  
+    // Altri aggiornamenti del giocatore
+    for (int i = 0; i < pAEffects.size(); i++) {
+        pAEffects[i]->remainingTime -= deltaTime;
+        if (pAEffects[i]->remainingTime <= 0) {
+            DigestCandy(pAEffects[i]->type);
+            delete pAEffects[i];
+            pAEffects[i] = nullptr;
+            erase = true;
         }
-        //Rimuove gli elementi nel vettore che soddisfano la condizione tempo restante <= 0
-        if(erase)
-            pAEffects.erase(std::remove_if(pAEffects.begin(), pAEffects.end(),
-                                        [](const ActiveEffect* pe) { return pe->remainingTime <= 0.0f; }),
-                        pAEffects.end());
-
-    }   
+    }
+    //Rimuove gli elementi nel vettore che soddisfano la condizione tempo restante <= 0
+    /*if (erase)
+        pAEffects.erase(std::remove_if(pAEffects.begin(), pAEffects.end(),
+                                    [](const ActiveEffect* pe) { return pe->remainingTime <= 0.0f; }),
+                    pAEffects.end());*/
+    if (erase)
+        pAEffects.erase(std::remove_if(pAEffects.begin(), pAEffects.end(),
+            [](const ActiveEffect* pe) { return pe == nullptr; }),
+            pAEffects.end());
 }
-
 void Player::StartTempInvincibility()
 {
     isInvincible = true;

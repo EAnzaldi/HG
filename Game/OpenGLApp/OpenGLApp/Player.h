@@ -46,6 +46,8 @@ class Player : public MovingObject
         //Costruttore 2d
         Player(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, PlayerName name, int lives);
 
+        ~Player();
+
         void HandleJump(float deltaTime, irrklang::ISoundEngine* engine);
 
         void HandleCollisionWithSolid(GameObject* solidObject) override;
