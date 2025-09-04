@@ -34,19 +34,25 @@ public:
 	void MouseClick(int button, int action, int mods) override;
 
 	void Reset();
-	void ResetLevel() { CurrentLevel = StartLevel; };
+	void ResetLevel() { CurrentLevel[Multiplayer] = StartLevel; };
 
-	static void SwitchMode() { Multiplayer = !Multiplayer; };
-	static bool IsMultiplayer() { return Multiplayer; };
-	static bool IsMultiplayerUnlocked() { return MultiplayerUnlocked; };
+	void SwitchMode() { Multiplayer = !Multiplayer; };
+	bool IsMultiplayer() { return Multiplayer; };
+	bool IsMultiplayerUnlocked() { return MultiplayerUnlocked; };
+	int GetLvl() { return CurrentLevel[Multiplayer]; };
+
+	int CurrentLevel[2];// The current level
+	int StartLevel = 1;// The initial level
+	//int StoryLevel;
+	//bool CompletedLevels[4] = { false, false, false, false };
 
 	const double start = 99;// tempo massimo per livello
 
-	static const int scoreMalus = 100;
-	static const int scoreEnemy = 500;
-	static const int scoreBonus = 600;
-	static const int scoreTelep = 1000;
-	static const int scoreTime = 50; //50 pt x sec rimasto
+	static const int scoreMalus = 10;
+	static const int scoreEnemy = 50;
+	static const int scoreBonus = 60;
+	static const int scoreTelep = 100;
+	static const int scoreTime = 10; //pt x sec rimasto
 
 	// The current score
 	long CurrentScore;
@@ -70,9 +76,6 @@ public:
 	glm::vec3 candySize;
 
 	int remainingTime;//countdown
-
-	int CurrentLevel;// The current level
-	int StartLevel = 1;// The initial level
 
 	// Returns the single instance (-> singleton)
 	static PlayState* GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
@@ -104,10 +107,16 @@ private:
 	std::vector<GameObject*> pCauldrons;
 	std::vector<Candy*> pCandies;
 	GameObject* pKeys[2];
-	GameObject* pHearts[2];
 
-	int nEnemies;
+	GameObject* pHearts[2];
+	GameObject* pSlimeUI;
+	GameObject* pKeysUI[2];
+
+	int nEnemiesKilled;
+	int nEnemiesAlive;
 	int spawnPlace;
+
+	int nKeys;
 
 	Model* pCubeModel;
 	Model* pCauldronModel;
@@ -133,8 +142,8 @@ private:
 	Player* pGretel;
 	Player* pHansel;
 
-	static bool Multiplayer;
-	static bool MultiplayerUnlocked;
+	bool Multiplayer;
+	bool MultiplayerUnlocked;
 
 	Camera* pCamera;
 

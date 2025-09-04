@@ -1,6 +1,7 @@
 #include "PlayState.h"
 
-#define TOTENEM 2
+#define TOTENEM 15
+#define TOTKEYS 1
 
 #define G_LIVES 3
 #define H_LIVES 2
@@ -13,8 +14,8 @@
 
 #define FLAT 1
 
-bool PlayState::Multiplayer = false;
-bool PlayState::MultiplayerUnlocked = true;
+bool Multiplayer = false;
+bool MultiplayerUnlocked = false;
 
 static glm::vec2 posSpawn[2] = { {-0.8f, 0.80f}, {0.8f, 0.80f} };
 static glm::vec2 posSpawn2[3] = { {-0.8f, 0.06f}, {0.2f, 0.06f}, {0.8f, -0.34f} };
@@ -53,7 +54,7 @@ static glm::vec2 posCauldron2[3] = { {-0.89f, 0.04f}, {0.29f, 0.04f}, {0.89f, -0
 static glm::vec3 sizeCauldron = { 0.1f, 0.1f, 0.1f };*/
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
-    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), CurrentLevel(StartLevel)
+    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f)
 {
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
@@ -79,6 +80,8 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
         //positionsTest[i] = { x_ndc, y_ndc };
     }*/
+
+    CurrentLevel[0] = CurrentLevel[1] = StartLevel;
 
     pTexPlatforms = new TextureObject("resources/textures/donut_block.jpg");
     //pTexPlayer = new TextureObject("resources/textures/ice_cream_block.jpg");
@@ -107,10 +110,14 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_orange.png"));
     pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_violet.png"));
 
-    //Creazione oggetti vite
+    //Creazione oggetti UI
     pHearts[0] = new GameObject(glm::vec2(fbWidth * 0.05f, 895.0f), pHeartsTex[0]->getSize() / 8.0f, pHeartsTex[0], 0);
     pHearts[1] = new GameObject(glm::vec2(fbWidth * 0.2f, 895.0f), pHeartsTex[1]->getSize() / 8.0f, pHeartsTex[1], 0);
     //pHearts[1] = new GameObject(glm::vec2(fbWidth * 0.1f, pHearts[0]->Position.y - pHearts[0]->Size.y - 10.0f), pHeartsTex[1]->getSize() / 8.0f, pHeartsTex[1], 0);
+
+    pSlimeUI = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.09f * pTexSlime->getAspect() * fbWidth / 2.0f, 0.09f * fbHeight / 2.0f, 0.1f), pTexSlime, 0);
+    pKeysUI[0] = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.045f * pKeysTex[0]->getAspect() * fbWidth / 2.0f, 0.045f * getAspect(Window) * fbHeight / 2.0f, 0.1f), pKeysTex[0], 0);
+    pKeysUI[1] = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.045f * pKeysTex[1]->getAspect() * fbWidth / 2.0f, 0.045f * getAspect(Window) * fbHeight / 2.0f, 0.1f), pKeysTex[1], 0);
 
     candySize = glm::vec3(0.07f, 0.07f * getAspect(Window), 0.1f);
 
@@ -237,7 +244,7 @@ PlayState* PlayState::GetInstance(StateManager* manager, GLFWwindow* window, irr
 
 void PlayState::Reset()
 {
-    if (CurrentLevel == 3)
+    if (CurrentLevel[Multiplayer] == 3)
         return;
 
     glm::vec2 positions[8] = {
@@ -272,6 +279,8 @@ void PlayState::Reset()
     
     CurrentScore = 0;
 
+    nKeys = 0;
+
     if (pGretel != nullptr)
         delete pGretel;
     if (pHansel != nullptr)
@@ -291,7 +300,8 @@ void PlayState::Reset()
             delete pe;
         pEnemies.clear();
     }
-    nEnemies = 0;
+    nEnemiesKilled = 0;
+    nEnemiesAlive = 0;
     if (!pCandies.empty()) {
         for (Candy* pc : pCandies)
             delete pc;
@@ -310,7 +320,7 @@ void PlayState::Reset()
         pHansel = new Player(glm::vec2(0.05f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexHansel->getAspect(), 0.1f), pTexHansel, 0, PlayerName::Hansel, H_LIVES);
     }
 
-    if (CurrentLevel == 1) {
+    if (CurrentLevel[Multiplayer] == 1) {
         // passo nullptr come texture per ora
         for (int i = 0; i < 2; i++)
         {
@@ -334,7 +344,7 @@ void PlayState::Reset()
         tests.emplace_back(glm::vec2(fbWidth * 4 / 5, 3 * l + l / 2), glm::vec3(l * 3.0f, l, 0.0f), pTest, 1);
         */
     }
-    else if (CurrentLevel == 2) {
+    else if (CurrentLevel[Multiplayer] == 2) {
         for (int i = 0; i < 3; i++)
         {
             pCauldrons.emplace_back(new GameObject(posCauldron2[i], sizeCauldron, pCauldronModel, 0));
@@ -378,7 +388,7 @@ void PlayState::ProcessInput()
 
     lastFrame = currentFrame;
 
-    // debug
+    // debug Gretel
     if (glfwGetKey(Window, GLFW_KEY_C) == GLFW_PRESS)
     {
         std::cout << ((pGretel->isOnGround == true) ? "A terra" : "In aria") << std::endl;
@@ -387,6 +397,12 @@ void PlayState::ProcessInput()
         std::cout << "HB-Bottom-Left: " << pGretel->GetHitbox().Min.x << ", " << pGretel->GetHitbox().Min.y << std::endl;
         std::cout << "HB-Top-Right: " << pGretel->GetHitbox().Max.x << ", " << pGretel->GetHitbox().Max.y << std::endl;
         std::cout << "Position-X: " << pGretel->Position.x << std::endl;
+    }
+
+    //debug skip livelli
+    if (glfwGetKey(Window, GLFW_KEY_V) == GLFW_PRESS)
+    {
+        Status = GameStatus::Victory;
     }
 
     if (glfwGetKey(Window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -473,8 +489,11 @@ void PlayState::ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned in
     pPlayer->Move(deltaTime);
     pPlayer->CheckCollisionWithSolids(platforms);
 
-    if (CurrentLevel == 2 && pPlayer->CheckCollision(pKeys[Multiplayer]) != MovingObject::Collision::None)
+    if (CurrentLevel[Multiplayer] == 2 && pPlayer->CheckCollision(pKeys[Multiplayer]) != MovingObject::Collision::None) {
+        nKeys--;
         Status = GameStatus::Victory;
+    }
+        
 
     pPlayer->Update(deltaTime); // Aggiorna lo stato del giocatore
 }
@@ -485,17 +504,17 @@ void PlayState::ProcessEvents() {
 
         if (lastSpawnTime >= spawnTime) {
 #if FLAT
-            if (CurrentLevel == 1)
+            if (CurrentLevel[Multiplayer] == 1)
                 pEnemies.emplace_back(new Enemy(posSpawn[spawnPlace], glm::vec3(0.13f * pTexSlime->getAspect(), 0.13f , 0.1f), pTexSlime, 0, velocities[spawnPlace], true));
-            else if (CurrentLevel == 2)
+            else if (CurrentLevel[Multiplayer] == 2)
                 pEnemies.emplace_back(new Enemy(posSpawn2[spawnPlace], glm::vec3(0.13f * pTexSlime->getAspect(), 0.13f, 0.1f), pTexSlime, 0, velocities2[spawnPlace], true));
 #else
-            if (CurrentLevel == 1)
+            if (CurrentLevel[Multiplayer] == 1)
                 pEnemies.emplace_back(new Enemy(posSpawn[spawnPlace], glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, velocities[spawnPlace], true));
-            else if (CurrentLevel == 2)
+            else if (CurrentLevel[Multiplayer] == 2)
                 pEnemies.emplace_back(new Enemy(posSpawn2[spawnPlace], glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, velocities2[spawnPlace], true));
 #endif
-            nEnemies++;
+            nEnemiesAlive++;
             lastSpawnTime = 0.0f;
             spawnTime = RandomInt(SPAWN_MIN_E, SPAWN_MAX_E);
             spawnPlace = RandomInt(0, pCauldrons.size() - 1);
@@ -510,11 +529,11 @@ void PlayState::ProcessEvents() {
                 Status = GameStatus::GameOver;
             }
             else if (pe->IsDead()) {//Se enemy muore
-                nEnemies--;
+                nEnemiesAlive--;
+                nEnemiesKilled++;
                 CurrentScore += scoreEnemy;
                 printf("Nemico morto a %f, %f\n", pe->Position.x, pe->Position.y);
-                if (CurrentLevel==1 && nEnemies <= 0 && pEnemies.size() == TOTENEM) {
-                    CurrentScore += remainingTime * scoreTime;
+                if (CurrentLevel[Multiplayer]==1 && nEnemiesKilled == TOTENEM) {
                     Status = GameStatus::Victory;
                 }
                 //spawn candy
@@ -559,13 +578,18 @@ void PlayState::ProcessEvents() {
     
     if (Status == GameStatus::GameOver) {
         //reset !
+        CurrentScore += remainingTime * scoreTime;
         ChangeState(EndState::GetInstance(Manager, Window, Engine));
     }
     else if (Status == GameStatus::Victory) {
         //Aggiorna statiche di fine partita
+        CurrentScore += remainingTime * scoreTime;
         pGretel->GetStats(pCandyTypes, GretelCandyStats, GretelKills);
         if(Multiplayer)
             pHansel->GetStats(pCandyTypes, HanselCandyStats, HanselKills);
+        //Sblocca multplayer sopo la vincita del secondo lvl single player
+        if (!Multiplayer && CurrentLevel[Multiplayer] == 2)
+            MultiplayerUnlocked == true;
         ChangeState(ScoreState::GetInstance(Manager, Window, Engine));
     }
 
@@ -579,7 +603,7 @@ void PlayState::ProcessEvents() {
         {
             endingTimer = 0.0f;
             if (Status == GameStatus::Victory) {
-                CurrentLevel++;
+                CurrentLevel[Multiplayer]++;
                 ChangeState(EndState::GetInstance(Manager, Window, Engine));
             }
         }
@@ -623,7 +647,7 @@ void PlayState::Render()
     // disattiva depth buffer quando si disegnano oggetti trasparenti (interferisce con blending)
     //glDepthMask(GL_FALSE);
 
-    if (CurrentLevel == 2)
+    if (CurrentLevel[Multiplayer] == 2)
         pKeys[Multiplayer]->Render(*pSpriteShader);
 
     if (!pCandies.empty()) {
@@ -666,29 +690,6 @@ void PlayState::Render()
     for (GameObject* pc : pCauldrons)
         pc->Render(*pEnlightenedShader);
 
-    //Oggetti con coordinate pixel
-    //--------------------------------------------------------------------------------
-    ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::Pixels);
-
-    float xstart = pHearts[0]->Position.x;
-
-    for (int i = 0; i < pGretel->lives; i++) {
-        pHearts[0]->Position.x = pHearts[0]->Position.x + pHearts[0]->Size.x + 10.0f;
-        pHearts[0]->Render(*pSpriteShader);
-    }
-    pHearts[0]->Position.x = xstart;
-
-    if (Multiplayer) {
-        xstart = pHearts[1]->Position.x;
-        for (int i = 0; i < pHansel->lives; i++) {
-            pHearts[1]->Position.x = pHearts[1]->Position.x + pHearts[1]->Size.x + 10.0f;
-            pHearts[1]->Render(*pSpriteShader);
-        }
-        pHearts[1]->Position.x = xstart;
-    }
-
-    //Testo (per ultimo per essere davanti a tutto)
-    //--------------------------------------------------------------------------------
     RenderStats();
 }
 void PlayState::MouseMoving(double xpos, double ypos)
@@ -733,8 +734,8 @@ void PlayState::MouseClick(int button, int action, int mods)
 void PlayState::EnterState()
 {
     //End of the game
-    if (CurrentLevel == 3) {
-        ChangeState(EndState::GetInstance(Manager, Window, Engine));
+    if (CurrentLevel[Multiplayer] == 3) {
+        ChangeState(ScoreState::GetInstance(Manager, Window, Engine));
         return;
     }
         
@@ -772,6 +773,30 @@ void PlayState::RenderStats() {
         Status = GameStatus::GameOver;
     }
 
+    //Oggetti con coordinate pixel
+    //--------------------------------------------------------------------------------
+    ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::Pixels);
+
+    float xstart = pHearts[0]->Position.x;
+
+    for (int i = 0; i < pGretel->lives; i++) {
+        pHearts[0]->Position.x = pHearts[0]->Position.x + pHearts[0]->Size.x + 10.0f;
+        pHearts[0]->Render(*pSpriteShader);
+    }
+    pHearts[0]->Position.x = xstart;
+
+    if (Multiplayer) {
+        xstart = pHearts[1]->Position.x;
+        for (int i = 0; i < pHansel->lives; i++) {
+            pHearts[1]->Position.x = pHearts[1]->Position.x + pHearts[1]->Size.x + 10.0f;
+            pHearts[1]->Render(*pSpriteShader);
+        }
+        pHearts[1]->Position.x = xstart;
+    }
+
+    //Testo (per ultimo per essere davanti a tutto)
+    //--------------------------------------------------------------------------------
+
     char buf[100];
     glm::vec3 color = { 255.0, 255.0, 255.0 };
 
@@ -783,21 +808,38 @@ void PlayState::RenderStats() {
     pText->Render(*pTextShader, lives, 1200.0f, 1100.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0));*/
 
     //std::string time = "TIME: " + std::to_string(remainingTime);
-    snprintf(buf, 100, "TIME:%02d", remainingTime);
+    snprintf(buf, 100, "TIME: %02d", remainingTime);
     std::string time = buf;
     //pText->Render(*pTextShader, time, 160.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0), Alignment::Left);
-    pText->Render(*pTextShader, time, fbWidth * 0.8f, 880.0f, 1.0f, color, Alignment::Center);
+    pText->Render(*pTextShader, time, fbWidth * 0.8f, 880.0f, 0.9f, color, Alignment::Left);
 
     //std::string lives = "LIVES: " + std::to_string(pGretel->lives);
     //pText->Render(*pTextShader, lives, 960.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0), Alignment::Left);
     //pText->Render(*pTextShader, lives, fbWidth * 0.2f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0), Alignment::Center);
 
-    std::string level = "LEVEL " + std::to_string(CurrentLevel);
+    //std::string level = "LEVEL " + std::to_string(CurrentLevel[Multiplayer]);
     //pText->Render(*pTextShader, level, fbWidth * 0.4f, 880.0f, 1.3f, glm::vec3(255.0, 255.0, 255.0), Alignment::Left);
-    pText->Render(*pTextShader, level, fbWidth * 0.5f, 880.0f, 1.3f, color, Alignment::Center);
+    //pText->Render(*pTextShader, level, fbWidth * 0.5f, 880.0f, 1.3f, color, Alignment::Center);
 
-    snprintf(buf, 100, "SCORE:%04d", CurrentScore);
+
+    //pText->Render(*pTextShader, std::string("SCORE"), fbWidth * 0.4f, 880.0f, 1.0f, color, Alignment::Center);
+    snprintf(buf, 100, "%05d", CurrentScore);
     std::string score = buf;
-    pText->Render(*pTextShader, score, fbWidth * 0.5f, 840.0f, 0.9f, color, Alignment::Center);
+    //pText->Render(*pTextShader, score, fbWidth * 0.5f, 840.0f, 0.9f, color, Alignment::Center);
+    pText->Render(*pTextShader, score, fbWidth * 0.4f, 880.0f, 0.9f, color, Alignment::Center);
 
+    if (CurrentLevel[Multiplayer] == 1) {
+        pSlimeUI->Position = glm::vec2(fbWidth * 0.6f - pSlimeUI->Size.x / 2.0f, 895.0f);
+        pSlimeUI->Render(*pSpriteShader);
+        snprintf(buf, 100, "%d/%d", nEnemiesKilled, TOTENEM);
+        std::string enemies = buf;
+        pText->Render(*pTextShader, enemies, pSlimeUI->Position.x + pSlimeUI->Size.x / 2.0f + 15.0f, 880.0f, 0.9f, color, Alignment::Left);
+    }
+    else if (CurrentLevel[Multiplayer] == 2) {
+        pKeysUI[Multiplayer]->Position = glm::vec2(fbWidth * 0.6f - pKeysUI[Multiplayer]->Size.x / 2.0f, 895.0f);
+        pKeysUI[Multiplayer]->Render(*pSpriteShader);
+        snprintf(buf, 100, "%d/%d", nKeys, TOTKEYS);
+        std::string keys = buf;
+        pText->Render(*pTextShader, keys, pKeysUI[Multiplayer]->Position.x + pKeysUI[Multiplayer]->Size.x / 2.0f + 15.0f, 880.0f, 0.9f, color, Alignment::Left);
+    }
 }

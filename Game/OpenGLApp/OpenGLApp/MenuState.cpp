@@ -130,16 +130,16 @@ void MenuState::ProcessInput()
 		canPressUp = true;
 
 	if (glfwGetKey(Window, GLFW_KEY_RIGHT) == GLFW_PRESS && canPressRight) {
-		if (PlayState::IsMultiplayerUnlocked())
-			PlayState::SwitchMode();
+		if (CurrentGame->IsMultiplayerUnlocked())
+			CurrentGame->SwitchMode();
 		canPressRight = false;
 	}
 	else if (glfwGetKey(Window, GLFW_KEY_RIGHT) == GLFW_RELEASE)
 		canPressRight = true;
 
 	if (glfwGetKey(Window, GLFW_KEY_LEFT) == GLFW_PRESS && canPressLeft) {
-		if (PlayState::IsMultiplayerUnlocked())
-			PlayState::SwitchMode();
+		if (CurrentGame->IsMultiplayerUnlocked())
+			CurrentGame->SwitchMode();
 		canPressLeft = false;
 	}
 	else if (glfwGetKey(Window, GLFW_KEY_LEFT) == GLFW_RELEASE)
@@ -193,7 +193,7 @@ void MenuState::MouseClick(int button, int action, int mods)
 			return;
 		}
 		//Controllare che il cursore sia sulla selezione modalità
-		if (PlayState::IsMultiplayerUnlocked() == false)
+		if (CurrentGame == nullptr || CurrentGame->IsMultiplayerUnlocked() == false)
 			return;
 		bounds = pMenuModObj[CurrentGame->IsMultiplayer()]->GetHitbox();
 		bool isCollidingText = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
@@ -201,7 +201,7 @@ void MenuState::MouseClick(int button, int action, int mods)
 		bool isCollidingArrow = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
 		if (isCollidingText || isCollidingArrow) {
 			Engine->play2D("resources/sounds/click.wav");
-			PlayState::SwitchMode();
+			CurrentGame->SwitchMode();
 		}
 	}
 }
@@ -224,10 +224,9 @@ void MenuState::Render()
 
 	glDisable(GL_DEPTH_TEST);//evita di considerare la profondità delle sprite
 
-	if (PlayState::IsMultiplayerUnlocked()) {
-		bool res = PlayState::IsMultiplayer();
-		pMenuModObj[res]->Render(*pSpriteShader);
-		pArrowObj[res]->Render(*pSpriteShader);
+	if (CurrentGame!=nullptr && CurrentGame->IsMultiplayerUnlocked()) {
+		pMenuModObj[CurrentGame->IsMultiplayer()]->Render(*pSpriteShader);
+		pArrowObj[CurrentGame->IsMultiplayer()]->Render(*pSpriteShader);
 	}
 
 	for (int i = 0; i < 3; i++)
