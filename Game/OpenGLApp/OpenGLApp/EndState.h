@@ -38,4 +38,8 @@ private:
     TextObject* pTextRenderer;
     TextObject* pTextNormal;
 
+    TextureObject* pBackgroundTex;
+    GameObject* pBackground;
+
+    Camera* pCamera;
 };

@@ -13,6 +13,17 @@ EndState::EndState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEn
     }
 
     pTextNormal = new TextObject(ft, "resources/fonts/8-bit-operator/8bitOperatorPlus8-Regular.ttf");
+
+    pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.5f));
+    glm::mat4 view = pCamera->GetViewMatrix();
+    pSpriteShader->use();
+    pSpriteShader->setMat4("view", view);
+    ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::Pixels);
+
+    int fbWidth, fbHeight;
+    glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
+    pBackgroundTex = new TextureObject("resources/textures/game_over2.png");
+    pBackground = new GameObject(glm::vec2(fbWidth/2.0f, fbHeight/2.0f), pBackgroundTex->getSize(), pBackgroundTex, 0);
 }
 
 
@@ -63,6 +74,12 @@ void EndState::Render()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    //glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    pBackground->Render(*pSpriteShader);
+
+    /*
     if (Status == GameStatus::GameOver) {
         // Pulisce lo schermo
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -84,6 +101,7 @@ void EndState::Render()
         // "Premi INVIO per ricominciare" centrato sotto
         pTextNormal->Render(*pTextShader, "Premi INVIO per ricominciare", SCR_WIDTH / 2 - 300.0f, SCR_HEIGHT / 2 - 50.0f, 1.2f, TextColor, Alignment::Left);
     }    
+    */
 
 }
 
