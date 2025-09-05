@@ -121,9 +121,9 @@ private:
 	Model* pCubeModel;
 	Model* pCauldronModel;
 	Model* pSlimeModel;
-	Model* pBackgroundModel;
+	//Model* pBackgroundModel;
 
-	GameObject* pBackground;
+	//GameObject* pBackground;
 
 	//FlatMesh* pTest;
 	//std::vector<GameObject> tests;
@@ -149,7 +149,7 @@ private:
 
 	//TextureObject* pTexPlayer;
 	//TextureObject* pTexEnemy;
-	TextureObject* pTexBackground;
+	//TextureObject* pTexBackground;
 
 	FT_Library ft;
 	TextObject* pText;

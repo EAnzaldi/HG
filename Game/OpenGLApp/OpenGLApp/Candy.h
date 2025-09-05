@@ -14,6 +14,8 @@ struct CandyType {
     CandyType(EffectType effect);
     CandyType(EffectType effect, float duration);
     CandyType(EffectType effect, float value, float duration);
+
+    const char* Print();
 };
 
 class Candy : public MovingObject {

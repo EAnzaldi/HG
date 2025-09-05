@@ -1,23 +1,30 @@
-﻿  EndState.cpp
+﻿  PlayState.cpp
 D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,31): warning C4244: 'inizializzazione': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
-  (compilazione del file di origine 'EndState.cpp')
+  (compilazione del file di origine 'PlayState.cpp')
   
 D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\utils.h(23,25): warning C4244: 'inizializzazione': conversione da 'time_t' a 'const unsigned int'. Possibile perdita di dati.
-  (compilazione del file di origine 'EndState.cpp')
+  (compilazione del file di origine 'PlayState.cpp')
   
 D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\MouseObject.h(23,22): warning C4244: '=': conversione da 'double' a 'T'. Possibile perdita di dati.
 D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\MouseObject.h(23,22): warning C4244:         with
 D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\MouseObject.h(23,22): warning C4244:         [
 D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\MouseObject.h(23,22): warning C4244:             T=float
 D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\MouseObject.h(23,22): warning C4244:         ]
-  (compilazione del file di origine 'EndState.cpp')
+  (compilazione del file di origine 'PlayState.cpp')
   
 D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\MouseObject.h(24,22): warning C4244: '=': conversione da 'double' a 'T'. Possibile perdita di dati.
 D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\MouseObject.h(24,22): warning C4244:         with
 D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\MouseObject.h(24,22): warning C4244:         [
 D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\MouseObject.h(24,22): warning C4244:             T=float
 D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\MouseObject.h(24,22): warning C4244:         ]
-  (compilazione del file di origine 'EndState.cpp')
+  (compilazione del file di origine 'PlayState.cpp')
   
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\EndState.cpp(73,15): warning C4101: 'TextColor': variabile locale senza riferimenti
+D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(366,49): warning C4267: 'argomento': conversione da 'size_t' a 'int'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(438,29): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(486,19): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(495,21): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(517,57): warning C4267: 'argomento': conversione da 'size_t' a 'int'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(561,26): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(571,26): warning C4244: 'argomento': conversione da 'double' a 'float'. Possibile perdita di dati.
+D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\PlayState.cpp(765,27): warning C4244: '=': conversione da 'double' a 'int'. Possibile perdita di dati.
   OpenGLApp.vcxproj -> D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\x64\Debug\OpenGLApp.exe

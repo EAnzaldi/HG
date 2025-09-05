@@ -89,7 +89,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pTexHansel = new TextureObject("resources/textures/hansel.png");
     //pTexEnemy = new TextureObject("resources/textures/awesomeface.png");
     pTexSlime = new TextureObject("resources/textures/slime2-mod.png");
-    pTexBackground = new TextureObject("resources/textures/dark_wood_background2.png");
+    //pTexBackground = new TextureObject("resources/textures/dark_wood_background2.png");
 
     pText = new TextObject(ft, "resources/fonts/8-bit-operator/8bitOperatorPlus8-Regular.ttf");
 
@@ -97,7 +97,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pCubeModel = new Model("resources/models/cubetto.obj");
     pCauldronModel = new Model("resources/models/cauldron.obj");
     pSlimeModel = new Model("resources/models/slime2.obj");
-    pBackgroundModel = new Model("resources/models/background.obj");
+    //pBackgroundModel = new Model("resources/models/background.obj");
 
     //caricamento modelli 2d
     pHeartsTex[0] = new TextureObject("resources/textures/black_heart.png");
@@ -152,7 +152,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     }
     printf("\n");*/
 
-    pBackground = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f), pTexBackground, 0);
+    //pBackground = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f), pTexBackground, 0);
 
     glm::mat4 projection2 = glm::ortho(0.0f, static_cast<float>(fbWidth), 0.0f, static_cast<float>(fbHeight));//left, right, bottom, top
 
@@ -207,9 +207,6 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pEnlightenedShader->setVec3("light.ambient", lightColor * glm::vec3(0.3f));
     pEnlightenedShader->setVec3("light.diffuse", lightColor * glm::vec3(0.6f));
     pEnlightenedShader->setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f)); */
-    
-    ShaderManager::PrintMaterialUniforms(*pEnlightenedShader);
-    ShaderManager::PrintLightUniforms(*pEnlightenedShader);
 
     // cattura il tempo iniziale di gioco
     startTime = glfwGetTime();
@@ -473,7 +470,7 @@ void PlayState::ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned in
                 CurrentScore += scoreBonus;
             else if (effect == EffectType::Teleport)
                 CurrentScore += scoreTelep;
-            printf("Player ha mangiato una caramella misteriosa\n");
+            //printf("Player ha mangiato una caramella misteriosa\n");
         }
 
         /*
@@ -532,7 +529,7 @@ void PlayState::ProcessEvents() {
                 nEnemiesAlive--;
                 nEnemiesKilled++;
                 CurrentScore += scoreEnemy;
-                printf("Nemico morto a %f, %f\n", pe->Position.x, pe->Position.y);
+                //printf("Nemico morto a %f, %f\n", pe->Position.x, pe->Position.y);
                 if (CurrentLevel[Multiplayer]==1 && nEnemiesKilled == TOTENEM) {
                     Status = GameStatus::Victory;
                 }
@@ -556,7 +553,7 @@ void PlayState::ProcessEvents() {
                     CandyType* type = pCandyTypes[rdindex];
                     TextureObject* texture = pCandiesMesh[rdindex];
                     pCandies.emplace_back(new Candy(glm::vec2(pixelX, pixelY), candySize, texture, 0, *type));
-                    printf("Spawnata caramella in posizione %f %f con texture %s di tipo %d\n", pixelX, pixelY, texture->Path, type->effect);
+                    printf("Spawnata caramella di tipo %s\n", type->Print());
                 }
 
             }

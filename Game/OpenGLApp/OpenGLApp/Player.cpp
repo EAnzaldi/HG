@@ -57,12 +57,12 @@ bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
         if (lives > 1)
         {
             lives--; // Perde una vita
-            std::cout << "Lives left: " << lives << std::endl;
+            //std::cout << "Lives left: " << lives << std::endl;
             StartTempInvincibility(); // Inizia l'invincibilità
         }
         else
         {
-            std::cout << "GAME OVER" << std::endl;
+            //std::cout << "GAME OVER" << std::endl;
             isDead = true;
         }
     }
@@ -127,7 +127,7 @@ void Player::DigestCandy(CandyType type)
         disableJump = false;
     if (nInvincibility <= 0) {
         isInvincible = false;
-        printf("Invincibility ended\n");
+        //printf("Invincibility ended\n");
     }
 }
 void Player::GetStats(std::vector<CandyType*> pCandyTypes, std::vector<int>& candyStats, int& kills) {
@@ -199,7 +199,7 @@ void Player::Update(float deltaTime)
         {
             isInvincible = false;  // Fine invincibilità
             invincibilityTimer = 0.0f;
-            std::cout << "Invincibility ended" << std::endl;
+            //std::cout << "Invincibility ended" << std::endl;
         }
     }
 

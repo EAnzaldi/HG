@@ -30,9 +30,6 @@ public:
 	static void SetMaterial(const Shader& shader, const MaterialType& material);
 	static void SetLight(const Shader& shader, glm::vec3 position, glm::vec3 color);
 
-	static void PrintMaterialUniforms(const Shader& shader);
-	static void PrintLightUniforms(const Shader& shader);
-
 	private:
 	static const glm::mat4 projectionNDC;
 
