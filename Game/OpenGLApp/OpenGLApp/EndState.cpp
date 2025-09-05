@@ -42,12 +42,13 @@ EndState* EndState::GetInstance(StateManager* manager, GLFWwindow* window, irrkl
 
 void EndState::EnterState()
 {
-    
+    // musica di sottofondo (non loop)
+    ost = Engine->play2D("resources/sounds/cleyron_xavier_no_hope.wav", false, false, true);
 }
 
 void EndState::LeaveState()
 {
-    
+    ost->stop();
 }
 
 

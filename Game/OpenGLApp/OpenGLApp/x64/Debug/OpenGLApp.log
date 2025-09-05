@@ -19,5 +19,5 @@ D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\MouseObject.h(24,22): warning
 D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\MouseObject.h(24,22): warning C4244:         ]
   (compilazione del file di origine 'EndState.cpp')
   
-D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\EndState.cpp(72,15): warning C4101: 'TextColor': variabile locale senza riferimenti
+D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\OpenGLApp\EndState.cpp(73,15): warning C4101: 'TextColor': variabile locale senza riferimenti
   OpenGLApp.vcxproj -> D:\ellyb\POLITO\04\IG\HG3\Game\OpenGLApp\x64\Debug\OpenGLApp.exe

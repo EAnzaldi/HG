@@ -35,8 +35,6 @@ private:
 
     void ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned int DOWN, unsigned int LEFT, unsigned int RIGHT);
 
-    FT_Library ft;
-
     // A pointer to the current active game (if any).
     PlayState* CurrentGame;
 
@@ -61,6 +59,11 @@ private:
 
     Model* pCageModel;
     GameObject* pCage;
+
+    //Sound
+    irrklang::ISound* ost;
+
+    FT_Library ft;
 
     Camera* pCamera;
 };

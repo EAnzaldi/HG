@@ -83,11 +83,14 @@ void ScoreState::EnterState()
         delete solidsGretel[1];
         solidsGretel.resize(1);
     }
+
+    // musica di sottofondo
+    ost = Engine->play2D("resources/sounds/tad_the_end_piano.mp3", true, false, true);
 }
 
 void ScoreState::LeaveState()
 {
-
+    ost->stop();
 }
 
 void ScoreState::ProcessInput()

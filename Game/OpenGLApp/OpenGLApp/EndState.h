@@ -33,13 +33,17 @@ protected:
 
 
 private:
-    FT_Library ft;
  
     TextObject* pTextRenderer;
     TextObject* pTextNormal;
 
     TextureObject* pBackgroundTex;
     GameObject* pBackground;
+
+    //Sound
+    irrklang::ISound* ost;
+
+    FT_Library ft;
 
     Camera* pCamera;
 };
