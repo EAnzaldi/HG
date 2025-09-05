@@ -114,27 +114,23 @@ void ScoreState::ProcessInput()
         ChangeState(MenuState::GetInstance(Manager, Window, Engine));
     }
 
-    ProcessInputPlayer(pGretel, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_A, GLFW_KEY_D);
-    if (CurrentGame->IsMultiplayer())
-        ProcessInputPlayer(pHansel, GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_LEFT, GLFW_KEY_RIGHT);
-
     if (CurrentGame->GetLvl() == 1) {
-        if (CurrentGame->IsMultiplayer() == false) {
-            pGretel->Move(deltaTime);
-            pGretel->CheckCollisionWithSolids(solidsGretel);
-        }
-        else {
-            pGretel->Move(deltaTime);
-            pGretel->CheckCollisionWithSolids(solidsGretel);
+        pGretel->Move(deltaTime);
+        pGretel->CheckCollisionWithSolids(solidsGretel);
+        ProcessInputPlayer(pGretel, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_A, GLFW_KEY_D);
+        if (CurrentGame->IsMultiplayer()) 
             pHansel->Move(deltaTime);
-            pHansel->CheckCollisionWithSolids(solidsHansel);
-        }
+        pHansel->CheckCollisionWithSolids(solidsHansel);
+        if (CurrentGame->IsMultiplayer())
+            ProcessInputPlayer(pHansel, GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_LEFT, GLFW_KEY_RIGHT);
     } else if (CurrentGame->GetLvl() == 2) {
         if (CurrentGame->IsMultiplayer() == false) {
             pGretel->Move(deltaTime);
             pGretel->CheckCollisionWithSolids(solidsGretel);
             pHansel->Move(deltaTime);
             pHansel->CheckCollisionWithSolids(solidsHansel);
+            ProcessInputPlayer(pGretel, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_A, GLFW_KEY_D);
+            ProcessInputPlayer(pHansel, GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_LEFT, GLFW_KEY_RIGHT);
         }
     }
 
@@ -255,7 +251,7 @@ void ScoreState::Render()
     ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::NDC);
 
     pFloor->Render(*pSpriteShader);
-    if (CurrentGame->GetLvl() < 2 && !CurrentGame->IsMultiplayer()) {
+    if (CurrentGame->GetLvl() == 1 || (CurrentGame->GetLvl() >= 2 && !CurrentGame->IsMultiplayer())) {
         pGretel->Render(*pSpriteShader);
         pHansel->Render(*pSpriteShader);
     }
@@ -266,26 +262,4 @@ void ScoreState::Render()
     //--------------------------------------------------------------------------------
     if(CurrentGame->GetLvl() == 1 && !CurrentGame->IsMultiplayer())
         pCage->Render(*pEnlightenedShader);
-
-
-    if (CurrentGame->GetLvl() == 1) {
-        if (CurrentGame->IsMultiplayer() == false) {
-            pGretel->Move(deltaTime);
-            pGretel->CheckCollisionWithSolids(solidsGretel);
-        }
-        else {
-            pGretel->Move(deltaTime);
-            pGretel->CheckCollisionWithSolids(solidsGretel);
-            pHansel->Move(deltaTime);
-            pHansel->CheckCollisionWithSolids(solidsHansel);
-        }
-    }
-    else if (CurrentGame->GetLvl() == 2) {
-        if (CurrentGame->IsMultiplayer() == false) {
-            pGretel->Move(deltaTime);
-            pGretel->CheckCollisionWithSolids(solidsGretel);
-            pHansel->Move(deltaTime);
-            pHansel->CheckCollisionWithSolids(solidsHansel);
-        }
-    }
 }

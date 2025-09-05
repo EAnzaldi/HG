@@ -127,11 +127,11 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pCandyTypes.emplace_back(new CandyType(EffectType::Invincibility, 5.0f));
     pCandyTypes.emplace_back(new CandyType(EffectType::Teleport));
 
-    pProbabilities.emplace_back(20);
-    pProbabilities.emplace_back(20);
-    pProbabilities.emplace_back(20);
-    pProbabilities.emplace_back(20);
-    pProbabilities.emplace_back(20);
+    pProbabilities.emplace_back(0);
+    pProbabilities.emplace_back(0);
+    pProbabilities.emplace_back(0);
+    pProbabilities.emplace_back(100);
+    pProbabilities.emplace_back(0);
 
     //Associazione run-time tra texture ed effetto della caramella
     std::shuffle(pCandiesMesh.begin(), pCandiesMesh.end(), rd);
@@ -587,9 +587,9 @@ void PlayState::ProcessEvents() {
         pGretel->GetStats(pCandyTypes, GretelCandyStats, GretelKills);
         if(Multiplayer)
             pHansel->GetStats(pCandyTypes, HanselCandyStats, HanselKills);
-        //Sblocca multplayer sopo la vincita del secondo lvl single player
-        if (!Multiplayer && CurrentLevel[Multiplayer] == 2)
-            MultiplayerUnlocked == true;
+        //Sblocca multiplayer sopo la vincita del secondo lvl single player
+        if (!MultiplayerUnlocked && CurrentLevel[Multiplayer] == 2)
+            MultiplayerUnlocked = true;
         ChangeState(ScoreState::GetInstance(Manager, Window, Engine));
     }
 

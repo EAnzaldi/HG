@@ -244,8 +244,6 @@ void MenuState::Render()
 
 	glEnable(GL_DEPTH_TEST);
 
-
-
 	/*if (Status != GameStatus::Paused)
 		colors[1] = NonAvailableColor;
 
