@@ -22,7 +22,8 @@ public:
     static void SpeedUp(float amount);
     static void SpeedDown(float amount);
 
-    private:
+private:
 
+    void Rotate();
     static float speedBonus;  
 };

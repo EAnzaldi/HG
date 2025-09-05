@@ -19,7 +19,7 @@ void MovingObject::Move(float deltaTime)
 
     this->Position += this->velocity * deltaTime;
 
-    //Teletrasporto
+    //Teletrasporto come pacman
     if (this->Position.x - this->Size.x / 2 >= 1.0f) {
         this->Position.x = -1.0f + this->Size.x / 2;
     }
@@ -28,31 +28,6 @@ void MovingObject::Move(float deltaTime)
         this->Position.x = 1.0f - this->Size.x / 2;
     }
 
-    if (velocity.x > 0.0f && !lastDirectionRight) {
-        targetRotation = 0.0f;  // Direzione verso destra
-        lastDirectionRight = true;
-    }
-    else if (velocity.x < 0.0f && lastDirectionRight) {
-        targetRotation = 180.0f;  // Direzione verso sinistra
-        lastDirectionRight = false;
-    }
-
-    // Se serve applico la rotazione del modello
-    /*
-    if (std::abs(targetRotation - Rotation) > 0.1f) {
-        float rotationStep = rotationSpeed * deltaTime;
-
-        rotationStep = std::min(rotationStep, 180.0f);  // Limito a 180 gradi per evitare overshoot
-
-        if (std::abs(targetRotation - Rotation) < rotationStep) {
-            Rotation = targetRotation;  // Allineo la rotazione alla destinazione se la differenza è piccola
-        }
-        else {
-            Rotation += (targetRotation > Rotation ? rotationStep : -rotationStep);
-        }
-    }*/
-
-    FlipX = lastDirectionRight ? 1.0f : -1.0f;
 }
 
 /*bool MovingObject::CheckCollision(GameObject other)
