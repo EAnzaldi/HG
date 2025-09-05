@@ -130,8 +130,8 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pProbabilities.emplace_back(0);
     pProbabilities.emplace_back(0);
     pProbabilities.emplace_back(0);
-    pProbabilities.emplace_back(100);
     pProbabilities.emplace_back(0);
+    pProbabilities.emplace_back(100);
 
     //Associazione run-time tra texture ed effetto della caramella
     std::shuffle(pCandiesMesh.begin(), pCandiesMesh.end(), rd);
@@ -407,10 +407,27 @@ void PlayState::ProcessInput()
         ChangeState(MenuState::GetInstance(Manager, Window, Engine));
     }
 
-    if(!pGretel->isDead)
+    if (!pGretel->isDead) {
         ProcessInputPlayer(pGretel, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_A, GLFW_KEY_D);
-    if(Multiplayer && !pHansel->isDead)
+        pGretel->Move(deltaTime);
+        pGretel->CheckCollisionWithSolids(platforms);
+        if (CurrentLevel[Multiplayer] == 2 && pGretel->CheckCollision(pKeys[Multiplayer]) != MovingObject::Collision::None) {
+            nKeys--;
+            Status = GameStatus::Victory;
+        }
+        pGretel->Update(deltaTime);
+
+    }
+    if (Multiplayer && !pHansel->isDead) {
         ProcessInputPlayer(pHansel, GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_LEFT, GLFW_KEY_RIGHT);
+        pHansel->Move(deltaTime);
+        pHansel->CheckCollisionWithSolids(platforms);
+        if (CurrentLevel[Multiplayer] == 2 && nKeys>0 && pHansel->CheckCollision(pKeys[Multiplayer]) != MovingObject::Collision::None) {
+            nKeys--;
+            Status = GameStatus::Victory;
+        }
+        pHansel->Update(deltaTime);
+    }
 
 }
 void PlayState::ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned int DOWN, unsigned int LEFT, unsigned int RIGHT)
@@ -473,26 +490,10 @@ void PlayState::ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned in
             //printf("Player ha mangiato una caramella misteriosa\n");
         }
 
-        /*
-        if(pPlayer->teleport)
-            Mouse->Show();
-        */
-
         canPressDOWN = false;
     }
     else if (glfwGetKey(Window, DOWN) == GLFW_RELEASE)
         canPressDOWN = true;
-
-    pPlayer->Move(deltaTime);
-    pPlayer->CheckCollisionWithSolids(platforms);
-
-    if (CurrentLevel[Multiplayer] == 2 && pPlayer->CheckCollision(pKeys[Multiplayer]) != MovingObject::Collision::None) {
-        nKeys--;
-        Status = GameStatus::Victory;
-    }
-        
-
-    pPlayer->Update(deltaTime); // Aggiorna lo stato del giocatore
 }
 void PlayState::ProcessEvents() {
 
