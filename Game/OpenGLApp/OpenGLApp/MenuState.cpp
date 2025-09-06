@@ -17,6 +17,8 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     //pTextNormal = new TextObject(ft, "resources/fonts/8-bit-operator/8bitOperatorPlus8-Regular.ttf");
 	//pTitle = new TextObject(ft, "resources/fonts/bleeding-cowboys/Bleeding_Cowboys.ttf");
 
+	CurrentGame = PlayState::GetInstance(Manager, Window, Engine);
+
 	int fbWidth, fbHeight;
 	glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
 	pBackground = new TextureObject("resources/textures/background2.png");
@@ -112,6 +114,7 @@ bool canPressDown = true;
 bool canPressRight = true;
 bool canPressLeft = true;
 bool canPressEnter = true;
+
 void MenuState::ProcessInput()
 {
 
@@ -130,16 +133,18 @@ void MenuState::ProcessInput()
 		canPressUp = true;
 
 	if (glfwGetKey(Window, GLFW_KEY_RIGHT) == GLFW_PRESS && canPressRight) {
-		if (CurrentGame->IsMultiplayerUnlocked())
+		if (PlayState::MultiplayerUnlocked) {
 			CurrentGame->SwitchMode();
+		}	
 		canPressRight = false;
 	}
 	else if (glfwGetKey(Window, GLFW_KEY_RIGHT) == GLFW_RELEASE)
 		canPressRight = true;
 
 	if (glfwGetKey(Window, GLFW_KEY_LEFT) == GLFW_PRESS && canPressLeft) {
-		if (CurrentGame->IsMultiplayerUnlocked())
+		if (PlayState::MultiplayerUnlocked) {
 			CurrentGame->SwitchMode();
+		}
 		canPressLeft = false;
 	}
 	else if (glfwGetKey(Window, GLFW_KEY_LEFT) == GLFW_RELEASE)
@@ -161,7 +166,7 @@ void MenuState::MouseMoving(double xpos, double ypos)
 
 	//Controllare se il cursore sia su una delle box
 	for (int i = 0; i < 3; i++) {
-		if (i==1 && Status == GameStatus::None)//no game -> skip resume
+		if (i == 1 && CurrentGame->GetStatus() == GameStatus::None)//no game -> skip resume
 			i++;
 		Hitbox bounds = pMenuObj[i]->GetHitbox();
 		bool isColliding = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
@@ -193,7 +198,7 @@ void MenuState::MouseClick(int button, int action, int mods)
 			return;
 		}
 		//Controllare che il cursore sia sulla selezione modalità
-		if (CurrentGame == nullptr || CurrentGame->IsMultiplayerUnlocked() == false)
+		if (PlayState::MultiplayerUnlocked == false)
 			return;
 		bounds = pMenuModObj[CurrentGame->IsMultiplayer()]->GetHitbox();
 		bool isCollidingText = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
@@ -224,13 +229,13 @@ void MenuState::Render()
 
 	glDisable(GL_DEPTH_TEST);//evita di considerare la profondità delle sprite
 
-	if (CurrentGame!=nullptr && CurrentGame->IsMultiplayerUnlocked()) {
+	if (PlayState::MultiplayerUnlocked) {
 		pMenuModObj[CurrentGame->IsMultiplayer()]->Render(*pSpriteShader);
 		pArrowObj[CurrentGame->IsMultiplayer()]->Render(*pSpriteShader);
 	}
 
 	for (int i = 0; i < 3; i++)
-		if (i == 1 && Status == GameStatus::None)
+		if (i == 1 && CurrentGame->GetStatus() == GameStatus::None)
 			pMenuNoGameObj->Render(*pSpriteShader);
 		else if(CurrentSelection!=i)
 			pMenuObj[i]->Render(*pSpriteShader);
@@ -244,7 +249,7 @@ void MenuState::Render()
 
 	glEnable(GL_DEPTH_TEST);
 
-	/*if (Status != GameStatus::Paused)
+	/*if (CurrentGame->GetStatus() != GameStatus::Paused)
 		colors[1] = NonAvailableColor;
 
 	glm::vec3 NonSelectedColor = { 255.0, 255.0, 255.0 };
@@ -255,7 +260,7 @@ void MenuState::Render()
 
 	colors[CurrentSelection] = SelectedColor;
 
-	if (Status != GameStatus::Paused)
+	if (CurrentGame->GetStatus() != GameStatus::Paused)
 		colors[1] = NonAvailableColor;
 
 	switch (CurrentSelection) {
@@ -295,7 +300,7 @@ void MenuState::SelectionUp()
 {
 	if(CurrentSelection > NEW)
 		CurrentSelection--;
-	if (CurrentSelection == RESUME && Status == GameStatus::None)//no game -> skip resume
+	if (CurrentSelection == RESUME && CurrentGame->GetStatus() == GameStatus::None)//no game -> skip resume
 			CurrentSelection--;
 	Engine->play2D("resources/sounds/click.wav");
 }
@@ -304,7 +309,7 @@ void MenuState::SelectionDown()
 {
 	if (CurrentSelection < EXIT)
 		CurrentSelection++;
-	if (CurrentSelection == RESUME && Status == GameStatus::None)//no game -> skip resume
+	if (CurrentSelection == RESUME && CurrentGame->GetStatus() == GameStatus::None)//no game -> skip resume
 		CurrentSelection++;
 	Engine->play2D("resources/sounds/click.wav");
 }
@@ -315,21 +320,20 @@ void MenuState::SelectionChosen()
 	switch (CurrentSelection)
 	{
 	case NEW:
+		/*
 		if (Status == GameStatus::None) {
 			CurrentGame = PlayState::GetInstance(Manager, Window, Engine);
-		}	
+		}*/
 		CurrentGame->ResetLevel();
 		ChangeState(CurrentGame);
 		CurrentGame->Reset();
 		break;
 
 	case RESUME:
-		if (Status == GameStatus::Paused)
+		if (CurrentGame->GetStatus() != GameStatus::None)
 			ChangeState(CurrentGame);
-		else if (Status == GameStatus::Victory || Status == GameStatus::GameOver) {
-			ChangeState(CurrentGame);
+		if (CurrentGame->GetStatus() == GameStatus::Victory || CurrentGame->GetStatus() == GameStatus::GameOver)
 			CurrentGame->Reset();//Inizia nuovo livello
-		}
 		break;
 
 	case EXIT:
@@ -338,3 +342,4 @@ void MenuState::SelectionChosen()
 		break;
 	}
 }
+//enum class GameStatus { None, Playing, Paused, GameOver, Victory };

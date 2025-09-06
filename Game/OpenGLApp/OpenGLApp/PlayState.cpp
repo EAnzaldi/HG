@@ -14,8 +14,8 @@
 
 #define FLAT 1
 
+bool PlayState::MultiplayerUnlocked = true;
 bool Multiplayer = false;
-bool MultiplayerUnlocked = false;
 
 static glm::vec2 posSpawn[2] = { {-0.8f, 0.80f}, {0.8f, 0.80f} };
 static glm::vec2 posSpawn2[3] = { {-0.8f, 0.06f}, {0.2f, 0.06f}, {0.8f, -0.34f} };
@@ -82,6 +82,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     }*/
 
     CurrentLevel[0] = CurrentLevel[1] = StartLevel;
+    Status[0] = Status[1] = GameStatus::None;
 
     pTexPlatforms = new TextureObject("resources/textures/donut_block.jpg");
     //pTexPlayer = new TextureObject("resources/textures/ice_cream_block.jpg");
@@ -111,8 +112,10 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_violet.png"));
 
     //Creazione oggetti UI
-    pHearts[0] = new GameObject(glm::vec2(fbWidth * 0.05f, 895.0f), pHeartsTex[0]->getSize() / 8.0f, pHeartsTex[0], 0);
-    pHearts[1] = new GameObject(glm::vec2(fbWidth * 0.2f, 895.0f), pHeartsTex[1]->getSize() / 8.0f, pHeartsTex[1], 0);
+    pHearts[0] = new GameObject(glm::vec2(fbWidth * 0.05f, 895.0f), pHeartsTex[0]->getSize() / 9.0f, pHeartsTex[0], 0);
+    pHearts[1] = new GameObject(glm::vec2(fbWidth * 0.2f, 895.0f), pHeartsTex[1]->getSize() / 9.0f, pHeartsTex[1], 0);
+    pHearts[0]->Position.x -= (pHearts[0]->Size.x/2.0f);
+    pHearts[1]->Position.x -= (pHearts[1]->Size.x/2.0f);
     //pHearts[1] = new GameObject(glm::vec2(fbWidth * 0.1f, pHearts[0]->Position.y - pHearts[0]->Size.y - 10.0f), pHeartsTex[1]->getSize() / 8.0f, pHeartsTex[1], 0);
 
     pSlimeUI = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.09f * pTexSlime->getAspect() * fbWidth / 2.0f, 0.09f * fbHeight / 2.0f, 0.1f), pTexSlime, 0);
@@ -366,7 +369,7 @@ void PlayState::Reset()
     spawnPlace = RandomInt(0, pCauldrons.size() - 1);
     printf("Prossimo spawn tra %d s nel calderone %d\n", spawnTime, spawnPlace);
 
-    if (Status != GameStatus::Paused) {
+    if (Status[Multiplayer] != GameStatus::Paused) {
         currentTime = 0;
         totalPauseTime = 0.0f;
         startPauseTime = 0.0f;
@@ -399,11 +402,11 @@ void PlayState::ProcessInput()
     //debug skip livelli
     if (glfwGetKey(Window, GLFW_KEY_V) == GLFW_PRESS)
     {
-        Status = GameStatus::Victory;
+        Status[Multiplayer] = GameStatus::Victory;
     }
 
     if (glfwGetKey(Window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        Status = GameStatus::Paused;
+        Status[Multiplayer] = GameStatus::Paused;
         ChangeState(MenuState::GetInstance(Manager, Window, Engine));
     }
 
@@ -413,7 +416,7 @@ void PlayState::ProcessInput()
         pGretel->CheckCollisionWithSolids(platforms);
         if (CurrentLevel[Multiplayer] == 2 && pGretel->CheckCollision(pKeys[Multiplayer]) != MovingObject::Collision::None) {
             nKeys--;
-            Status = GameStatus::Victory;
+            Status[Multiplayer] = GameStatus::Victory;
         }
         pGretel->Update(deltaTime);
 
@@ -424,7 +427,7 @@ void PlayState::ProcessInput()
         pHansel->CheckCollisionWithSolids(platforms);
         if (CurrentLevel[Multiplayer] == 2 && nKeys>0 && pHansel->CheckCollision(pKeys[Multiplayer]) != MovingObject::Collision::None) {
             nKeys--;
-            Status = GameStatus::Victory;
+            Status[Multiplayer] = GameStatus::Victory;
         }
         pHansel->Update(deltaTime);
     }
@@ -524,7 +527,7 @@ void PlayState::ProcessEvents() {
     for (Enemy* pe : pEnemies) {
         if (pe->IsDead() == false) {
             if (pGretel->CheckEnemyCollision(pe, Engine) || (Multiplayer && pHansel->CheckEnemyCollision(pe, Engine))) {//Se un player muore
-                Status = GameStatus::GameOver;
+                Status[Multiplayer] = GameStatus::GameOver;
             }
             else if (pe->IsDead()) {//Se enemy muore
                 nEnemiesAlive--;
@@ -532,7 +535,7 @@ void PlayState::ProcessEvents() {
                 CurrentScore += scoreEnemy;
                 //printf("Nemico morto a %f, %f\n", pe->Position.x, pe->Position.y);
                 if (CurrentLevel[Multiplayer]==1 && nEnemiesKilled == TOTENEM) {
-                    Status = GameStatus::Victory;
+                    Status[Multiplayer] = GameStatus::Victory;
                 }
                 //spawn candy
                 if (DoAction(SPAWN_PROB_C)) {
@@ -574,12 +577,12 @@ void PlayState::ProcessEvents() {
         }
 
     
-    if (Status == GameStatus::GameOver) {
+    if (Status[Multiplayer] == GameStatus::GameOver) {
         //reset !
         CurrentScore += remainingTime * scoreTime;
         ChangeState(EndState::GetInstance(Manager, Window, Engine));
     }
-    else if (Status == GameStatus::Victory) {
+    else if (Status[Multiplayer] == GameStatus::Victory) {
         //Aggiorna statiche di fine partita
         CurrentScore += remainingTime * scoreTime;
         pGretel->GetStats(pCandyTypes, GretelCandyStats, GretelKills);
@@ -742,10 +745,12 @@ void PlayState::EnterState()
     // musica di sottofondo
     ost = Engine->play2D("resources/sounds/kim_lightyear_angel_eyes_piano_version.wav", true, false, true);
 
-    if (Status == GameStatus::Paused)//salta prima chiamata
+    if (Status[Multiplayer] == GameStatus::Paused)//salta prima chiamata
         totalPauseTime += glfwGetTime() - startPauseTime;
 
-    Status = GameStatus::Playing;
+    //Aggiorna lo stato della modalità di gioco corrente, resetta l'altra modalità
+    Status[Multiplayer] = GameStatus::Playing;
+    Status[!Multiplayer] = GameStatus::None;
 }
 
 void PlayState::LeaveState() {
@@ -753,7 +758,7 @@ void PlayState::LeaveState() {
 
     ost->stop();
 
-    if(Status == GameStatus::Paused)
+    if(Status[Multiplayer] == GameStatus::Paused)
         startPauseTime = glfwGetTime();
 }
 
@@ -768,7 +773,7 @@ void PlayState::RenderStats() {
     // se scade il tempo perdo e chiudo il gioco
     if (remainingTime <= 0)
     {
-        Status = GameStatus::GameOver;
+        Status[Multiplayer] = GameStatus::GameOver;
     }
 
     //Oggetti con coordinate pixel

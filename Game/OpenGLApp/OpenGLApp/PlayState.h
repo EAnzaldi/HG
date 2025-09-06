@@ -38,8 +38,14 @@ public:
 
 	void SwitchMode() { Multiplayer = !Multiplayer; };
 	bool IsMultiplayer() { return Multiplayer; };
-	bool IsMultiplayerUnlocked() { return MultiplayerUnlocked; };
+	//bool IsMultiplayerUnlocked() { return MultiplayerUnlocked; };
 	int GetLvl() { return CurrentLevel[Multiplayer]; };
+
+	GameStatus GetStatus() { return Status[Multiplayer]; }
+
+	static bool MultiplayerUnlocked;
+
+	GameStatus Status[2];
 
 	int CurrentLevel[2];// The current level
 	int StartLevel = 1;// The initial level
@@ -143,7 +149,6 @@ private:
 	Player* pHansel;
 
 	bool Multiplayer;
-	bool MultiplayerUnlocked;
 
 	Camera* pCamera;
 

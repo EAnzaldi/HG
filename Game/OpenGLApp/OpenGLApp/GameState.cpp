@@ -1,8 +1,6 @@
 #include "GameState.h"
 #include "StateManager.h" //forward delaration
 
-GameStatus GameState::Status = GameStatus::None;
-
 GameState::GameState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine) : Manager(manager), Window(window), Engine(engine)
 {
     // build and compile our shader zprogram

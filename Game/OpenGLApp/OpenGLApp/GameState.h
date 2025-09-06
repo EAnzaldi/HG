@@ -22,7 +22,7 @@ public:
 
 	~GameState();
 
-	static GameStatus Status;//visibile a tutti gli stati
+	//static GameStatus Status;//visibile a tutti gli stati
 
 	// The different 'events' functions
 	// Child classes can implement the ones in which they are interested in
