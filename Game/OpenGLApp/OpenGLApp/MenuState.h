@@ -61,13 +61,12 @@ private:
 	TextureObject* pMenuSel[3];
 	TextureObject* pMenuNoGame;
 	TextureObject* pMenuMod[2];
+	TextureObject* pArrow;
 
 	GameObject* pMenuObj[3];
 	GameObject* pMenuSelObj[3];
 	GameObject* pMenuNoGameObj;
 	GameObject* pMenuModObj[2];
-
-	TextureObject* pArrow;
 	GameObject* pArrowObj[2];
 
 	/*

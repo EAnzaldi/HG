@@ -12,7 +12,7 @@ EndState::EndState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEn
         std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
     }
 
-    pTextNormal = new TextObject(ft, "resources/fonts/8-bit-operator/8bitOperatorPlus8-Regular.ttf");
+    pText = new TextObject(ft, "resources/fonts/8-bit-operator/8bitOperatorPlus8-Regular.ttf");
 
     pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.5f));
     glm::mat4 view = pCamera->GetViewMatrix();
@@ -29,8 +29,10 @@ EndState::EndState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEn
 
 EndState::~EndState()
 {
-    delete pTextRenderer;
-    delete pTextShader;
+    delete pText;
+    delete pBackgroundTex;
+    delete pBackground;
+
     FT_Done_FreeType(ft);
 }
 

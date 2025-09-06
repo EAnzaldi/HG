@@ -38,9 +38,24 @@ ScoreState::ScoreState(StateManager* manager, GLFWwindow* window, irrklang::ISou
     ShaderManager::SetLight(*pEnlightenedShader, lightPosition, lightColor);
 }
 
-
 ScoreState::~ScoreState()
 {
+    delete pTextNormal;
+
+    delete pLevelsCompletedTex[0];
+    delete pLevelsCompletedTex[1];
+
+    delete pCageModel;
+
+    delete pLevelsCompleted[0];
+    delete pLevelsCompleted[1];
+    delete pFloor;
+    delete pCage;
+    delete pCandy;
+    delete pSlime;
+
+    delete pGretel;
+    delete pHansel;
 
     FT_Done_FreeType(ft);
 }

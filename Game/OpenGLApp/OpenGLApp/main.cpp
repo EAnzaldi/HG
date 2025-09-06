@@ -1,28 +1,22 @@
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include "stb_image.h"
-#include "shader_s.h"
-#include "camera.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
 #include <iostream>
 #include <vector>
 #include <string>
 #include <chrono>
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <irrKlang.h>
 
-#include "GameObject.h"
-#include "Player.h"
-#include "Enemy.h"
-#include "TextureObject.h"
-#include "TextObject.h"
-#include "utils.h"
+#include "stb_image.h"
+#include "shader_s.h"
+#include "camera.h"
 #include "model.h"
+#include "utils.h"
+
 #include "StateManager.h"
-#include "PlayState.h"
 #include "MenuState.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);

@@ -2,8 +2,8 @@
 
 StateManager::StateManager() : ActiveState(nullptr)
 {
-}
 
+}
 void StateManager::ProcessInput()
 {
 	if (ActiveState)

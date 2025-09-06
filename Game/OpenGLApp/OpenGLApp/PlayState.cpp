@@ -56,7 +56,7 @@ static glm::vec2 posCauldron2[3] = { {-0.89f, 0.04f}, {0.29f, 0.04f}, {0.89f, -0
 static glm::vec3 sizeCauldron = { 0.1f, 0.1f, 0.1f };*/
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
-    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f)
+    : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), pGretel(nullptr), pHansel(nullptr)
 {
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
@@ -210,25 +210,47 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     // cattura il tempo iniziale di gioco
     startTime = glfwGetTime();
 }
-PlayState::~PlayState() {
-
+PlayState::~PlayState()
+{
+    //public:
+    delete pTexGretel;
+    delete pTexHansel;
     delete pTexPlatforms;
-    //delete pTexPlayer;
-    //delete pTexEnemy;
-    delete pCamera;
-    delete pShader;
-    delete pTextShader;
-    delete pEnlightenedShader;
+    delete pTexSlime;
+
+    for (TextureObject* p : pCandiesMesh)
+        delete p;
+    for (CandyType* p : pCandyTypes)
+        delete p;
+
+    //private:
     delete pText;
     delete pCubeModel;
     delete pCauldronModel;
-    delete pGretel;
-    delete pHansel;
-    //delete pEnemy;
-    //delete pCauldron_right;
-    //delete pCauldron_left;
+    delete pSlimeModel;
+    delete pSlimeUI;
 
-    ost->drop();
+    if (pGretel != nullptr)
+        delete pGretel;
+    if (pHansel != nullptr)
+        delete pHansel;
+
+    for (int i = 0; i < 2; i++) {
+        pKeysTex[i];
+        pHeartsTex[i];
+        pHearts[i];
+        pKeysUI[i];
+        pKeys[i];
+    }
+
+    for (Enemy* p : pEnemies)
+        delete p;
+    for (Candy* p : pCandies)
+        delete p;
+    for (GameObject* p : platforms)
+        delete p;
+    for (GameObject* p : pCauldrons)
+        delete p;
 
     //Distrugge FreeType
     FT_Done_FreeType(ft);

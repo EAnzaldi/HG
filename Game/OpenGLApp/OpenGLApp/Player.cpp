@@ -14,7 +14,8 @@ Player::Player(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool 
 {
 
 }
-Player::~Player() {
+Player::~Player()
+{
     //Dealloca e annulla effetti attivi delle caramelle mangiate
     if (pAEffects.size() != 0) {
         for (ActiveEffect* pe : pAEffects) {

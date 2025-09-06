@@ -3,7 +3,7 @@
 FlatMesh* GameObject::fmesh = nullptr;
 
 GameObject::GameObject(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth)
-    : Position(position), Size(size), Rotation(0.0f), model(model), RepeatWidth(repeatWidth), FlipX(1.0f), Dimension(DimensionType::ThreeD)
+    : Position(position), Size(size), Rotation(0.0f), model(model), Texture(nullptr), RepeatWidth(repeatWidth), FlipX(1.0f), Dimension(DimensionType::ThreeD)
 {
     // flag specifica se si voglia scalare la texture (consigliato=1 per piattaforme)
 }
@@ -13,6 +13,7 @@ GameObject::GameObject(glm::vec2 position, glm::vec3 size, TextureObject* textur
 {
     if (!fmesh) fmesh = new FlatMesh();
 }
+
 void GameObject::Render(const Shader& shader) const
 {
     shader.use();

@@ -26,7 +26,6 @@ public:
 	void ProcessEvents();
 	void UpdateTime(long currentTime);
 	void Render();
-
 	void EnterState();
 	void LeaveState();
 
@@ -35,57 +34,48 @@ public:
 
 	void Reset();
 	void ResetLevel() { CurrentLevel[Multiplayer] = StartLevel; };
-
 	void SwitchMode() { Multiplayer = !Multiplayer; };
 	bool IsMultiplayer() { return Multiplayer; };
-	//bool IsMultiplayerUnlocked() { return MultiplayerUnlocked; };
 	int GetLvl() { return CurrentLevel[Multiplayer]; };
-
 	GameStatus GetStatus() { return Status[Multiplayer]; }
 
-	static bool MultiplayerUnlocked;
-	static bool TeleportUnlocked;
+	// Returns the single instance (-> singleton)
+	static PlayState* GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
 
 	GameStatus Status[2];
 
-	int CurrentLevel[2];// The current level
-	int StartLevel = 1;// The initial level
-	//int StoryLevel;
-	//bool CompletedLevels[4] = { false, false, false, false };
+	std::vector<TextureObject*> pCandiesMesh;
+	TextureObject* pTexGretel;
+	TextureObject* pTexHansel;
+	TextureObject* pTexPlatforms;
+	TextureObject* pTexSlime;
 
-	const double start = 99;// tempo massimo per livello
+	std::vector<CandyType*> pCandyTypes;
 
+	std::vector<int> pProbabilities;
+	std::vector<int> GretelCandyStats;
+	std::vector<int> HanselCandyStats;
+
+	glm::vec3 candySize;
+
+	static bool MultiplayerUnlocked;
+	static bool TeleportUnlocked;
 	static const int scoreMalus = 10;
 	static const int scoreEnemy = 50;
 	static const int scoreBonus = 60;
 	static const int scoreTelep = 100;
 	static const int scoreTime = 10; //pt x sec rimasto
 
-	// The current score
+	const double start = 99;// tempo massimo per livello
+
+	int CurrentLevel[2];// The current level
+	int StartLevel = 1;// The initial level
+
 	long CurrentScore;
-	void AddScore(int score) { CurrentScore += score; };
-
-	std::vector<TextureObject*> pCandiesMesh;
-	//std::unordered_map<CandyType*, TextureObject*> typeToTextureMap;
-	std::vector<CandyType*> pCandyTypes;
-	std::vector<int> pProbabilities;
-
-	TextureObject* pTexGretel;
-	TextureObject* pTexHansel;
-	TextureObject* pTexPlatforms;
-	TextureObject* pTexSlime;
-
-	std::vector<int> GretelCandyStats;
-	std::vector<int> HanselCandyStats;
 	int GretelKills;
 	int HanselKills;
 
-	glm::vec3 candySize;
-
 	int remainingTime;//countdown
-
-	// Returns the single instance (-> singleton)
-	static PlayState* GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
 
 protected:
 	PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
@@ -96,29 +86,35 @@ private:
 	void ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned int DOWN, unsigned int LEFT, unsigned int RIGHT);
 	void CheckEndGame();
 
-	// The blocks matrix class
-	//CBlocksMatrix* m_pMatrix;
-	// The font used to draw text
-	//CGameFont* m_pFont;
-	// The control in charge of the decreasing 
-	// time for the combo score.
-	//CComboControl* m_pComboControl;
+	TextObject* pText;
 
-	// The text controls to display the current
-	// information.
-	//CTextControl* m_pScoreControl;
-	//CTextControl* m_pLevelControl;
-	//CTextControl* m_pLinesControl;
+	TextureObject* pKeysTex[2];
+	TextureObject* pHeartsTex[2];
+
+	Model* pCubeModel;
+	Model* pCauldronModel;
+	Model* pSlimeModel;
 
 	std::vector<GameObject*> platforms;
-	std::vector<Enemy*> pEnemies;
 	std::vector<GameObject*> pCauldrons;
-	std::vector<Candy*> pCandies;
-	GameObject* pKeys[2];
-
 	GameObject* pHearts[2];
-	GameObject* pSlimeUI;
 	GameObject* pKeysUI[2];
+	GameObject* pKeys[2];
+	GameObject* pSlimeUI;
+
+	Player* pGretel;
+	Player* pHansel;
+
+	std::vector<Enemy*> pEnemies;
+
+	std::vector<Candy*> pCandies;
+
+	bool Multiplayer;
+
+	glm::vec2 positions[8];
+	glm::vec3 sizes[8];
+	glm::vec2 positionsTest[8];
+	glm::vec2 sizesTest[8];
 
 	int nEnemiesKilled;
 	int nEnemiesAlive;
@@ -126,40 +122,9 @@ private:
 
 	int nKeys;
 
-	Model* pCubeModel;
-	Model* pCauldronModel;
-	Model* pSlimeModel;
-	//Model* pBackgroundModel;
-
-	//GameObject* pBackground;
-
-	//FlatMesh* pTest;
-	//std::vector<GameObject> tests;
-
-	TextureObject* pKeysTex[2];
-
-	TextureObject* pHeartsTex[2];
-
-	glm::vec2 positions[8];
-	glm::vec3 sizes[8];
-
-	glm::vec2 positionsTest[8];
-	glm::vec2 sizesTest[8];
-
-	// Pointer to the current player
-	Player* pGretel;
-	Player* pHansel;
-
-	bool Multiplayer;
-
 	Camera* pCamera;
 
-	//TextureObject* pTexPlayer;
-	//TextureObject* pTexEnemy;
-	//TextureObject* pTexBackground;
-
 	FT_Library ft;
-	TextObject* pText;
 
 	// Gestione frame
 	double lastFrame;

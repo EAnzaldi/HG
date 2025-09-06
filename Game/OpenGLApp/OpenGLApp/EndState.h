@@ -34,8 +34,7 @@ protected:
 
 private:
  
-    TextObject* pTextRenderer;
-    TextObject* pTextNormal;
+    TextObject* pText;
 
     TextureObject* pBackgroundTex;
     GameObject* pBackground;

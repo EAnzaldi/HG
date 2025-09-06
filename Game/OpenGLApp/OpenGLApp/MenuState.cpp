@@ -99,7 +99,24 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 }
 
 MenuState::~MenuState() {
-	ost->drop();
+	for (int i = 0; i < 3; i++) {
+		delete pMenu[i];
+		delete pMenuObj[i];
+		delete pMenuSel[i];
+		delete pMenuSelObj[i];
+	}
+
+	for (int i = 0; i < 2; i++) {
+		delete pMenuMod[i];
+		delete pMenuModObj[i];
+		delete pArrowObj[i];
+	}
+
+	delete pArrow;
+	delete pMenuNoGame;
+	delete pMenuNoGameObj;
+
+	FT_Done_FreeType(ft);
 }
 
 MenuState* MenuState::GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)

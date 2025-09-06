@@ -40,15 +40,17 @@ private:
 
     TextObject* pTextNormal;
 
-    GameObject* pCandy;
-    GameObject* pSlime;
-
     TextureObject* pLevelsCompletedTex[2];
-    GameObject* pLevelsCompleted[2];
 
-    GameObject* pFloor;
+    Model* pCageModel;
+
     std::vector<GameObject*> solidsGretel;
     std::vector<GameObject*> solidsHansel;
+    GameObject* pLevelsCompleted[2];
+    GameObject* pFloor;
+    GameObject* pCage;
+    GameObject* pCandy;
+    GameObject* pSlime;
 
     Player* pGretel;
     Player* pHansel;
@@ -56,9 +58,6 @@ private:
     // Gestione frame
     double lastFrame;
     double deltaTime;
-
-    Model* pCageModel;
-    GameObject* pCage;
 
     //Sound
     irrklang::ISound* ost;

@@ -1,3 +1,6 @@
 *.blend1
 *.pdb
 .vs/
+*.sarif
+*.xml
+*.txt
