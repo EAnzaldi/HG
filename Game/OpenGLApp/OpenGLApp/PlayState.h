@@ -173,7 +173,7 @@ private:
 	int spawnTime;
 	double lastSpawnTime;
 
-	const float endingDuration = 0.5f;	// Durata timer fine gioco
+	const float endingDuration = 1.0f;	// Piccolo delay di fine gioco
 	float endingTimer = 0.0f;			// Timer dopo il fine gioco
 	bool isEnding = false;
 

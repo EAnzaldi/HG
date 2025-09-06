@@ -463,6 +463,7 @@ void PlayState::ProcessInput()
         pGretel->Move(deltaTime);
         pGretel->CheckCollisionWithSolids(platforms);
         if (nKeys < TOTKEYS && CurrentLevel[Multiplayer] == 2 && pGretel->CheckCollision(pKeys[Multiplayer]) != MovingObject::Collision::None) {
+            Engine->play2D("resources/sounds/key_pickup.wav");
             nKeys++;
             if(nKeys == TOTKEYS)
                 Status[Multiplayer] = GameStatus::Victory;
@@ -475,6 +476,7 @@ void PlayState::ProcessInput()
         pHansel->Move(deltaTime);
         pHansel->CheckCollisionWithSolids(platforms);
         if (nKeys < TOTKEYS && CurrentLevel[Multiplayer] == 2 && nKeys > 0 && pHansel->CheckCollision(pKeys[Multiplayer]) != MovingObject::Collision::None) {
+            Engine->play2D("resources/sounds/key_pickup.wav");
             nKeys++;
             if (nKeys == TOTKEYS)
                 Status[Multiplayer] = GameStatus::Victory;
@@ -651,6 +653,7 @@ void PlayState::CheckEndGame() {
             pGretel->Stop(deltaTime);
             if(Multiplayer)
                 pHansel->Stop(deltaTime);
+            CurrentScore += remainingTime * scoreTime;
             isEnding = true;
         }
         return;
@@ -667,12 +670,10 @@ void PlayState::CheckEndGame() {
 
     if (Status[Multiplayer] == GameStatus::GameOver) {
         //reset !
-        CurrentScore += remainingTime * scoreTime;
         ChangeState(EndState::GetInstance(Manager, Window, Engine));
     }
     else if (Status[Multiplayer] == GameStatus::Victory) {
         //Aggiorna statistiche di fine partita
-        CurrentScore += remainingTime * scoreTime;
         pGretel->GetStats(pCandyTypes, GretelCandyStats, GretelKills);
         if (Multiplayer)
             pHansel->GetStats(pCandyTypes, HanselCandyStats, HanselKills);
@@ -841,12 +842,12 @@ void PlayState::RenderStats() {
         currentTime = static_cast<int>((glfwGetTime() - startTime) - totalPauseTime);
 
         remainingTime = start - currentTime;
-    }
 
-    // se scade il tempo perdo e chiudo il gioco
-    if (remainingTime <= 0)
-    {
-        Status[Multiplayer] = GameStatus::GameOver;
+        // se scade il tempo perdo e chiudo il gioco
+        if (remainingTime <= 0)
+        {
+            Status[Multiplayer] = GameStatus::GameOver;
+        }
     }
 
     //Oggetti con coordinate pixel
