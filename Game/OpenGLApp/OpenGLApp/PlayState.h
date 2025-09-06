@@ -94,6 +94,7 @@ protected:
 private:
 	void RenderStats();
 	void ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned int DOWN, unsigned int LEFT, unsigned int RIGHT);
+	void CheckEndGame();
 
 	// The blocks matrix class
 	//CBlocksMatrix* m_pMatrix;
@@ -172,7 +173,7 @@ private:
 	int spawnTime;
 	double lastSpawnTime;
 
-	const float endingDuration = 10.0f;	// Durata timer fine gioco
+	const float endingDuration = 0.5f;	// Durata timer fine gioco
 	float endingTimer = 0.0f;			// Timer dopo il fine gioco
 	bool isEnding = false;
 

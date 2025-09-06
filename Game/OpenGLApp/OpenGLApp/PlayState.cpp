@@ -10,7 +10,7 @@
 #define SPAWN_MIN_E 3
 #define SPAWN_MAX_E 6
 
-#define SPAWN_PROB_C 100 //percentuale di spawn delle caramelle (bonus e malus)
+#define SPAWN_PROB_C 50 //percentuale di spawn delle caramelle (bonus e malus)
 
 #define FLAT 1
 
@@ -137,7 +137,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
     printf("TAB CARAMELLE\n");
     for (int i = 0; i < std::min(pCandiesMesh.size(), pCandyTypes.size()); i++)
-        printf("%d\t%s\n", pCandyTypes[i]->effect, pCandiesMesh[i]->Path);
+        printf("%s\t%s\n", pCandyTypes[i]->Print(), pCandiesMesh[i]->Path);
  
     /*
     for (int i = 0; i < std::min(pCandiesMesh.size(), pCandyTypes.size()); i++) {
@@ -276,8 +276,6 @@ void PlayState::Reset()
     
     CurrentScore = 0;
 
-    nKeys = 0;
-
     if (pGretel != nullptr) {
         delete pGretel;
         pGretel = nullptr;
@@ -303,6 +301,7 @@ void PlayState::Reset()
     }
     nEnemiesKilled = 0;
     nEnemiesAlive = 0;
+
     if (!pCandies.empty()) {
         for (Candy* pc : pCandies)
             delete pc;
@@ -325,11 +324,18 @@ void PlayState::Reset()
         pProbabilities.emplace_back(0);
     }
     else {
+        /*
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(16);// Teleport è più rara
+        */
+        pProbabilities.emplace_back(0);
+        pProbabilities.emplace_back(0);
+        pProbabilities.emplace_back(0);
+        pProbabilities.emplace_back(0);
+        pProbabilities.emplace_back(100);// Teleport è più rara
     }
 
     /*
@@ -344,6 +350,8 @@ void PlayState::Reset()
         pGretel = new Player(glm::vec2(-0.05f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexGretel->getAspect(), 0.1f), pTexGretel, 0, PlayerName::Gretel, H_LIVES);
         pHansel = new Player(glm::vec2(0.05f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexHansel->getAspect(), 0.1f), pTexHansel, 0, PlayerName::Hansel, H_LIVES);
     }
+
+    nKeys = 0;
 
     if (CurrentLevel[Multiplayer] == 1) {
         // passo nullptr come texture per ora
@@ -413,6 +421,21 @@ void PlayState::ProcessInput()
 
     lastFrame = currentFrame;
 
+    if (isEnding) {
+        if (!pGretel->isDead) {
+            pGretel->Move(deltaTime);
+            pGretel->CheckCollisionWithSolids(platforms);
+            pGretel->Update(deltaTime);
+
+        }
+        if (Multiplayer && !pHansel->isDead) {
+            pHansel->Move(deltaTime);
+            pHansel->CheckCollisionWithSolids(platforms);
+            pHansel->Update(deltaTime);
+        }
+        return;
+    }
+
     // debug Gretel
     if (glfwGetKey(Window, GLFW_KEY_C) == GLFW_PRESS)
     {
@@ -439,9 +462,10 @@ void PlayState::ProcessInput()
         ProcessInputPlayer(pGretel, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_A, GLFW_KEY_D);
         pGretel->Move(deltaTime);
         pGretel->CheckCollisionWithSolids(platforms);
-        if (CurrentLevel[Multiplayer] == 2 && pGretel->CheckCollision(pKeys[Multiplayer]) != MovingObject::Collision::None) {
-            nKeys--;
-            Status[Multiplayer] = GameStatus::Victory;
+        if (nKeys < TOTKEYS && CurrentLevel[Multiplayer] == 2 && pGretel->CheckCollision(pKeys[Multiplayer]) != MovingObject::Collision::None) {
+            nKeys++;
+            if(nKeys == TOTKEYS)
+                Status[Multiplayer] = GameStatus::Victory;
         }
         pGretel->Update(deltaTime);
 
@@ -450,9 +474,10 @@ void PlayState::ProcessInput()
         ProcessInputPlayer(pHansel, GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_LEFT, GLFW_KEY_RIGHT);
         pHansel->Move(deltaTime);
         pHansel->CheckCollisionWithSolids(platforms);
-        if (CurrentLevel[Multiplayer] == 2 && nKeys>0 && pHansel->CheckCollision(pKeys[Multiplayer]) != MovingObject::Collision::None) {
-            nKeys--;
-            Status[Multiplayer] = GameStatus::Victory;
+        if (nKeys < TOTKEYS && CurrentLevel[Multiplayer] == 2 && nKeys > 0 && pHansel->CheckCollision(pKeys[Multiplayer]) != MovingObject::Collision::None) {
+            nKeys++;
+            if (nKeys == TOTKEYS)
+                Status[Multiplayer] = GameStatus::Victory;
         }
         pHansel->Update(deltaTime);
     }
@@ -523,7 +548,24 @@ void PlayState::ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned in
     else if (glfwGetKey(Window, DOWN) == GLFW_RELEASE)
         canPressDOWN = true;
 }
-void PlayState::ProcessEvents() {
+void PlayState::ProcessEvents()
+{
+    if (isEnding) {
+        for (Enemy* pe : pEnemies) {
+            if (!pe->IsDead()) {
+                pe->Move(deltaTime);
+                pe->CheckCollisionWithSolids(platforms);
+            }
+        }
+        for (Candy* pc : pCandies) {
+            if (!pc->IsEaten()) {
+                pc->CheckCollisionWithSolids(platforms);
+                pc->Move(deltaTime);
+            }
+        }
+        CheckEndGame();
+        return;
+    }
 
     if (pEnemies.size() < TOTENEM) {
         lastSpawnTime += deltaTime;
@@ -593,44 +635,50 @@ void PlayState::ProcessEvents() {
         }
     }
 
-    if (pCandies.size() != 0)
-        for (Candy* pc : pCandies) {
-            if (!pc->IsEaten()) {
-                pc->CheckCollisionWithSolids(platforms);
-                pc->Move(deltaTime);
-            }
+    for (Candy* pc : pCandies) {
+        if (!pc->IsEaten()) {
+            pc->CheckCollisionWithSolids(platforms);
+            pc->Move(deltaTime);
         }
+    }
 
-    
+    CheckEndGame();
+}
+void PlayState::CheckEndGame() {
+    if (!isEnding){
+        if (Status[Multiplayer] == GameStatus::GameOver || Status[Multiplayer] == GameStatus::Victory) {
+            printf("End game started\n");
+            pGretel->Stop(deltaTime);
+            if(Multiplayer)
+                pHansel->Stop(deltaTime);
+            isEnding = true;
+        }
+        return;
+    }
+
+    // Aggiorna il timer fine gioco
+    endingTimer += deltaTime;
+    if (endingTimer < endingDuration)
+        return;
+
+    printf("Ending...\n");
+    endingTimer = 0.0f;
+    isEnding = false;
+
     if (Status[Multiplayer] == GameStatus::GameOver) {
         //reset !
         CurrentScore += remainingTime * scoreTime;
         ChangeState(EndState::GetInstance(Manager, Window, Engine));
     }
     else if (Status[Multiplayer] == GameStatus::Victory) {
-        //Aggiorna statiche di fine partita
+        //Aggiorna statistiche di fine partita
         CurrentScore += remainingTime * scoreTime;
         pGretel->GetStats(pCandyTypes, GretelCandyStats, GretelKills);
-        if(Multiplayer)
+        if (Multiplayer)
             pHansel->GetStats(pCandyTypes, HanselCandyStats, HanselKills);
         ChangeState(ScoreState::GetInstance(Manager, Window, Engine));
     }
 
-    // Aggiorna il timer fine gioco
-    /*
-    if (Status == GameStatus::GameOver || Status == GameStatus::Victory)
-    {
-        endingTimer += deltaTime;
-        isEnding = true;
-        if (endingTimer >= endingDuration)
-        {
-            endingTimer = 0.0f;
-            if (Status == GameStatus::Victory) {
-                CurrentLevel[Multiplayer]++;
-                ChangeState(EndState::GetInstance(Manager, Window, Engine));
-            }
-        }
-    }*/
 }
 void PlayState::UpdateTime(long currentTime)
 {
@@ -699,7 +747,7 @@ void PlayState::Render()
     if(Multiplayer && !pHansel->isDead)
         pHansel->Render(*pSpriteShader);
 
-    if (!isEnding && Player::teleport) {
+    if (Player::teleport) {
         Mouse->Move();
         Mouse->Render(*pShader);
     }
@@ -789,9 +837,11 @@ void PlayState::RenderStats() {
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
 
-    currentTime = static_cast<int>((glfwGetTime() - startTime) - totalPauseTime);
+    if (!isEnding) {
+        currentTime = static_cast<int>((glfwGetTime() - startTime) - totalPauseTime);
 
-    remainingTime = start - currentTime;
+        remainingTime = start - currentTime;
+    }
 
     // se scade il tempo perdo e chiudo il gioco
     if (remainingTime <= 0)

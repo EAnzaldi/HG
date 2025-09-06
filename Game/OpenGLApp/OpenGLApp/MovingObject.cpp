@@ -29,7 +29,9 @@ void MovingObject::Move(float deltaTime)
     }
 
 }
-
+void MovingObject::Stop(float deltaTime) {
+    this->velocity.x = 0.0f;
+}
 /*bool MovingObject::CheckCollision(GameObject other)
 {
     Hitbox bounds1 = this->GetHitbox();

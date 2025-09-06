@@ -64,12 +64,6 @@ void ScoreState::EnterState()
     int lvl = CurrentGame->CurrentLevel[CurrentGame->IsMultiplayer()] - 1;
     if (pLevelsCompleted[lvl] == nullptr)
         pLevelsCompleted[lvl] = new GameObject(glm::vec2(fbWidth*0.5f, fbHeight*0.85f), pLevelsCompletedTex[lvl]->getSize() * 1.06f, pLevelsCompletedTex[lvl], 0);
-    if (pFloor == nullptr) {
-        pFloor =  new GameObject(glm::vec2{ 0.0f, -0.95f }, glm::vec3{ 2.0f, 0.1f, 0.2f }, CurrentGame->pTexPlatforms, 1);
-        solidsGretel.emplace_back(pFloor);
-        solidsHansel.emplace_back(pFloor);
-
-    }
     if (pGretel == nullptr)
         pGretel = new Player(glm::vec2(-0.5f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * CurrentGame->pTexGretel->getAspect(), 0.1f), CurrentGame->pTexGretel, 0, PlayerName::Gretel, 3);
     else
@@ -78,14 +72,19 @@ void ScoreState::EnterState()
         pHansel = new Player(glm::vec2(0.5f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * CurrentGame->pTexHansel->getAspect(), 0.1f), CurrentGame->pTexHansel, 0, PlayerName::Hansel, 3);
     else
         pHansel->Position = glm::vec2(0.5f, -0.85f);
+    if (pFloor == nullptr) {
+        pFloor = new GameObject(glm::vec2{ 0.0f, -0.95f }, glm::vec3{ 2.0f, 0.1f, 0.2f }, CurrentGame->pTexPlatforms, 1);
+        solidsHansel.emplace_back(pFloor);
+    }
     if (pCage == nullptr) {
         pCage = new GameObject(glm::vec2(0.5f, -0.72f), glm::vec3(0.1f, 0.1f, 0.1f), pCageModel, 0);
+    }
+    solidsGretel.clear();
+    solidsGretel.emplace_back(pFloor);
+    if (CurrentGame->GetLvl() == 1 && !CurrentGame->IsMultiplayer()) {
         solidsGretel.emplace_back(pCage);
     }
-    else if (CurrentGame->GetLvl() == 2 && !CurrentGame->IsMultiplayer()) {
-        delete solidsGretel[1];
-        solidsGretel.resize(1);
-    }
+
     //Unlock
     if (!CurrentGame->IsMultiplayer()) {
         if (!PlayState::TeleportUnlocked && CurrentGame->GetLvl() == 1) {

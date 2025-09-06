@@ -27,6 +27,8 @@ public:
 
     virtual void Render(const Shader& Shader) const;
 
+    void Stop(float deltaTime);
+
     //bool CheckCollision(GameObject other);
 
     Collision CheckCollision(GameObject* other);
