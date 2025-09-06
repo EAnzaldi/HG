@@ -1,6 +1,9 @@
 #include "ScoreState.h"
 #include "PlayState.h"
 
+bool DrawTeleportUnlocked = false;
+bool DrawMultiplayerUnlocked = false;
+
 ScoreState::ScoreState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
     : GameState(manager, window, engine)
 {
@@ -83,6 +86,15 @@ void ScoreState::EnterState()
         delete solidsGretel[1];
         solidsGretel.resize(1);
     }
+    //Unlock
+    if (!CurrentGame->IsMultiplayer()) {
+        if (!PlayState::TeleportUnlocked && CurrentGame->GetLvl() == 1) {
+            PlayState::TeleportUnlocked = DrawTeleportUnlocked = true;
+        }           
+        else if (!PlayState::MultiplayerUnlocked && CurrentGame->GetLvl() == 2) {
+            PlayState::MultiplayerUnlocked = DrawMultiplayerUnlocked = true;
+        }  
+    }
 
     // musica di sottofondo
     ost = Engine->play2D("resources/sounds/tad_the_end_piano.mp3", true, false, true);
@@ -90,6 +102,11 @@ void ScoreState::EnterState()
 
 void ScoreState::LeaveState()
 {
+    if (DrawTeleportUnlocked)
+        DrawTeleportUnlocked = false;
+    if (DrawMultiplayerUnlocked)
+        DrawMultiplayerUnlocked = false;
+
     ost->stop();
 }
 
@@ -180,6 +197,7 @@ void ScoreState::MouseClick(int button, int action, int mods)
     }
 
 }
+
 void ScoreState::Render()
 {
     int fbWidth, fbHeight;
@@ -241,13 +259,24 @@ void ScoreState::Render()
         }
 
     }
+
     height -= y_indent;
     std::string time = "TIME LEFT: " + std::to_string(CurrentGame->remainingTime);
     pTextNormal->Render(*pTextShader, time, text_width, height, 1.0f, TextColor, Alignment::Left);
+
     height -= y_indent;
     std::string score = "SCORE: " + std::to_string(CurrentGame->CurrentScore);
     pTextNormal->Render(*pTextShader, score, text_width, height, 1.0f, TextColor, Alignment::Left);
 
+    if (DrawTeleportUnlocked) {
+        height -= y_indent;
+        pTextNormal->Render(*pTextShader, std::string("TELEPORT CANDY UNLOCKED"), text_width, height, 1.0f, TextColor, Alignment::Left);
+    }
+
+    if (DrawMultiplayerUnlocked) {
+        height -= y_indent;
+        pTextNormal->Render(*pTextShader, std::string("MULTIPLAYER UNLOCKED"), text_width, height, 1.0f, TextColor, Alignment::Left);
+    }
 
     //Oggetti con coordinate pixel
     //--------------------------------------------------------------------------------

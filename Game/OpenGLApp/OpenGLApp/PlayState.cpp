@@ -1,6 +1,6 @@
 #include "PlayState.h"
 
-#define TOTENEM 2
+#define TOTENEM 15
 #define TOTKEYS 1
 
 #define G_LIVES 3
@@ -14,7 +14,9 @@
 
 #define FLAT 1
 
-bool PlayState::MultiplayerUnlocked = true;
+bool PlayState::TeleportUnlocked = false;
+
+bool PlayState::MultiplayerUnlocked = false;
 bool Multiplayer = false;
 
 static glm::vec2 posSpawn[2] = { {-0.8f, 0.80f}, {0.8f, 0.80f} };
@@ -129,12 +131,6 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pCandyTypes.emplace_back(new CandyType(EffectType::SpeedEnemy, 1.5f, 10.0f));
     pCandyTypes.emplace_back(new CandyType(EffectType::Invincibility, 5.0f));
     pCandyTypes.emplace_back(new CandyType(EffectType::Teleport));
-
-    pProbabilities.emplace_back(0);
-    pProbabilities.emplace_back(0);
-    pProbabilities.emplace_back(0);
-    pProbabilities.emplace_back(0);
-    pProbabilities.emplace_back(100);
 
     //Associazione run-time tra texture ed effetto della caramella
     std::shuffle(pCandiesMesh.begin(), pCandiesMesh.end(), rd);
@@ -311,6 +307,29 @@ void PlayState::Reset()
         for (Candy* pc : pCandies)
             delete pc;
         pCandies.clear();
+    }
+    pCandyTypes.emplace_back(new CandyType(EffectType::NoJump, 10.0f));
+    pCandyTypes.emplace_back(new CandyType(EffectType::Speed, 1.5f, 10.0f));
+    pCandyTypes.emplace_back(new CandyType(EffectType::SpeedEnemy, 1.5f, 10.0f));
+    pCandyTypes.emplace_back(new CandyType(EffectType::Invincibility, 5.0f));
+    pCandyTypes.emplace_back(new CandyType(EffectType::Teleport));
+    
+    if (!pProbabilities.empty())
+        pProbabilities.clear();
+    if (TeleportUnlocked == false) {
+        //NoJump, Speed, SpeedEnemy, Invincibility, Teleport
+        pProbabilities.emplace_back(25);
+        pProbabilities.emplace_back(25);
+        pProbabilities.emplace_back(25);
+        pProbabilities.emplace_back(25);
+        pProbabilities.emplace_back(0);
+    }
+    else {
+        pProbabilities.emplace_back(21);
+        pProbabilities.emplace_back(21);
+        pProbabilities.emplace_back(21);
+        pProbabilities.emplace_back(21);
+        pProbabilities.emplace_back(16);// Teleport è più rara
     }
 
     /*
@@ -594,9 +613,6 @@ void PlayState::ProcessEvents() {
         pGretel->GetStats(pCandyTypes, GretelCandyStats, GretelKills);
         if(Multiplayer)
             pHansel->GetStats(pCandyTypes, HanselCandyStats, HanselKills);
-        //Sblocca multiplayer sopo la vincita del secondo lvl single player
-        if (!MultiplayerUnlocked && CurrentLevel[Multiplayer] == 2)
-            MultiplayerUnlocked = true;
         ChangeState(ScoreState::GetInstance(Manager, Window, Engine));
     }
 

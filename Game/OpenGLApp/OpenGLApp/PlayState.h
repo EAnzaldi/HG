@@ -44,6 +44,7 @@ public:
 	GameStatus GetStatus() { return Status[Multiplayer]; }
 
 	static bool MultiplayerUnlocked;
+	static bool TeleportUnlocked;
 
 	GameStatus Status[2];
 
