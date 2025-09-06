@@ -39,7 +39,7 @@ class Player : public MovingObject
 
         glm::vec2 maxVelocity = glm::vec2(1.5f, 2.5f);
 
-        std::vector<ActiveEffect*> pAEffects;
+        std::vector<ActiveEffect*> pAEffects = {};
 
         //Costruttore 3d
         Player(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, PlayerName name, int lives);

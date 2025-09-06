@@ -330,10 +330,11 @@ void MenuState::SelectionChosen()
 		break;
 
 	case RESUME:
-		if (CurrentGame->GetStatus() != GameStatus::None)
+		if (CurrentGame->GetStatus() != GameStatus::None) {
 			ChangeState(CurrentGame);
-		if (CurrentGame->GetStatus() == GameStatus::Victory || CurrentGame->GetStatus() == GameStatus::GameOver)
-			CurrentGame->Reset();//Inizia nuovo livello
+			if (CurrentGame->GetStatus() != GameStatus::Paused)
+				CurrentGame->Reset();//Inizia nuovo livello
+		}
 		break;
 
 	case EXIT:

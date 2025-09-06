@@ -1,6 +1,6 @@
 #include "PlayState.h"
 
-#define TOTENEM 15
+#define TOTENEM 2
 #define TOTKEYS 1
 
 #define G_LIVES 3
@@ -227,6 +227,7 @@ PlayState::~PlayState() {
     delete pCubeModel;
     delete pCauldronModel;
     delete pGretel;
+    delete pHansel;
     //delete pEnemy;
     //delete pCauldron_right;
     //delete pCauldron_left;
@@ -281,10 +282,14 @@ void PlayState::Reset()
 
     nKeys = 0;
 
-    if (pGretel != nullptr)
+    if (pGretel != nullptr) {
         delete pGretel;
-    if (pHansel != nullptr)
+        pGretel = nullptr;
+    }      
+    if (pHansel != nullptr) {
         delete pHansel;
+        pHansel = nullptr;
+    }
     if (!pCauldrons.empty()) {
         for (GameObject* pc : pCauldrons)
             delete pc;
@@ -314,8 +319,9 @@ void PlayState::Reset()
         pHansel = new Player(glm::vec2(0.0f, -0.75f), glm::vec3(0.1f, 0.1f, 0.1f), pCubeModel, pTexPlayer, 0, PlayerName::Hansel);
     */
 
-    pGretel = new Player(glm::vec2(0.0f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexGretel->getAspect(), 0.1f), pTexGretel, 0, PlayerName::Gretel, G_LIVES);
-    if (Multiplayer) {
+    if(Multiplayer == false)
+        pGretel = new Player(glm::vec2(0.0f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexGretel->getAspect(), 0.1f), pTexGretel, 0, PlayerName::Gretel, G_LIVES);
+    else {
         pGretel = new Player(glm::vec2(-0.05f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexGretel->getAspect(), 0.1f), pTexGretel, 0, PlayerName::Gretel, H_LIVES);
         pHansel = new Player(glm::vec2(0.05f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * pTexHansel->getAspect(), 0.1f), pTexHansel, 0, PlayerName::Hansel, H_LIVES);
     }
@@ -748,9 +754,10 @@ void PlayState::EnterState()
     if (Status[Multiplayer] == GameStatus::Paused)//salta prima chiamata
         totalPauseTime += glfwGetTime() - startPauseTime;
 
-    //Aggiorna lo stato della modalità di gioco corrente, resetta l'altra modalità
+    //Aggiorna lo stato delle modalità di gioco
     Status[Multiplayer] = GameStatus::Playing;
-    Status[!Multiplayer] = GameStatus::None;
+    if(Status[!Multiplayer] != GameStatus::None)
+        Status[!Multiplayer] = GameStatus::NotPlaying;
 }
 
 void PlayState::LeaveState() {
