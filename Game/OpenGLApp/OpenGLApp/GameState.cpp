@@ -5,11 +5,10 @@ GameState::GameState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 {
     // build and compile our shader zprogram
     // -------------------------------------
-    pShader = new Shader("shader.vs", "shader.fs");
-    pTextShader = new Shader("shader_text.vs", "shader_text.fs");
-    pEnlightenedShader = new Shader("enlightened_object_shader.vs", "enlightened_object_shader.fs");
-    //pEnlightenedTexturedShader = new Shader("enlightened_textured_shader.vs", "enlightened_textured_shader.fs");
-    pSpriteShader = new Shader("shader_sprite.vs", "shader_sprite.fs");
+    pShader = new Shader("resources/shaders/shader.vs", "resources/shaders/shader.fs");
+    pTextShader = new Shader("resources/shaders/shader_text.vs", "resources/shaders/shader_text.fs");
+    pEnlightenedShader = new Shader("resources/shaders/enlightened_object_shader.vs", "resources/shaders/enlightened_object_shader.fs");
+    pSpriteShader = new Shader("resources/shaders/shader_sprite.vs", "resources/shaders/shader_sprite.fs");
 
     TextureObject* pMouseTex = new TextureObject("resources/textures/cross3.png");
     Mouse = new MouseObject(window, pMouseTex, glm::vec3(75.0f, 75.0f, 0.1f));

@@ -144,9 +144,10 @@ void ScoreState::ProcessInput()
         }
     }
 
+    /*
     if (glfwGetKey(Window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         ChangeState(MenuState::GetInstance(Manager, Window, Engine));
-    }
+    }*/
 
     if (CurrentGame->GetLvl() == 1) {
         pGretel->Move(deltaTime);
@@ -200,7 +201,8 @@ void ScoreState::ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned i
 void ScoreState::MouseClick(int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        CurrentGame->CurrentLevel[CurrentGame->IsMultiplayer()]++;
+        if(CurrentGame->GetLvl() < 3 )
+            CurrentGame->CurrentLevel[CurrentGame->IsMultiplayer()]++;
         if (CurrentGame->CurrentLevel[CurrentGame->IsMultiplayer()] < 3) {
             ChangeState(CurrentGame);
             CurrentGame->Reset();//Inizia nuovo livello

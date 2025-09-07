@@ -126,7 +126,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
     candySize = glm::vec3(0.07f, 0.07f * getAspect(Window), 0.1f);
 
-    pCandyTypes.emplace_back(new CandyType(EffectType::NoJump, 10.0f));
+    pCandyTypes.emplace_back(new CandyType(EffectType::NoJump, 5.0f));
     pCandyTypes.emplace_back(new CandyType(EffectType::Speed, 1.5f, 10.0f));
     pCandyTypes.emplace_back(new CandyType(EffectType::SpeedEnemy, 1.5f, 10.0f));
     pCandyTypes.emplace_back(new CandyType(EffectType::Invincibility, 5.0f));
@@ -135,9 +135,11 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     //Associazione run-time tra texture ed effetto della caramella
     std::shuffle(pCandiesMesh.begin(), pCandiesMesh.end(), rd);
 
+    #if DEBUG
     printf("TAB CARAMELLE\n");
     for (int i = 0; i < std::min(pCandiesMesh.size(), pCandyTypes.size()); i++)
         printf("%s\t%s\n", pCandyTypes[i]->Print(), pCandiesMesh[i]->Path);
+    #endif
  
     /*
     for (int i = 0; i < std::min(pCandiesMesh.size(), pCandyTypes.size()); i++) {
@@ -263,7 +265,7 @@ PlayState* PlayState::GetInstance(StateManager* manager, GLFWwindow* window, irr
 
 void PlayState::Reset()
 {
-    if (CurrentLevel[Multiplayer] == 3)
+    if (CurrentLevel[Multiplayer] > 2)
         return;
 
     glm::vec2 positions[8] = {
@@ -346,18 +348,19 @@ void PlayState::Reset()
         pProbabilities.emplace_back(0);
     }
     else {
-        /*
+        
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(16);// Teleport è più rara
+        /*
+        pProbabilities.emplace_back(0);
+        pProbabilities.emplace_back(0);
+        pProbabilities.emplace_back(0);
+        pProbabilities.emplace_back(0);
+        pProbabilities.emplace_back(100);
         */
-        pProbabilities.emplace_back(0);
-        pProbabilities.emplace_back(0);
-        pProbabilities.emplace_back(0);
-        pProbabilities.emplace_back(0);
-        pProbabilities.emplace_back(100);// Teleport è più rara
     }
 
     /*
@@ -422,7 +425,9 @@ void PlayState::Reset()
     lastSpawnTime = 0.0f;
     spawnTime = 0;
     spawnPlace = RandomInt(0, pCauldrons.size() - 1);
+    #if DEBUG
     printf("Prossimo spawn tra %d s nel calderone %d\n", spawnTime, spawnPlace);
+    #endif
 
     if (Status[Multiplayer] != GameStatus::Paused) {
         currentTime = 0;
@@ -461,12 +466,14 @@ void PlayState::ProcessInput()
     // debug Gretel
     if (glfwGetKey(Window, GLFW_KEY_C) == GLFW_PRESS)
     {
+        #if DEBUG
         std::cout << ((pGretel->isOnGround == true) ? "A terra" : "In aria") << std::endl;
         std::cout << "Velocity: " << pGretel->velocity.x << ", " << pGretel->velocity.y << std::endl;
         std::cout << "Bottom-Left: " << pGretel->Position.x - (pGretel->Size.x / 2) << ", " << pGretel->Position.y - (pGretel->Size.y / 2) << std::endl;
         std::cout << "HB-Bottom-Left: " << pGretel->GetHitbox().Min.x << ", " << pGretel->GetHitbox().Min.y << std::endl;
         std::cout << "HB-Top-Right: " << pGretel->GetHitbox().Max.x << ", " << pGretel->GetHitbox().Max.y << std::endl;
         std::cout << "Position-X: " << pGretel->Position.x << std::endl;
+        #endif
     }
 
     //debug skip livelli
@@ -611,7 +618,9 @@ void PlayState::ProcessEvents()
             spawnTime = RandomInt(SPAWN_MIN_E, SPAWN_MAX_E);
             spawnPlace = RandomInt(0, pCauldrons.size() - 1);
             Engine->play2D("resources/sounds/bubbles.wav");
+            #if DEBUG
             printf("Prossimo spawn tra %d s nel calderone %d\n", spawnTime, spawnPlace);
+            #endif
         }
     }
 
@@ -648,7 +657,9 @@ void PlayState::ProcessEvents()
                     CandyType* type = pCandyTypes[rdindex];
                     TextureObject* texture = pCandiesMesh[rdindex];
                     pCandies.emplace_back(new Candy(glm::vec2(pixelX, pixelY), candySize, texture, 0, *type));
+                    #if DEBUG
                     printf("Spawnata caramella di tipo %s\n", type->Print());
+                    #endif
                 }
 
             }
@@ -671,7 +682,9 @@ void PlayState::ProcessEvents()
 void PlayState::CheckEndGame() {
     if (!isEnding){
         if (Status[Multiplayer] == GameStatus::GameOver || Status[Multiplayer] == GameStatus::Victory) {
+            #if DEBUG
             printf("End game started\n");
+            #endif
             pGretel->Stop(deltaTime);
             if(Multiplayer)
                 pHansel->Stop(deltaTime);
@@ -685,8 +698,9 @@ void PlayState::CheckEndGame() {
     endingTimer += deltaTime;
     if (endingTimer < endingDuration)
         return;
-
+    #if DEBUG
     printf("Ending...\n");
+    #endif
     endingTimer = 0.0f;
     isEnding = false;
 
@@ -801,7 +815,7 @@ void PlayState::MouseClick(int button, int action, int mods)
         ypos = fbHeight - ypos;
         //Controlla se stia teleportando fuori schermo
         if (xpos <= 0 || xpos > fbWidth || ypos <= 0 || ypos > fbHeight) {
-            printf("Coordinate fuori schermo -> RIPROVARE\n");
+            //printf("Coordinate fuori schermo -> RIPROVARE\n");
             return;
         }
         //Trasforma in coordinate NDC
@@ -814,7 +828,7 @@ void PlayState::MouseClick(int button, int action, int mods)
             Hitbox bounds = pp->GetHitbox();
             bool isColliding = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
             if (isColliding) {
-                printf("Coordinate collidono con ostacoli -> RIPROVARE\n");
+                //printf("Coordinate collidono con ostacoli -> RIPROVARE\n");
                 return;
             }
         }
@@ -822,7 +836,7 @@ void PlayState::MouseClick(int button, int action, int mods)
         pGretel->Teleport(glm::vec2(xpos - 0.05f,ypos), Engine);
         if(Multiplayer)
             pHansel->Teleport(glm::vec2(xpos + 0.05f, ypos), Engine);
-        printf("Teleport effettuato\n");
+        //printf("Teleport effettuato\n");
     }
 }
 void PlayState::EnterState()

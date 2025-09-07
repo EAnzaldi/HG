@@ -60,11 +60,11 @@ public:
 
 	static bool MultiplayerUnlocked;
 	static bool TeleportUnlocked;
-	static const int scoreMalus = 10;
-	static const int scoreEnemy = 50;
-	static const int scoreBonus = 60;
-	static const int scoreTelep = 100;
-	static const int scoreTime = 10; //pt x sec rimasto
+	static const int scoreMalus = 100;
+	static const int scoreEnemy = 500;
+	static const int scoreBonus = 600;
+	static const int scoreTelep = 1000;
+	static const int scoreTime = 50; //pt x sec rimasto
 
 	const double start = 99;// tempo massimo per livello
 

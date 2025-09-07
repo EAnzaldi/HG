@@ -5,6 +5,9 @@
 #include <random>
 #include <GLFW/glfw3.h>
 
+//0 = no print, 1 = debug print
+#define DEBUG 0
+
 // screen's settings
 // const unsigned int SCR_WIDTH = 1600;
 //const unsigned int SCR_HEIGHT = 1200;
@@ -35,7 +38,7 @@ static int RandomInt(int min, int max) {
 
 static bool DoAction(int probability) {
     int n = rand() % 100;
-    printf("Percentuale estratta %d\n", n);
+    //printf("Percentuale estratta %d\n", n);
     return n < probability;
 }
 
