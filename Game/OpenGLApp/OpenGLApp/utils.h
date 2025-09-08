@@ -7,7 +7,7 @@
 
 //0 = no print, 1 = debug print
 #define DEBUG 0
-
+ 
 // screen's settings
 // const unsigned int SCR_WIDTH = 1600;
 //const unsigned int SCR_HEIGHT = 1200;

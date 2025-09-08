@@ -158,7 +158,7 @@ void ScoreState::ProcessInput()
         pHansel->CheckCollisionWithSolids(solidsHansel);
         if (CurrentGame->IsMultiplayer())
             ProcessInputPlayer(pHansel, GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_LEFT, GLFW_KEY_RIGHT);
-    } else if (CurrentGame->GetLvl() == 2) {
+    } else if (CurrentGame->GetLvl() >= 2) {
         if (CurrentGame->IsMultiplayer() == false) {
             pGretel->Move(deltaTime);
             pGretel->CheckCollisionWithSolids(solidsGretel);

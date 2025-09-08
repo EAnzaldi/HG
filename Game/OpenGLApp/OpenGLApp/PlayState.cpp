@@ -485,6 +485,7 @@ void PlayState::ProcessInput()
     if (glfwGetKey(Window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         Status[Multiplayer] = GameStatus::Paused;
         ChangeState(MenuState::GetInstance(Manager, Window, Engine));
+        return;
     }
 
     if (!pGretel->isDead) {
@@ -948,7 +949,7 @@ void PlayState::RenderStats() {
         std::string enemies = buf;
         pText->Render(*pTextShader, enemies, pSlimeUI->Position.x + pSlimeUI->Size.x / 2.0f + 15.0f, 880.0f, 0.9f, color, Alignment::Left);
     }
-    else if (CurrentLevel[Multiplayer] == 2) {
+    else if (CurrentLevel[Multiplayer] >= 2) {
         pKeysUI[Multiplayer]->Position = glm::vec2(fbWidth * 0.6f - pKeysUI[Multiplayer]->Size.x / 2.0f, 895.0f);
         pKeysUI[Multiplayer]->Render(*pSpriteShader);
         snprintf(buf, 100, "%d/%d", nKeys, TOTKEYS);

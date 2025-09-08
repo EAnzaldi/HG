@@ -342,15 +342,15 @@ void MenuState::SelectionChosen()
 			CurrentGame = PlayState::GetInstance(Manager, Window, Engine);
 		}*/
 		CurrentGame->ResetLevel();
-		ChangeState(CurrentGame);
 		CurrentGame->Reset();
+		ChangeState(CurrentGame);
 		break;
 
 	case RESUME:
 		if (CurrentGame->GetStatus() != GameStatus::None) {
-			ChangeState(CurrentGame);
 			if (CurrentGame->GetStatus() != GameStatus::Paused)
 				CurrentGame->Reset();//Inizia nuovo livello
+			ChangeState(CurrentGame);
 		}
 		break;
 
