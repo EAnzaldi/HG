@@ -6,7 +6,7 @@ class MovingObject : public GameObject
 {
 public:
 
-    enum class Collision { None, Top, Other };
+    enum class Collision { None, Top, Bottom, Left, Right };
 
     bool isOnGround = true;
 
@@ -35,6 +35,6 @@ public:
 
     void CheckCollisionWithSolids(const std::vector<GameObject*>& solidObjects);
 
-    virtual void HandleCollisionWithSolid(GameObject* solidObject);
+    virtual void HandleCollisionWithSolid(GameObject* solidObject, Collision collision);
 
 };

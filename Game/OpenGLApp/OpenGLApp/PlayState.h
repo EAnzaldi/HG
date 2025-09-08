@@ -4,6 +4,8 @@
 #include <glm/glm.hpp>
 #include <unordered_map>
 #include <iomanip>
+#include <deque>
+#include <tuple>
 
 #include "Camera.h"
 #include "TextObject.h"
@@ -141,6 +143,11 @@ private:
 	const float endingDuration = 1.0f;	// Piccolo delay di fine gioco
 	float endingTimer = 0.0f;			// Timer dopo il fine gioco
 	bool isEnding = false;
+
+	const float displayDuration = 1.0f;
+	const float displayDurationNonEmpty = 1.0f;
+	//float displayTimer = 0.0f;
+	bool newDisplay = false;
 
 	//Sound
 	irrklang::ISound* ost;

@@ -32,31 +32,33 @@ void MovingObject::Move(float deltaTime)
 void MovingObject::Stop(float deltaTime) {
     this->velocity.x = 0.0f;
 }
-/*bool MovingObject::CheckCollision(GameObject other)
-{
-    Hitbox bounds1 = this->GetHitbox();
-    Hitbox bounds2 = other.GetHitbox();
-    return (bounds1.Min.x <= bounds2.Max.x && bounds1.Max.x >= bounds2.Min.x &&
-        bounds1.Min.y <= bounds2.Max.y && bounds1.Max.y >= bounds2.Min.y);
-}*/
-
+//Collision::x --> this è stato colpito nella direzione x
 MovingObject::Collision MovingObject::CheckCollision(GameObject* other)
 {
-    Hitbox bounds1 = this->GetHitbox();
-    Hitbox bounds2 = other->GetHitbox();
+    Hitbox thisHitbox = this->GetHitbox();
+    Hitbox otherHitbox = other->GetHitbox();
 
-    bool isColliding = (bounds1.Min.x <= bounds2.Max.x && bounds1.Max.x >= bounds2.Min.x &&
-        bounds1.Min.y <= bounds2.Max.y && bounds1.Max.y >= bounds2.Min.y);
+    //Calcola poligono di soprapposizione mesh: overlapX = min(max1.x,max2.x) - max(min1.x,min2.x), overlapY = ...
+    float overlapX = std::min(thisHitbox.Max.x, otherHitbox.Max.x) - std::max(thisHitbox.Min.x, otherHitbox.Min.x);
+    float overlapY = std::min(thisHitbox.Max.y, otherHitbox.Max.y) - std::max(thisHitbox.Min.y, otherHitbox.Min.y);
 
-    if(!isColliding)
+    if (overlapX <= 0 || overlapY <= 0)
         return Collision::None;
 
-    if (this->velocity.y < 0) {// se player sta cadendo su other
-        if (bounds1.Min.y <= bounds2.Max.y && bounds1.Min.y >= bounds2.Max.y - 5.0f)//se colpisce entro una finestra di 5.0f
-            return Collision::Top;
+    if (overlapX < overlapY) // Valuta l'asse X
+    {
+        if (this->Position.x < other->Position.x)
+            return Collision::Right;
+        else
+            return Collision::Left;
     }
-
-    return Collision::Other;
+    else // Valuta l'asse Y
+    {
+        if (this->Position.y < other->Position.y)
+            return Collision::Top;
+        else
+            return Collision::Bottom;
+    }
 }
 void MovingObject::CheckCollisionWithSolids(const std::vector<GameObject*>& solidObjects)
 {
@@ -64,14 +66,16 @@ void MovingObject::CheckCollisionWithSolids(const std::vector<GameObject*>& soli
 
     for (GameObject* solid : solidObjects)
     {  
-        if (CheckCollision(solid) != Collision::None)
+        Collision collision = CheckCollision(solid);
+        if (collision != Collision::None)
         {
-            HandleCollisionWithSolid(solid);
+            HandleCollisionWithSolid(solid, collision);
         }
     }
 }
-void MovingObject::HandleCollisionWithSolid(GameObject* solidObject)
+void MovingObject::HandleCollisionWithSolid(GameObject* solidObject, Collision collision)
 {
+    /*
     Hitbox thisHitbox = this->GetHitbox();
     Hitbox solidHitbox = solidObject->GetHitbox();
 
@@ -103,6 +107,29 @@ void MovingObject::HandleCollisionWithSolid(GameObject* solidObject)
         }
         this->velocity.y = 0;
     }
+    */
+
+    Hitbox thisHitbox = this->GetHitbox();
+    Hitbox otherHitbox = solidObject->GetHitbox();
+
+    float overlapX = std::min(thisHitbox.Max.x, otherHitbox.Max.x) - std::max(thisHitbox.Min.x, otherHitbox.Min.x);
+    float overlapY = std::min(thisHitbox.Max.y, otherHitbox.Max.y) - std::max(thisHitbox.Min.y, otherHitbox.Min.y);
+
+    switch (collision) {
+        case Collision::Right:  this->Position.x -= overlapX;
+                                break;
+        case Collision::Left:   this->Position.x += overlapX;
+                                break;
+        case Collision::Top:    this->Position.y -= overlapY;
+                                this->velocity.y = 0;
+                                break;
+        case Collision::Bottom: this->Position.y += overlapY;
+                                this->isOnGround = true;
+                                this->velocity.y = 0;
+                                break;
+        default: {}
+    }
+
 }
 void MovingObject::Render(const Shader& Shader) const
 {

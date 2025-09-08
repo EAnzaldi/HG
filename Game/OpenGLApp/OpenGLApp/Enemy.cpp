@@ -12,11 +12,13 @@ Enemy::Enemy(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool re
 
 }
 float Enemy::speedBonus = 1.0f;
-void Enemy::HandleCollisionWithSolid(GameObject* solidObject)
+void Enemy::HandleCollisionWithSolid(GameObject* solidObject, Collision collision)
 {
+    /*
     Hitbox thisHitbox = this->GetHitbox();
     Hitbox solidHitbox = solidObject->GetHitbox();
 
+    
     float overlapX = std::min(thisHitbox.Max.x, solidHitbox.Max.x) - std::max(thisHitbox.Min.x, solidHitbox.Min.x);
     float overlapY = std::min(thisHitbox.Max.y, solidHitbox.Max.y) - std::max(thisHitbox.Min.y, solidHitbox.Min.y);
 
@@ -26,12 +28,12 @@ void Enemy::HandleCollisionWithSolid(GameObject* solidObject)
         if (this->Position.x < solidObject->Position.x) // Collisione a destra del MovingObject
         {
             this->Position.x -= overlapX;
-            this->velocity.x = -this->velocity.x;
+            this->velocity.x = -this->velocity.x;//rimbalza il nemico che cambia direzione
         }
         else // Collisione a sinistra del MovingObject
         {
             this->Position.x += overlapX;
-            this->velocity.x = -this->velocity.x;
+            this->velocity.x = -this->velocity.x;//rimbalza il nemico che cambia direzione
         }
     }
     else // Correggi sull'asse Y
@@ -46,6 +48,12 @@ void Enemy::HandleCollisionWithSolid(GameObject* solidObject)
             this->isOnGround = true;
         }
         this->velocity.y = 0;
+    }*/
+
+    MovingObject::HandleCollisionWithSolid(solidObject, collision);
+
+    if (collision == Collision::Left || collision == Collision::Right) {
+        this->velocity.x = -this->velocity.x;//rimbalza il nemico che cambia direzione
     }
 }
 void Enemy::Move(float deltaTime)

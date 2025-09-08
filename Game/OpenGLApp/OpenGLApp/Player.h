@@ -18,10 +18,13 @@ struct ActiveEffect {
 
 enum class PlayerName { Gretel, Hansel };
 
+enum class Collision { None, Top, Bottom, Left, Right };
+
 class Player : public MovingObject
 {
     public:
         PlayerName name;
+        const char* nameString;
 
         bool isInvincible;           // Flag per indicare se il giocatore è invincibile
         float invincibilityDuration; // Durata dell'invincibilità (in secondi)
@@ -50,7 +53,6 @@ class Player : public MovingObject
 
         void HandleJump(float deltaTime, irrklang::ISoundEngine* engine);
 
-        void HandleCollisionWithSolid(GameObject* solidObject) override;
 
         bool CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine);   
 
@@ -63,7 +65,7 @@ class Player : public MovingObject
         void StartInvincibility();
         void EndInvincibility();
 
-        void EatCandy(CandyType type, irrklang::ISoundEngine* engine);
+        std::string EatCandy(CandyType type, irrklang::ISoundEngine* engine);
 
         void GetStats(std::vector<CandyType*> pCandyTypes, std::vector<int>& candyStats, int& kills);
 
@@ -84,5 +86,7 @@ class Player : public MovingObject
         int nKills = 0;
 
         void DigestCandy(CandyType type);
+
+        void HandleCollisionWithSolid(GameObject* solidObject, Collision collision) override;
 
 };

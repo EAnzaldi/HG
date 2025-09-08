@@ -6,13 +6,19 @@ Player::Player(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidt
     : MovingObject(position, size, model, repeatWidth, velocity = glm::vec2(0.0f, 0.0f), true), 
     invincibilityDuration(1.0f), invincibilityTimer(0.0f), isInvincible(false), name(name), lives(lives)
 {
-
+    if (name == PlayerName::Gretel)
+        nameString = "GRETEL";
+    else if (name == PlayerName::Hansel)
+        nameString = "HANSEL";
 }
 Player::Player(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, PlayerName name, int lives)
     : MovingObject(position, size, texture, repeatWidth, velocity = glm::vec2(0.0f, 0.0f), true),
         invincibilityDuration(1.0f), invincibilityTimer(0.0f), isInvincible(false), name(name), lives(lives)
 {
-
+    if (name == PlayerName::Gretel)
+        nameString = "GRETEL";
+    else if (name == PlayerName::Hansel)
+        nameString = "HANSEL";
 }
 Player::~Player()
 {
@@ -49,11 +55,70 @@ void Player::HandleJump(float deltaTime, irrklang::ISoundEngine* engine)
         }
     }
 }
+void Player::HandleCollisionWithSolid(GameObject* solidObject, Collision collision)
+{
+    /*
+    Hitbox playerHitbox = this->GetHitbox();
+    Hitbox solidHitbox = solidObject->GetHitbox();
+
+    float overlapX = std::min(playerHitbox.Max.x, solidHitbox.Max.x) - std::max(playerHitbox.Min.x, solidHitbox.Min.x);
+    float overlapY = std::min(playerHitbox.Max.y, solidHitbox.Max.y) - std::max(playerHitbox.Min.y, solidHitbox.Min.y);
+
+    // Correggo l'overlap minore
+    if (overlapX < overlapY) // Correggo sull'asse X
+    {
+        if (this->Position.x < solidObject->Position.x) // Collisione a destra del player
+        {
+            this->Position.x -= overlapX;
+        }
+        else // Collisione a sinistra del player
+        {
+            this->Position.x += overlapX; // Sposta il player verso destra
+        }
+        this->velocity.x = 0;
+    }
+    else // Correggi sull'asse Y
+    {
+        if (this->Position.y < solidObject->Position.y) // Collisione sopra il player
+        {
+            this->Position.y -= overlapY;
+        }
+        else // Collisione sotto il player
+        {
+            this->Position.y += overlapY;
+            this->isOnGround = true;
+            this->isPastJumpPeak = false;
+        }
+        this->velocity.y = 0;
+    }
+    */
+
+    MovingObject::HandleCollisionWithSolid(solidObject, collision);
+
+    if (collision == Collision::Left || collision == Collision::Right) {
+        this->velocity.x = 0;
+    }
+    if (collision == Collision::Bottom) {
+        this->isPastJumpPeak = false;
+    }
+}
 bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
 {
+    if (isInvincible)
+        return false;
+
     Collision collision = CheckCollision(enemy);
 
-    if (!isInvincible && collision == Collision::Other) {
+    if (collision == Collision::None)
+        return false;
+
+    if (collision == Collision::Bottom) {
+        //std::cout << "Kill enemy" << std::endl;
+        engine->play2D("resources/sounds/kill_slime.wav");
+        enemy->kill();
+        nKills++;
+    }
+    else {
         engine->play2D("resources/sounds/damage.wav");
         if (lives > 1)
         {
@@ -67,50 +132,57 @@ bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
             isDead = true;
         }
     }
-    else if (collision == Collision::Top) {
 
-        //std::cout << "Kill enemy" << std::endl;
-        engine->play2D("resources/sounds/kill_slime.wav");
-        enemy->kill();
-        nKills++;
-    }
     return isDead;
 }
 bool Player::CheckCandyCollision(Candy* candy, irrklang::ISoundEngine* engine)
 {
-    Collision collision = CheckCollision(candy);
-
-    if (collision != Collision::None) {
+    if (CheckCollision(candy) != Collision::None) {
         return true;
     }
     return false;
 }
-void Player::EatCandy(CandyType type, irrklang::ISoundEngine* engine)
+static const std::string nojump_str(": NO JUMP");
+static const std::string speed_str(": SPEED UP");
+static const std::string speedenemy_str("SLIMES: SPEED UP");
+static const std::string invincibility_str(": INVINCIBILITY");
+static const std::string teleport_str("TELEPORT");
+std::string Player::EatCandy(CandyType type, irrklang::ISoundEngine* engine)
 {
+    std::string output = {};
     engine->play2D("resources/sounds/crunch2.ogg");
     switch (type.effect) {
         case(EffectType::None): {} break;
         case(EffectType::NoJump):       disableJump = true;
                                         nNoJump++;
                                         nNoJumpEaten++; //Aggiorna statistica
+                                        output = nameString + nojump_str;
                                         break;
         case(EffectType::Speed):        maxVelocity *= type.value;
                                         nSpeedEaten++;  //Aggiorna statistica
+                                        output = nameString + speed_str;
                                         break;
         case(EffectType::SpeedEnemy):   Enemy::SpeedUp(type.value);
                                         nSpeedEnemyEaten++; //Aggiorna statistica
+                                        output = speedenemy_str;
                                         break;
         case(EffectType::Invincibility):isInvincible = true;
                                         nInvincibility++;
                                         nInvincibilityEaten++; //Aggiorna statistica
+                                        output = nameString + invincibility_str;
                                         break;
         case(EffectType::Teleport):     teleport = true;
                                         nTeleportEaten++; //Aggiorna statistica
-                                        return;//non viene inserito nel vettore degli effetti ma gestito separatamente
-        default: return;
+                                        output = teleport_str;
+                                        break;
+        default: return output;
     }
-    ActiveEffect* pe = new ActiveEffect(type);
-    pAEffects.emplace_back(pe);
+    if (type.effect != EffectType::Teleport) {//Teleport non viene inserito nel vettore degli effetti ma gestito separatamente
+        ActiveEffect* pe = new ActiveEffect(type);
+        pAEffects.emplace_back(pe);
+    }
+
+    return output;
 }
 void Player::DigestCandy(CandyType type)
 {
@@ -153,43 +225,6 @@ void Player::Teleport(glm::vec2 position, irrklang::ISoundEngine* engine) {
     teleport = false;
     engine->play2D("resources/sounds/teleport.wav");
 }
-void Player::HandleCollisionWithSolid(GameObject* solidObject)
-{
-    Hitbox playerHitbox = this->GetHitbox();
-    Hitbox solidHitbox = solidObject->GetHitbox();
-
-    float overlapX = std::min(playerHitbox.Max.x, solidHitbox.Max.x) - std::max(playerHitbox.Min.x, solidHitbox.Min.x);
-    float overlapY = std::min(playerHitbox.Max.y, solidHitbox.Max.y) - std::max(playerHitbox.Min.y, solidHitbox.Min.y);
-
-    // Correggo l'overlap minore
-    if (overlapX < overlapY) // Correggo sull'asse X
-    {
-        if (this->Position.x < solidObject->Position.x) // Collisione a destra del player
-        {
-            this->Position.x -= overlapX;
-        }
-        else // Collisione a sinistra del player
-        {
-            this->Position.x += overlapX; // Sposta il player verso destra
-        }
-        this->velocity.x = 0;
-    }
-    else // Correggi sull'asse Y
-    {
-        if (this->Position.y < solidObject->Position.y) // Collisione sopra il player
-        {
-            this->Position.y -= overlapY;
-        }
-        else // Collisione sotto il player
-        {
-            this->Position.y += overlapY;
-            this->isOnGround = true;
-            this->isPastJumpPeak = false;
-        }
-        this->velocity.y = 0;
-    }
-}
-
 void Player::Update(float deltaTime)
 {
     // Aggiorna il timer di invincibilità

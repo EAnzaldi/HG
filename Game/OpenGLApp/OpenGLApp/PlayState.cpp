@@ -10,7 +10,7 @@
 #define SPAWN_MIN_E 3
 #define SPAWN_MAX_E 6
 
-#define SPAWN_PROB_C 50 //percentuale di spawn delle caramelle (bonus e malus)
+#define SPAWN_PROB_C 100 //percentuale di spawn delle caramelle (bonus e malus)
 
 #define FLAT 1
 
@@ -24,6 +24,9 @@ static glm::vec2 posSpawn2[3] = { {-0.8f, 0.06f}, {0.2f, 0.06f}, {0.8f, -0.34f} 
 static glm::vec2 velocity = { 0.3f, 0.0f };
 static glm::vec2 velocities[2] = { velocity, -velocity };
 static glm::vec2 velocities2[3] = { velocity, -velocity, -velocity };
+
+//std::queue<std::string> q;
+std::deque<std::tuple<std::string, float>> q;
 /*
 static glm::vec2 positions[8] = {
    {0.0f, -0.95f},//pavimento
@@ -341,11 +344,19 @@ void PlayState::Reset()
         pProbabilities.clear();
     if (TeleportUnlocked == false) {
         //NoJump, Speed, SpeedEnemy, Invincibility, Teleport
+
         pProbabilities.emplace_back(25);
         pProbabilities.emplace_back(25);
         pProbabilities.emplace_back(25);
         pProbabilities.emplace_back(25);
         pProbabilities.emplace_back(0);
+        /*
+        pProbabilities.emplace_back(0);
+        pProbabilities.emplace_back(0);
+        pProbabilities.emplace_back(0);
+        pProbabilities.emplace_back(0);
+        pProbabilities.emplace_back(100);
+        */
     }
     else {
         
@@ -361,6 +372,7 @@ void PlayState::Reset()
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(100);
         */
+        
     }
 
     /*
@@ -421,6 +433,9 @@ void PlayState::Reset()
                                                 glm::vec3(0.09f * pKeysTex[Multiplayer]->getAspect(), 0.09f * getAspect(Window), 0.1f),
                                                 pKeysTex[Multiplayer], 0);
     }
+
+    //Svuota coda effetti
+    q.clear();
 
     lastSpawnTime = 0.0f;
     spawnTime = 0;
@@ -563,7 +578,15 @@ void PlayState::ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned in
 
         if (pCloser != nullptr) {
             pCloser->Eat();
-            pPlayer->EatCandy(pCloser->GetType(), Engine);
+            std::string output = pPlayer->EatCandy(pCloser->GetType(), Engine);
+            if (q.empty())
+                newDisplay = true;
+            if(Player::teleport)
+                q.push_back(std::make_tuple(output, displayDuration));
+            else {
+                if (q.empty()) q.push_back(std::make_tuple(output, displayDuration));
+                else q.push_back(std::make_tuple(output, displayDurationNonEmpty));
+            }
             EffectType effect = pCloser->GetEffect();
             //Add score
             if(effect == EffectType::NoJump || effect == EffectType::SpeedEnemy)
@@ -956,4 +979,37 @@ void PlayState::RenderStats() {
         std::string keys = buf;
         pText->Render(*pTextShader, keys, pKeysUI[Multiplayer]->Position.x + pKeysUI[Multiplayer]->Size.x / 2.0f + 15.0f, 880.0f, 0.9f, color, Alignment::Left);
     }
+
+    //Render effetti caramelle giocatori
+
+    if (q.empty())
+        return;
+
+    std::string& effect = std::get<0>(q[0]);
+    pText->Render(*pTextShader, effect, fbWidth * 0.5f, 820.0f, 1.0f, color, Alignment::Center);
+
+    if (newDisplay) {
+        //fa partire il timer dal prossimo render
+        newDisplay = false;
+        return;
+    }
+    /*
+    if (Player::teleport && effect.compare("TELEPORT"))
+        return;*/
+
+    float& displayTimer = std::get<1>(q[0]);
+    displayTimer -= deltaTime;
+    /*
+    if (q.size() > 1 && std::get<1>(q[q.size() - 1]) > displayDurationNonEmpty)
+        std::get<1>(q[q.size() - 1]) -= (displayDuration - displayDurationNonEmpty);
+
+    // Aggiorna il timer per display caramelle mangiate
+    while (!q.empty() && std::get<1>(q[0]) <= 0.0f) {
+        q.pop_front();
+    }*/
+
+    if (displayTimer <= 0.0f) {
+        q.pop_front();
+    }
+
 }

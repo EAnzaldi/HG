@@ -139,20 +139,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader.vs">
-      <Filter>File di origine</Filter>
-    </None>
-    <None Include="shader.fs">
-      <Filter>File di origine</Filter>
-    </None>
-    <None Include="shader_text.fs" />
-    <None Include="shader_text.vs" />
-    <None Include="enlightened_object_shader.fs" />
-    <None Include="enlightened_object_shader.vs" />
-    <None Include="shader_sprite.fs" />
-    <None Include="shader_sprite.vs" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="textures\awesomeface.png">
       <Filter>File di risorse</Filter>
     </Image>
