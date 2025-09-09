@@ -18,14 +18,24 @@ EndState::EndState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEn
     glm::mat4 view = pCamera->GetViewMatrix();
     pSpriteShader->use();
     pSpriteShader->setMat4("view", view);
-    ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::Pixels);
 
     int fbWidth, fbHeight;
     glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
-    pBackgroundTex = new TextureObject("resources/textures/game_over2.png");
-    pBackground = new GameObject(glm::vec2(fbWidth/2.0f, fbHeight/2.0f), pBackgroundTex->getSize(), pBackgroundTex, 0);
-}
+    pBackgroundTex = new TextureObject("resources/textures/game_over3.png");
+    pBackground = new GameObject(glm::vec2(fbWidth / 2.0f, fbHeight / 2.0f), pBackgroundTex->getSize(), pBackgroundTex, 0);
 
+    pWitchTex = new TextureObject("resources/textures/witch2.png");
+
+    glm::vec2 posPixels = glm::vec2(0.15 * fbWidth + pWitchTex->getWidth() / 2.0f, fbHeight / 2.0f);
+    glm::vec2 posNDC = GameObject::NDCPosition(glm::vec2(posPixels));
+    glm::vec3 sizePixels = glm::vec3(pWitchTex->Width, pWitchTex->Height, 1.0f);
+    glm::vec3 sizeNDC = GameObject::NDCSize(sizePixels);
+
+    pWitch = new MovingObject(posPixels, sizePixels, pWitchTex, 0, glm::vec2(0.0f, 0.0f), 0);
+    //pWitch = new MovingObject(posPixels, pWitchTex->getSize(), pWitchTex, 0, glm::vec2(0.0f, 0.0f), 1);
+    //pTexEnemy = new TextureObject("resources/textures/slime2-mod.png");
+    //pEnemy = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.13f, 0.13f, 0.1f), pTexEnemy, 0);
+}
 
 EndState::~EndState()
 {
@@ -41,26 +51,41 @@ EndState* EndState::GetInstance(StateManager* manager, GLFWwindow* window, irrkl
     static EndState Instance(manager, window, engine);
     return &Instance;
 }
-
+int oscillate = true;
 void EndState::EnterState()
 {
+    pWitch->SetRotation(5.0f, GameObject::axisZ, 0.2f);
+    oscillate = true;
+
     // musica di sottofondo (non loop)
-    ost = Engine->play2D("resources/sounds/cleyron_xavier_no_hope.wav", false, false, true);
+    //ost = Engine->play2D("resources/sounds/cleyron_xavier_no_hope.wav", false, false, true);
+    Engine->play2D("resources/sounds/crazy_laugh.wav");
 }
 
 void EndState::LeaveState()
 {
-    ost->stop();
+    //ost->stop();
 }
-
 
 void EndState::ProcessInput()
 {
+    float currentFrame = static_cast<float>(glfwGetTime());
+    deltaTime = currentFrame - lastFrame;
+
+    if (deltaTime > 0.1f)// Ignora delta troppo grandi
+        deltaTime = 0.0f;
+
+    lastFrame = currentFrame;
+
     if (glfwGetKey(Window, GLFW_KEY_ENTER) == GLFW_PRESS) {
         ChangeState(MenuState::GetInstance(Manager, Window, Engine));
     }
 }
-
+void EndState::ProcessEvents() {
+    if (oscillate) {
+        oscillate = pWitch->Oscillate(deltaTime);
+    }
+}
 void EndState::MouseClick(int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
@@ -80,7 +105,16 @@ void EndState::Render()
     //glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    glDisable(GL_DEPTH_TEST);
+
+    ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::Pixels);
     pBackground->Render(*pSpriteShader);
+
+
+    //ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::NDC);
+    pWitch->Render(*pSpriteShader);
+
+    glEnable(GL_DEPTH_TEST);
 
     /*
     if (Status == GameStatus::GameOver) {

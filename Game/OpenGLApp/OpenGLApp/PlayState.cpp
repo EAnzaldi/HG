@@ -497,6 +497,12 @@ void PlayState::ProcessInput()
         Status[Multiplayer] = GameStatus::Victory;
     }
 
+    //debug morte
+    if (glfwGetKey(Window, GLFW_KEY_L) == GLFW_PRESS)
+    {
+        Status[Multiplayer] = GameStatus::GameOver;
+    }
+
     if (glfwGetKey(Window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         Status[Multiplayer] = GameStatus::Paused;
         ChangeState(MenuState::GetInstance(Manager, Window, Engine));
@@ -563,21 +569,9 @@ void PlayState::ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned in
     // raccolta caramelle
     if (glfwGetKey(Window, DOWN) == GLFW_PRESS && canPressDOWN)
     {
-        Candy* pCloser = nullptr;
-        float d_min = FLT_MAX;
-        //Cerca se esiste la caramella da mangiare a distanza minima
-        for (Candy* pc : pCandies) {
-            if (!pc->IsEaten() && pPlayer->CheckCandyCollision(pc, Engine)) {
-                float d = pPlayer->DistanceTo(pc);
-                if (d < d_min) {
-                    d_min = d;
-                    pCloser = pc;
-                }
-            }
-        }
+        Candy* pCloser = pPlayer->CheckCollisionWithCandies(pCandies);
 
         if (pCloser != nullptr) {
-            pCloser->Eat();
             std::string output = pPlayer->EatCandy(pCloser->GetType(), Engine);
             if (q.empty())
                 newDisplay = true;

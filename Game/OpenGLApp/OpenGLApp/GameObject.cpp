@@ -2,6 +2,10 @@
 
 FlatMesh* GameObject::fmesh = nullptr;
 
+const glm::vec3 GameObject::axisX = glm::vec3(1.0f, 0.0f, 0.0f);
+const glm::vec3 GameObject::axisY = glm::vec3(0.0f, 1.0f, 0.0f);
+const glm::vec3 GameObject::axisZ = glm::vec3(0.0f, 0.0f, 1.0f);
+
 GameObject::GameObject(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth)
     : Position(position), Size(size), Rotation(0.0f), model(model), Texture(nullptr), RepeatWidth(repeatWidth), FlipX(1.0f), Dimension(DimensionType::ThreeD)
 {
@@ -25,7 +29,9 @@ void GameObject::Render(const Shader& shader) const
     model_mat = glm::translate(model_mat, glm::vec3(this->Position, 0.0f));
 
     // Rotazione
-    model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), glm::vec3(0.0f, 1.0f, 0.0f)); // Ruota attorno all'asse Z
+
+    float radians = glm::radians(this->Rotation);
+    model_mat = glm::rotate(model_mat, radians, Axis);
 
     // Scalamento
     //model_mat = glm::scale(model_mat, this->Size);
@@ -128,4 +134,19 @@ float GameObject::DistanceTo(GameObject* pObj) const
     float x2 = (Position.x - pObj->Position.x) * (Position.x - pObj->Position.x);
     float y2 = (Position.y - pObj->Position.y) * (Position.y - pObj->Position.y);
     return sqrt(x2 + y2);
+}
+glm::vec2 GameObject::NDCPosition(glm::vec2 pixelPosition)
+{
+    float x = pixelPosition.x * (2.0f / SCR_WIDTH) - 1.0f;
+    float y = SCR_HEIGHT - pixelPosition.y;
+    y = y * (2.0f / SCR_HEIGHT) - 1.0f;
+    return glm::vec2(x, y);
+}
+
+glm::vec3 GameObject::NDCSize(glm::vec3 pixelSize)
+{
+    float x = pixelSize.x * (2.0f / SCR_WIDTH);
+    float y = pixelSize.y;
+    y = y * (2.0f / SCR_HEIGHT);
+    return glm::vec3(x, y, pixelSize.z);
 }

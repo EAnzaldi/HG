@@ -35,7 +35,13 @@ public:
 
     glm::vec2 Position;
     glm::vec3 Size;
+
+    static const glm::vec3 axisX;
+    static const glm::vec3 axisY;
+    static const glm::vec3 axisZ;
+
     float Rotation;
+    glm::vec3 Axis = GameObject::axisY;
     float FlipX;
 
     bool RepeatWidth;
@@ -55,6 +61,9 @@ public:
     void Print() const;
 
     float DistanceTo(GameObject* pObj) const;
+
+    static glm::vec2 NDCPosition(glm::vec2 pixelPosition);
+    static glm::vec3 NDCSize(glm::vec3 pixelSize);
 
 protected:
     void Render(const Shader& shader, const glm::mat4 model_mat) const;

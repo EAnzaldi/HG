@@ -24,7 +24,7 @@ public:
 
 private:
 
-    void Rotate();
+    void Flip();
     static float speedBonus;  
 
     void HandleCollisionWithSolid(GameObject* solidObject, Collision collision) override;

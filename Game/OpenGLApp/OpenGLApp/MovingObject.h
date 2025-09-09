@@ -15,7 +15,8 @@ public:
     glm::vec2 velocity;
 
     bool lastDirectionRight = true;  // Assume che inizialmente l'oggetto si muova a destra
-    float rotationSpeed = 720.0f;      // Velocità della rotazione
+
+    float rotationSpeed = 620.0f;      // Velocità della rotazione
     float targetRotation = 0.0f;    // Angolo di rotazione di destinazione
 
     //Costruttore 3d
@@ -24,6 +25,12 @@ public:
     MovingObject(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight);
 
     virtual void Move(float deltaTime);
+
+    void Rotate(float deltatime);
+
+    bool Oscillate(float deltatime);
+
+    void SetRotation(float targetRotation, glm::vec3 rotationAxis, float timeSec);
 
     virtual void Render(const Shader& Shader) const;
 
@@ -34,6 +41,8 @@ public:
     Collision CheckCollision(GameObject* other);
 
     void CheckCollisionWithSolids(const std::vector<GameObject*>& solidObjects);
+
+protected:
 
     virtual void HandleCollisionWithSolid(GameObject* solidObject, Collision collision);
 

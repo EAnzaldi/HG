@@ -93,7 +93,7 @@ void Player::HandleCollisionWithSolid(GameObject* solidObject, Collision collisi
     }
     */
 
-    MovingObject::HandleCollisionWithSolid(solidObject, collision);
+MovingObject::HandleCollisionWithSolid(solidObject, collision);
 
     if (collision == Collision::Left || collision == Collision::Right) {
         this->velocity.x = 0;
@@ -135,12 +135,25 @@ bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
 
     return isDead;
 }
-bool Player::CheckCandyCollision(Candy* candy, irrklang::ISoundEngine* engine)
-{
-    if (CheckCollision(candy) != Collision::None) {
-        return true;
+Candy* Player::CheckCollisionWithCandies(const std::vector<Candy*>& candies) {
+    Candy* pCloser = nullptr;
+    float d_min = FLT_MAX;
+
+    //Cerca se esiste la caramella da mangiare a distanza minima
+    for (Candy* pc : candies) {
+        if (!pc->IsEaten() && CheckCollision(pc) != Collision::None) {
+            float d = DistanceTo(pc);
+            if (d < d_min) {
+                d_min = d;
+                pCloser = pc;
+            }
+        }
     }
-    return false;
+
+    if (pCloser != nullptr)
+        pCloser->Eat();
+
+    return pCloser;
 }
 static const std::string nojump_str(": NO JUMP");
 static const std::string speed_str(": SPEED UP");

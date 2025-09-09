@@ -29,10 +29,76 @@ void MovingObject::Move(float deltaTime)
     }
 
 }
+void MovingObject::SetRotation(float rotation, glm::vec3 rotationAxis, float timeSec) {
+    Axis = rotationAxis;
+    targetRotation = rotation;
+    rotationSpeed = rotation / timeSec;
+    //printf("targetRotation = %f\n", targetRotation);
+    //printf("Axis.x = %f, axis.y = %f, axis.z = %f\n", Axis.x, Axis.y, Axis.z);
+}
+void MovingObject::Rotate(float deltatime) {
+    // Ribaltamento del modello
+    /*
+    if (velocity.x > 0.0f && !lastDirectionRight) {
+        targetRotation = 0.0f;  // Direzione verso destra
+        lastDirectionRight = true;
+    }
+    else if (velocity.x < 0.0f && lastDirectionRight) {
+        targetRotation = 180.0f;  // Direzione verso sinistra
+        lastDirectionRight = false;
+    }
+
+    if (velocity.x > 0.0f) {
+        targetRotation = 0.0f;  // Direzione verso destra
+    } 
+    else if (velocity.x < 0.0f) {
+        targetRotation = 180.0f;  // Direzione verso sinistra
+    }*/
+
+    float remaining = targetRotation - Rotation;
+
+    if (std::abs(remaining) > 0.1f) {
+        float rotationStep = rotationSpeed * deltatime;
+
+        rotationStep = std::min(rotationStep, 180.0f);  // Limito a 180 gradi per evitare overshoot
+
+        if (std::abs(remaining) < rotationStep) {
+            Rotation = targetRotation;  // Allineo la rotazione alla destinazione se la differenza è piccola
+        }
+        else {
+            /*
+            if(targetRotation > Rotation)//gestisce movimento orario/antiorario
+                Rotation += remaining > 0 ? rotationStep : -rotationStep;
+            else
+                Rotation -= remaining > 0 ? rotationStep : -rotationStep;*/
+            Rotation += (remaining > 0 ? rotationStep : -rotationStep);
+
+        }
+        if (Rotation > 180.0f) Rotation -= 360.0f;
+        if (Rotation < -180.0f) Rotation += 360.0f;
+    }
+
+}
+static const int nSwings = 3;
+int n = 0;
+bool MovingObject::Oscillate(float deltatime) {
+    if (n > nSwings) {
+        n = 0;
+        return false;
+    }
+    if (std::abs(Rotation - targetRotation) < 0.1f) {
+        targetRotation = -targetRotation;
+        if(n==nSwings-1)
+            targetRotation=0.0f;    
+        n++;
+    }
+    Rotate(deltatime);
+    return true;
+}
 void MovingObject::Stop(float deltaTime) {
     this->velocity.x = 0.0f;
 }
-//Collision::x --> this è stato colpito nella direzione x
+//Collision::x --> this è stato colpito da x
 MovingObject::Collision MovingObject::CheckCollision(GameObject* other)
 {
     Hitbox thisHitbox = this->GetHitbox();
@@ -131,6 +197,8 @@ void MovingObject::HandleCollisionWithSolid(GameObject* solidObject, Collision c
     }
 
 }
+
+
 void MovingObject::Render(const Shader& Shader) const
 {
     GameObject::Render(Shader);
@@ -140,7 +208,7 @@ void MovingObject::Render(const Shader& Shader) const
     {
         glm::mat4 model_mat = glm::mat4(1.0f);
         model_mat = glm::translate(model_mat, glm::vec3((this->Position - glm::vec2(2.0f, 0.0f)), 0.0f));
-        model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), glm::vec3(0.0f, 1.0f, 0.0f)); // Ruota attorno all'asse Z
+        model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), Axis);
         //model_mat = glm::scale(model_mat, this->Size);
         model_mat = glm::scale(model_mat, glm::vec3(FlipX * this->Size.x, this->Size.y, 1.0f));
 
@@ -152,7 +220,7 @@ void MovingObject::Render(const Shader& Shader) const
     {
         glm::mat4 model_mat = glm::mat4(1.0f);
         model_mat = glm::translate(model_mat, glm::vec3((this->Position + glm::vec2(2.0f, 0.0f)), 0.0f));
-        model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), glm::vec3(0.0f, 1.0f, 0.0f)); // Ruota attorno all'asse Z
+        model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), Axis);
         //model_mat = glm::scale(model_mat, this->Size);
         model_mat = glm::scale(model_mat, glm::vec3(FlipX * this->Size.x, this->Size.y, 1.0f));
 

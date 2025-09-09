@@ -8,6 +8,9 @@
 #include "MenuState.h"
 #include "TextObject.h"
 #include "TextureObject.h"
+#include "GameObject.h"
+#include "MovingObject.h"
+#include "Enemy.h"
 
 // Ex GameOverState
 // Specializzazione di EndState per lo stato di fine partita (Game Over - Victory)
@@ -17,12 +20,14 @@ class EndState : public GameState
 public:
     ~EndState();
 
-    void ProcessInput();
-    void MouseClick(int button, int action, int mods);
+    void ProcessInput() override;
+    void ProcessEvents() override;
 
-    void Render();
-    void EnterState();
-    void LeaveState();
+    void MouseClick(int button, int action, int mods) override;
+
+    void Render() override;
+    void EnterState() override;
+    void LeaveState() override;
 
     // Returns the single instance (-> singleton)
     static EndState* GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);
@@ -33,11 +38,17 @@ protected:
 
 
 private:
- 
+
     TextObject* pText;
 
     TextureObject* pBackgroundTex;
+    TextureObject* pWitchTex;
+
     GameObject* pBackground;
+    MovingObject* pWitch;
+
+    TextureObject* pTexEnemy;
+    GameObject* pEnemy;
 
     //Sound
     irrklang::ISound* ost;
@@ -45,4 +56,8 @@ private:
     FT_Library ft;
 
     Camera* pCamera;
+
+    // Gestione frame
+    double lastFrame;
+    double deltaTime;
 };
