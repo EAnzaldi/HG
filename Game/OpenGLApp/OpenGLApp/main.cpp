@@ -64,8 +64,9 @@ int main()
 
     glfwSetWindowPos(window, xpos, ypos);
 
-    int fbWidth, fbHeight;
-    glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+    //int fbWidth, fbHeight;
+    //glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+    
     // -----------------------------------------------------------------------------------------
 
     glfwMakeContextCurrent(window);
@@ -127,8 +128,28 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 }
 
 void cursor_moving_callback(GLFWwindow* window, double xpos, double ypos) {
+    int fbWidth, fbHeight;
+    glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+
+    ypos = fbHeight - ypos; //OpenGL ha y invertita rispetto a GLFW
+
+    //Gestione full screen (game pos : real pos = game size : real size)
+    xpos = xpos * (SCR_WIDTH_F / (float)fbWidth);
+    ypos = ypos * (SCR_HEIGHT_F / (float)fbHeight);
+
     mySManager.MouseMoving(xpos, ypos);
 }
 void cursor_button_callback(GLFWwindow* window, int button, int action, int mods) {
-    mySManager.MouseClick(button, action, mods);
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+    int fbWidth, fbHeight;
+    glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+
+    ypos = fbHeight - ypos; //OpenGL ha y invertita rispetto a GLFW
+
+    //Gestione full screen (game pos : real pos = game size : real size)
+    xpos = xpos * (SCR_WIDTH_F / (float)fbWidth);
+    ypos = ypos * (SCR_HEIGHT_F / (float)fbHeight);
+
+    mySManager.MouseClick(xpos, ypos, button, action, mods);
 }

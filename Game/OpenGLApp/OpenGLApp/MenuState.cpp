@@ -19,14 +19,17 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
 	CurrentGame = PlayState::GetInstance(Manager, Window, Engine);
 
-	int fbWidth, fbHeight;
-	glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
+	//int fbWidth, fbHeight;
+	//glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
 	pBackground = new TextureObject("resources/textures/background2.png");
-	pBackgroundObj = new GameObject(glm::vec2(fbWidth/2, fbHeight/2), pBackground->getSize()/1.25f, pBackground, 0);
+	pBackgroundObj = new GameObject(glm::vec2(SCR_WIDTH_F /2, SCR_HEIGHT_F/2), pBackground->getSize()/1.25f, pBackground, 0);
 
-	float pos_center_y = fbHeight - 700.0f;
-	float space_y = 140.0f;
-	float offset_x = 840.0f;
+	//float pos_center_y = SCR_HEIGHT_F - 700.0f;
+	//float space_y = 140.0f;
+	//float offset_x = 840.0f;
+	float pos_center_y = SCR_HEIGHT_F * 0.27f;
+	float space_y = SCR_HEIGHT_F * 0.14f;
+	float offset_x = SCR_WIDTH_F * 0.66f;
 
 	//unselected menu
 	pMenu[0] = new TextureObject("resources/textures/new_game.png");
@@ -82,7 +85,7 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
 	glm::mat4 projectionNDC = glm::ortho(left, right, bottom, top);
 	/*glm::mat4 projection = glm::ortho(0.0f, SCR_WIDTH_F, 0.0f, SCR_HEIGHT_F);//left, right, bottom, top*/
-	glm::mat4 projectionPixels = glm::ortho(0.0f, static_cast<float>(fbWidth), 0.0f, static_cast<float>(fbHeight));//left, right, bottom, top
+	glm::mat4 projectionPixels = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH_F), 0.0f, static_cast<float>(SCR_HEIGHT_F));//left, right, bottom, top
 
 	glm::mat4 view = pCamera->GetViewMatrix();
 
@@ -177,9 +180,7 @@ void MenuState::ProcessInput()
 }
 void MenuState::MouseMoving(double xpos, double ypos)
 {
-	int fbWidth, fbHeight;
-	glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
-	ypos = fbHeight - ypos; //OpenGL ha coordinata y Invertita rispetto a GLFW
+	Mouse->Move(xpos, ypos);
 
 	//Controllare se il cursore sia su una delle box
 	for (int i = 0; i < 3; i++) {
@@ -198,15 +199,14 @@ void MenuState::MouseMoving(double xpos, double ypos)
 	}
 }
 
-void MenuState::MouseClick(int button, int action, int mods)
+void MenuState::MouseClick(double xpos, double ypos, int button, int action, int mods)
 {
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
 		//Controllare che il cursore sia sulla box
-		double xpos, ypos;
-		int fbWidth, fbHeight;
-		glfwGetCursorPos(Window, &xpos, &ypos);
-		glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
-		ypos = fbHeight - ypos;
+
+		//Mouse->Move(xpos, ypos);
+		printf("%lf %lf", xpos, ypos);
+
 		Hitbox bounds = pMenuObj[CurrentSelection]->GetHitbox();
 		bool isColliding = (xpos <= bounds.Max.x && xpos >= bounds.Min.x && ypos <= bounds.Max.y && ypos >= bounds.Min.y);
 		//Se è sulla box scegliere la selezione

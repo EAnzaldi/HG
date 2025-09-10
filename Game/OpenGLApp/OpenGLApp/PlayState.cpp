@@ -61,8 +61,8 @@ static glm::vec3 sizeCauldron = { 0.1f, 0.1f, 0.1f };*/
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
     : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), pGretel(nullptr), pHansel(nullptr)
 {
-    int fbWidth, fbHeight;
-    glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
+    //int fbWidth, fbHeight;
+    //glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
 
     pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.5f));
 
@@ -117,15 +117,15 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_violet.png"));
 
     //Creazione oggetti UI
-    pHearts[0] = new GameObject(glm::vec2(fbWidth * 0.05f, 895.0f), pHeartsTex[0]->getSize() / 9.0f, pHeartsTex[0], 0);
-    pHearts[1] = new GameObject(glm::vec2(fbWidth * 0.2f, 895.0f), pHeartsTex[1]->getSize() / 9.0f, pHeartsTex[1], 0);
+    pHearts[0] = new GameObject(glm::vec2(SCR_WIDTH_F * 0.05f, 895.0f), pHeartsTex[0]->getSize() / 9.0f, pHeartsTex[0], 0);
+    pHearts[1] = new GameObject(glm::vec2(SCR_WIDTH_F * 0.2f, 895.0f), pHeartsTex[1]->getSize() / 9.0f, pHeartsTex[1], 0);
     pHearts[0]->Position.x -= (pHearts[0]->Size.x/2.0f);
     pHearts[1]->Position.x -= (pHearts[1]->Size.x/2.0f);
     //pHearts[1] = new GameObject(glm::vec2(fbWidth * 0.1f, pHearts[0]->Position.y - pHearts[0]->Size.y - 10.0f), pHeartsTex[1]->getSize() / 8.0f, pHeartsTex[1], 0);
 
-    pSlimeUI = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.09f * pTexSlime->getAspect() * fbWidth / 2.0f, 0.09f * fbHeight / 2.0f, 0.1f), pTexSlime, 0);
-    pKeysUI[0] = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.045f * pKeysTex[0]->getAspect() * fbWidth / 2.0f, 0.045f * getAspect(Window) * fbHeight / 2.0f, 0.1f), pKeysTex[0], 0);
-    pKeysUI[1] = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.045f * pKeysTex[1]->getAspect() * fbWidth / 2.0f, 0.045f * getAspect(Window) * fbHeight / 2.0f, 0.1f), pKeysTex[1], 0);
+    pSlimeUI = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.09f * pTexSlime->getAspect() * SCR_WIDTH_F / 2.0f, 0.09f * SCR_HEIGHT_F / 2.0f, 0.1f), pTexSlime, 0);
+    pKeysUI[0] = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.045f * pKeysTex[0]->getAspect() * SCR_WIDTH_F / 2.0f, 0.045f * getAspect(Window) * SCR_HEIGHT_F / 2.0f, 0.1f), pKeysTex[0], 0);
+    pKeysUI[1] = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.045f * pKeysTex[1]->getAspect() * SCR_WIDTH_F / 2.0f, 0.045f * getAspect(Window) * SCR_HEIGHT_F / 2.0f, 0.1f), pKeysTex[1], 0);
 
     candySize = glm::vec3(0.07f, 0.07f * getAspect(Window), 0.1f);
 
@@ -158,7 +158,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
     //pBackground = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f), pTexBackground, 0);
 
-    glm::mat4 projection2 = glm::ortho(0.0f, static_cast<float>(fbWidth), 0.0f, static_cast<float>(fbHeight));//left, right, bottom, top
+    glm::mat4 projection2 = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH_F), 0.0f, static_cast<float>(SCR_HEIGHT_F));//left, right, bottom, top
 
     float left = -1.0f;   // Puoi modificare questi valori per adattarli alla tua scena
     float right = 1.0f;
@@ -166,7 +166,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     float top = 1.0f;
 
     glm::mat4 projectionNDC = glm::ortho(left, right, bottom, top);
-    glm::mat4 projectionPixels = glm::ortho(0.0f, static_cast<float>(fbWidth), 0.0f, static_cast<float>(fbHeight));//left, right, bottom, top
+    glm::mat4 projectionPixels = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH_F), 0.0f, static_cast<float>(SCR_HEIGHT_F));//left, right, bottom, top
 
     glm::mat4 view = pCamera->GetViewMatrix();
 
@@ -344,34 +344,34 @@ void PlayState::Reset()
         pProbabilities.clear();
     if (TeleportUnlocked == false) {
         //NoJump, Speed, SpeedEnemy, Invincibility, Teleport
-
+/*
         pProbabilities.emplace_back(25);
         pProbabilities.emplace_back(25);
         pProbabilities.emplace_back(25);
         pProbabilities.emplace_back(25);
         pProbabilities.emplace_back(0);
-        /*
+        */
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(100);
-        */
+        
     }
     else {
-        
+        /*
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(16);// Teleport è più rara
-        /*
+        */
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(100);
-        */
+        
         
     }
 
@@ -803,7 +803,7 @@ void PlayState::Render()
         pHansel->Render(*pSpriteShader);
 
     if (Player::teleport) {
-        Mouse->Move();
+        //Mouse->Move();
         Mouse->Render(*pShader);
     }
 
@@ -820,27 +820,22 @@ void PlayState::Render()
 }
 void PlayState::MouseMoving(double xpos, double ypos)
 {
-
+    if (!isEnding && Player::teleport)
+        Mouse->Move(xpos, ypos);
 }
-void PlayState::MouseClick(int button, int action, int mods)
+void PlayState::MouseClick(double xpos, double ypos, int button, int action, int mods)
 {
     if (!isEnding && Player::teleport && button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        //Ottiene coordinate pixel
-        double xpos, ypos;
-        int fbWidth, fbHeight;
-        glfwGetCursorPos(Window, &xpos, &ypos);
-        glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
-        ypos = fbHeight - ypos;
         //Controlla se stia teleportando fuori schermo
-        if (xpos <= 0 || xpos > fbWidth || ypos <= 0 || ypos > fbHeight) {
+        if (xpos <= 0 || xpos > SCR_WIDTH_F || ypos <= 0 || ypos > SCR_HEIGHT_F) {
             //printf("Coordinate fuori schermo -> RIPROVARE\n");
             return;
         }
         //Trasforma in coordinate NDC
         //xpos = (xpos + 1.0f) * 0.5f * fbWidth;
         //ypos = (ypos + 1.0f) * 0.5f * fbHeight;
-        xpos = 2*xpos / fbWidth - 1.0f;
-        ypos = 2*ypos / fbHeight - 1.0f;
+        xpos = 2*xpos / SCR_WIDTH_F - 1.0f;
+        ypos = 2*ypos / SCR_HEIGHT_F - 1.0f;
         //Controlla se stia teleportando in area vietata
         for (GameObject* pp : platforms) {
             Hitbox bounds = pp->GetHitbox();
@@ -851,9 +846,16 @@ void PlayState::MouseClick(int button, int action, int mods)
             }
         }
         //Se le coordinate sono corrette teleporta
-        pGretel->Teleport(glm::vec2(xpos - 0.05f,ypos), Engine);
-        if(Multiplayer)
-            pHansel->Teleport(glm::vec2(xpos + 0.05f, ypos), Engine);
+        float xoffset = 0.05f;
+        //xoffset = (xoffset / SCR_WIDTH_F) * 2.0f;
+        
+        if(Multiplayer){
+            pGretel->Teleport(glm::vec2(xpos - xoffset, ypos), Engine);
+            pHansel->Teleport(glm::vec2(xpos + xoffset, ypos), Engine);
+        }
+        else {
+            pGretel->Teleport(glm::vec2(xpos, ypos), Engine);
+        }
         //printf("Teleport effettuato\n");
     }
 }
@@ -865,7 +867,7 @@ void PlayState::EnterState()
         return;
     }
         
-    Mouse->Hide();
+    //Mouse->Hide();
 
     // musica di sottofondo
     ost = Engine->play2D("resources/sounds/kim_lightyear_angel_eyes_piano_version.wav", true, false, true);
@@ -889,8 +891,8 @@ void PlayState::LeaveState() {
 }
 
 void PlayState::RenderStats() {
-    int fbWidth, fbHeight;
-    glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
+    //int fbWidth, fbHeight;
+    //glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
 
     if (!isEnding) {
         currentTime = static_cast<int>((glfwGetTime() - startTime) - totalPauseTime);
@@ -909,9 +911,11 @@ void PlayState::RenderStats() {
     ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::Pixels);
 
     float xstart = pHearts[0]->Position.x;
+    //float xspace = 10.0f;
+    float xspace = SCR_WIDTH_F * 0.01;
 
     for (int i = 0; i < pGretel->lives; i++) {
-        pHearts[0]->Position.x = pHearts[0]->Position.x + pHearts[0]->Size.x + 10.0f;
+        pHearts[0]->Position.x = pHearts[0]->Position.x + pHearts[0]->Size.x + xspace;
         pHearts[0]->Render(*pSpriteShader);
     }
     pHearts[0]->Position.x = xstart;
@@ -919,7 +923,7 @@ void PlayState::RenderStats() {
     if (Multiplayer) {
         xstart = pHearts[1]->Position.x;
         for (int i = 0; i < pHansel->lives; i++) {
-            pHearts[1]->Position.x = pHearts[1]->Position.x + pHearts[1]->Size.x + 10.0f;
+            pHearts[1]->Position.x = pHearts[1]->Position.x + pHearts[1]->Size.x + xspace;
             pHearts[1]->Render(*pSpriteShader);
         }
         pHearts[1]->Position.x = xstart;
@@ -930,6 +934,8 @@ void PlayState::RenderStats() {
 
     char buf[100];
     glm::vec3 color = { 255.0, 255.0, 255.0 };
+
+    float height = SCR_HEIGHT * 0.92f;
 
     /*
     std::string time = "TIME: " + std::to_string(remainingTime);
@@ -942,7 +948,8 @@ void PlayState::RenderStats() {
     snprintf(buf, 100, "TIME: %02d", remainingTime);
     std::string time = buf;
     //pText->Render(*pTextShader, time, 160.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0), Alignment::Left);
-    pText->Render(*pTextShader, time, fbWidth * 0.8f, 880.0f, 0.9f, color, Alignment::Left);
+    //pText->Render(*pTextShader, time, fbWidth * 0.8f, 880.0f, 0.9f, color, Alignment::Left);
+    pText->Render(*pTextShader, time, SCR_WIDTH_F * 0.8f, height, 0.9f, color, Alignment::Left);
 
     //std::string lives = "LIVES: " + std::to_string(pGretel->lives);
     //pText->Render(*pTextShader, lives, 960.0f, 880.0f, 1.0f, glm::vec3(255.0, 255.0, 255.0), Alignment::Left);
@@ -957,21 +964,24 @@ void PlayState::RenderStats() {
     snprintf(buf, 100, "%05d", CurrentScore);
     std::string score = buf;
     //pText->Render(*pTextShader, score, fbWidth * 0.5f, 840.0f, 0.9f, color, Alignment::Center);
-    pText->Render(*pTextShader, score, fbWidth * 0.4f, 880.0f, 0.9f, color, Alignment::Center);
+    //pText->Render(*pTextShader, score, fbWidth * 0.4f, 880.0f, 0.9f, color, Alignment::Center);
+    pText->Render(*pTextShader, score, SCR_WIDTH_F * 0.4f, height, 0.9f, color, Alignment::Center);
 
     if (CurrentLevel[Multiplayer] == 1) {
-        pSlimeUI->Position = glm::vec2(fbWidth * 0.6f - pSlimeUI->Size.x / 2.0f, 895.0f);
+        pSlimeUI->Position = glm::vec2(SCR_WIDTH_F * 0.6f - pSlimeUI->Size.x / 2.0f, 895.0f);
         pSlimeUI->Render(*pSpriteShader);
         snprintf(buf, 100, "%d/%d", nEnemiesKilled, TOTENEM);
         std::string enemies = buf;
-        pText->Render(*pTextShader, enemies, pSlimeUI->Position.x + pSlimeUI->Size.x / 2.0f + 15.0f, 880.0f, 0.9f, color, Alignment::Left);
+        //pText->Render(*pTextShader, enemies, pSlimeUI->Position.x + pSlimeUI->Size.x / 2.0f + 15.0f, 880.0f, 0.9f, color, Alignment::Left);
+        pText->Render(*pTextShader, enemies, pSlimeUI->Position.x + pSlimeUI->Size.x / 2.0f + xspace, height, 0.9f, color, Alignment::Left);
     }
     else if (CurrentLevel[Multiplayer] >= 2) {
-        pKeysUI[Multiplayer]->Position = glm::vec2(fbWidth * 0.6f - pKeysUI[Multiplayer]->Size.x / 2.0f, 895.0f);
+        pKeysUI[Multiplayer]->Position = glm::vec2(SCR_WIDTH_F * 0.6f - pKeysUI[Multiplayer]->Size.x / 2.0f, 895.0f);
         pKeysUI[Multiplayer]->Render(*pSpriteShader);
         snprintf(buf, 100, "%d/%d", nKeys, TOTKEYS);
         std::string keys = buf;
-        pText->Render(*pTextShader, keys, pKeysUI[Multiplayer]->Position.x + pKeysUI[Multiplayer]->Size.x / 2.0f + 15.0f, 880.0f, 0.9f, color, Alignment::Left);
+        //pText->Render(*pTextShader, keys, pKeysUI[Multiplayer]->Position.x + pKeysUI[Multiplayer]->Size.x / 2.0f + 15.0f, 880.0f, 0.9f, color, Alignment::Left);
+        pText->Render(*pTextShader, keys, pKeysUI[Multiplayer]->Position.x + pKeysUI[Multiplayer]->Size.x / 2.0f + xspace, height, 0.9f, color, Alignment::Left);
     }
 
     //Render effetti caramelle giocatori
@@ -980,7 +990,8 @@ void PlayState::RenderStats() {
         return;
 
     std::string& effect = std::get<0>(q[0]);
-    pText->Render(*pTextShader, effect, fbWidth * 0.5f, 820.0f, 1.0f, color, Alignment::Center);
+    //pText->Render(*pTextShader, effect, fbWidth * 0.5f, 820.0f, 1.0f, color, Alignment::Center);
+    pText->Render(*pTextShader, effect, SCR_WIDTH_F * 0.5f, SCR_HEIGHT_F * 0.86, 1.0f, color, Alignment::Center);
 
     if (newDisplay) {
         //fa partire il timer dal prossimo render

@@ -19,14 +19,14 @@ EndState::EndState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEn
     pSpriteShader->use();
     pSpriteShader->setMat4("view", view);
 
-    int fbWidth, fbHeight;
-    glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
+    //int fbWidth, fbHeight;
+    //glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
     pBackgroundTex = new TextureObject("resources/textures/game_over3.png");
-    pBackground = new GameObject(glm::vec2(fbWidth / 2.0f, fbHeight / 2.0f), pBackgroundTex->getSize(), pBackgroundTex, 0);
+    pBackground = new GameObject(glm::vec2(SCR_WIDTH_F / 2.0f, SCR_HEIGHT_F / 2.0f), pBackgroundTex->getSize(), pBackgroundTex, 0);
 
     pWitchTex = new TextureObject("resources/textures/witch2.png");
 
-    glm::vec2 posPixels = glm::vec2(0.15 * fbWidth + pWitchTex->getWidth() / 2.0f, fbHeight / 2.0f);
+    glm::vec2 posPixels = glm::vec2(0.15 * SCR_WIDTH_F + pWitchTex->getWidth() / 2.0f, SCR_HEIGHT_F / 2.0f);
     glm::vec2 posNDC = GameObject::NDCPosition(glm::vec2(posPixels));
     glm::vec3 sizePixels = glm::vec3(pWitchTex->Width, pWitchTex->Height, 1.0f);
     glm::vec3 sizeNDC = GameObject::NDCSize(sizePixels);
@@ -86,7 +86,7 @@ void EndState::ProcessEvents() {
         oscillate = pWitch->Oscillate(deltaTime);
     }
 }
-void EndState::MouseClick(int button, int action, int mods)
+void EndState::MouseClick(double xpos, double ypos, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         ChangeState(MenuState::GetInstance(Manager, Window, Engine));

@@ -26,7 +26,7 @@ public:
 	void ProcessEvents();
 
 	void MouseMoving(double xpos, double ypos);
-	void MouseClick(int button, int action, int mods);
+	void MouseClick(double xpos, double ypos, int button, int action, int mods);
 
 	//void Update(DWORD dwCurrentTime);
 	void Render();

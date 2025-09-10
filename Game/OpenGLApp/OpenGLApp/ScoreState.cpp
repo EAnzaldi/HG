@@ -68,17 +68,17 @@ ScoreState* ScoreState::GetInstance(StateManager* manager, GLFWwindow* window, i
 
 void ScoreState::EnterState()
 {
-    int fbWidth, fbHeight;
-    glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
+    //int fbWidth, fbHeight;
+    //glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
     if (CurrentGame == nullptr)
         CurrentGame = PlayState::GetInstance(Manager, Window, Engine);
     if (pCandy == nullptr)
-        pCandy = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.07f * fbWidth/2.0f, 0.07f * fbHeight/2.0f * getAspect(Window), 0.1f), (TextureObject*) nullptr, 0);
+        pCandy = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.07f * SCR_WIDTH_F /2.0f, 0.07f * SCR_HEIGHT_F/2.0f * getAspect(Window), 0.1f), (TextureObject*) nullptr, 0);
     if (pSlime == nullptr)
-        pSlime = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.13f * CurrentGame->pTexSlime->getAspect() * fbWidth / 2.0f, 0.13f * fbHeight / 2.0f, 0.1f), CurrentGame->pTexSlime, 0);
+        pSlime = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.13f * CurrentGame->pTexSlime->getAspect() * SCR_WIDTH_F / 2.0f, 0.13f * SCR_HEIGHT_F / 2.0f, 0.1f), CurrentGame->pTexSlime, 0);
     int lvl = CurrentGame->CurrentLevel[CurrentGame->IsMultiplayer()] - 1;
     if (pLevelsCompleted[lvl] == nullptr)
-        pLevelsCompleted[lvl] = new GameObject(glm::vec2(fbWidth*0.5f, fbHeight*0.85f), pLevelsCompletedTex[lvl]->getSize() * 1.06f, pLevelsCompletedTex[lvl], 0);
+        pLevelsCompleted[lvl] = new GameObject(glm::vec2(SCR_WIDTH_F *0.5f, SCR_HEIGHT_F *0.85f), pLevelsCompletedTex[lvl]->getSize() * 1.06f, pLevelsCompletedTex[lvl], 0);
     if (pGretel == nullptr)
         pGretel = new Player(glm::vec2(-0.5f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * CurrentGame->pTexGretel->getAspect(), 0.1f), CurrentGame->pTexGretel, 0, PlayerName::Gretel, 3);
     else
@@ -198,7 +198,7 @@ void ScoreState::ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned i
             pPlayer->isPastJumpPeak = true; // Se il tasto non è premuto, non si può più aumentare il salto
     }
 }
-void ScoreState::MouseClick(int button, int action, int mods)
+void ScoreState::MouseClick(double xpos, double ypos, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         if(CurrentGame->GetLvl() < 3 )
@@ -216,8 +216,8 @@ void ScoreState::MouseClick(int button, int action, int mods)
 
 void ScoreState::Render()
 {
-    int fbWidth, fbHeight;
-    glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
+    //int fbWidth, fbHeight;
+    //glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
 
     glm::vec3 TextColor = { 255.0f, 255.0f, 255.0f };
 
@@ -231,11 +231,11 @@ void ScoreState::Render()
 
     //Oggetti con coordinate NDC
     //--------------------------------------------------------------------------------
-    float height = fbHeight * 0.75f;
-    float text_width = fbWidth * 0.25;
-    float gretel_width = fbWidth * 0.55f;
-    float hansel_width = fbWidth * 0.75f;
-    float y_indent = fbHeight/20.0f;
+    float height = SCR_HEIGHT_F * 0.75f;
+    float text_width = SCR_WIDTH_F * 0.25;
+    float gretel_width = SCR_WIDTH_F * 0.55f;
+    float hansel_width = SCR_WIDTH_F * 0.75f;
+    float y_indent = SCR_HEIGHT_F /20.0f;
 
     ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::Pixels);
 

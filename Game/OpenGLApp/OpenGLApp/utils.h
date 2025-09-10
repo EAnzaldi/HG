@@ -9,17 +9,17 @@
 #define DEBUG 0
  
 // screen's settings
-// const unsigned int SCR_WIDTH = 1600;
-//const unsigned int SCR_HEIGHT = 1200;
-const unsigned int SCR_WIDTH = 1280;
-const unsigned int SCR_HEIGHT = 960;
-const float SCR_WIDTH_F = static_cast<float>(SCR_WIDTH);
-const float SCR_HEIGHT_F = static_cast<float>(SCR_HEIGHT);
+//static const unsigned int SCR_WIDTH = 1600;
+//static const unsigned int SCR_HEIGHT = 1200;
+static const unsigned int SCR_WIDTH = 1280;
+static const unsigned int SCR_HEIGHT = 960;
+static const float SCR_WIDTH_F = static_cast<float>(SCR_WIDTH);
+static const float SCR_HEIGHT_F = static_cast<float>(SCR_HEIGHT);
 
 static float getAspect(GLFWwindow* window) {
-    int fbWidth, fbHeight;
-    glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
-    return (float)fbWidth / (float)fbHeight;
+    //int fbWidth, fbHeight;
+    //glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+    return SCR_WIDTH_F / SCR_HEIGHT_F;
 }
 
 // random generator

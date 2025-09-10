@@ -4,7 +4,9 @@
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
+
 #include "shader_s.h"
+#include "utils.h"
 
 class MaterialType {
 public:
@@ -32,7 +34,7 @@ public:
 
 	private:
 	static const glm::mat4 projectionNDC;
-
+	static const glm::mat4 projectionPixels;
 
 };
 

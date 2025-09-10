@@ -28,7 +28,7 @@ public:
 	void LeaveState();
 
 	void MouseMoving(double xpos, double ypos) override;
-	void MouseClick(int button, int action, int mods) override;
+	void MouseClick(double xpos, double ypos, int button, int action, int mods) override;
 
 	// Returns the single instance (-> singleton)
 	static MenuState* GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);

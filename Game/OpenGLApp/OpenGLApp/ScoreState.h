@@ -16,12 +16,12 @@ class ScoreState : public GameState
 public:
     ~ScoreState();
 
-    void ProcessInput();
-    void MouseClick(int button, int action, int mods);
+    void ProcessInput() override;
+    void MouseClick(double xpos, double ypos, int button, int action, int mods) override;
 
-    void Render();
-    void EnterState();
-    void LeaveState();
+    void Render() override;
+    void EnterState() override;
+    void LeaveState() override;
 
     // Returns the single instance (-> singleton)
     static ScoreState* GetInstance(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine);

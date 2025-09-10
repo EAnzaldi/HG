@@ -31,7 +31,7 @@ public:
 	virtual void ProcessEvents() { }
 
 	virtual void MouseMoving(double xpos, double ypos) { }
-	virtual void MouseClick(int button, int action, int mods) { }
+	virtual void MouseClick(double xpos, double ypos, int button, int action, int mods) { }
 
 	virtual void UpdateTime() { }
 	virtual void Render() { }

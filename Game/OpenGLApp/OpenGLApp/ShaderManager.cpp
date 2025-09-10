@@ -15,6 +15,7 @@ const MaterialType ShaderManager::Silver(
 );
 
 const glm::mat4 ShaderManager::projectionNDC = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f);
+const glm::mat4 ShaderManager::projectionPixels = glm::ortho(0.0f, SCR_WIDTH_F, 0.0f, SCR_HEIGHT_F);
 
 void ShaderManager::SetProjection(const Shader& shader, GLFWwindow* window, ProjectionType type) {
     shader.use();
@@ -22,9 +23,9 @@ void ShaderManager::SetProjection(const Shader& shader, GLFWwindow* window, Proj
         shader.setMat4("projection", projectionNDC);
     }
     else if (type == ProjectionType::Pixels) {
-        int fbWidth, fbHeight;
-        glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
-        glm::mat4 projectionPixels = glm::ortho(0.0f, static_cast<float>(fbWidth), 0.0f, static_cast<float>(fbHeight));
+        //int fbWidth, fbHeight;
+        //glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+        //glm::mat4 projectionPixels = glm::ortho(0.0f, static_cast<float>(fbWidth), 0.0f, static_cast<float>(fbHeight));
         shader.setMat4("projection", projectionPixels);
     }
 }

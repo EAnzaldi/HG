@@ -23,7 +23,7 @@ public:
     void ProcessInput() override;
     void ProcessEvents() override;
 
-    void MouseClick(int button, int action, int mods) override;
+    void MouseClick(double xpos, double ypos, int button, int action, int mods) override;
 
     void Render() override;
     void EnterState() override;

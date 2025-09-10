@@ -18,9 +18,9 @@ void StateManager::MouseMoving(double xpos, double ypos) {
 	if (ActiveState)
 		ActiveState->MouseMoving(xpos, ypos);
 }
-void StateManager::MouseClick(int button, int action, int mods) {
+void StateManager::MouseClick(double xpos, double ypos, int button, int action, int mods) {
 	if (ActiveState)
-		ActiveState->MouseClick(button, action, mods);
+		ActiveState->MouseClick(xpos, ypos, button, action, mods);
 }
 /*
 void StateManager::Update(DWORD dwCurrentTime)

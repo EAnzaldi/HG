@@ -32,7 +32,7 @@ public:
 	void LeaveState();
 
 	void MouseMoving(double xpos, double ypos) override;
-	void MouseClick(int button, int action, int mods) override;
+	void MouseClick(double xpos, double ypos, int button, int action, int mods) override;
 
 	void Reset();
 	void ResetLevel() { CurrentLevel[Multiplayer] = StartLevel; };
