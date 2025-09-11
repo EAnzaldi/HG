@@ -83,8 +83,10 @@ void ScoreState::EnterState()
         pGretel = new Player(glm::vec2(-0.5f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * CurrentGame->pTexGretel->getAspect(), 0.1f), CurrentGame->pTexGretel, 0, PlayerName::Gretel, 3);
     else
         pGretel->Position = glm::vec2(-0.5f, -0.85f);
-    if (pHansel == nullptr)
-        pHansel = new Player(glm::vec2(0.5f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * CurrentGame->pTexHansel->getAspect(), 0.1f), CurrentGame->pTexHansel, 0, PlayerName::Hansel, 3);
+    if (pHansel == nullptr) {
+        //pHansel = new Player(glm::vec2(0.5f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * CurrentGame->pTexHansel->getAspect(), 0.1f), CurrentGame->pTexHansel, 0, PlayerName::Hansel, 3);
+        pHansel = new Player(glm::vec2(0.75f, 0.80f), glm::vec3(0.12f, 0.12f * getAspect(Window) * CurrentGame->pTexHansel->getAspect(), 0.1f), CurrentGame->pTexHansel, 0, PlayerName::Hansel, 3);
+    }
     else
         pHansel->Position = glm::vec2(0.5f, -0.85f);
     if (pFloor == nullptr) {
@@ -92,7 +94,8 @@ void ScoreState::EnterState()
         solidsHansel.emplace_back(pFloor);
     }
     if (pCage == nullptr) {
-        pCage = new GameObject(glm::vec2(0.5f, -0.72f), glm::vec3(0.1f, 0.1f, 0.1f), pCageModel, 0);
+        //pCage = new MovingObject(glm::vec2(0.5f, -0.72f), glm::vec3(0.1f, 0.1f, 0.1f), pCageModel, 0, glm::vec2(0.0f, 0.0f), 0);
+        pCage = new MovingObject(glm::vec2(0.75f, 0.89f), glm::vec3(0.1f, 0.1f, 0.1f), pCageModel, 0, glm::vec2(0.0f, 0.0f), 0);
     }
     solidsGretel.clear();
     solidsGretel.emplace_back(pFloor);
@@ -310,4 +313,7 @@ void ScoreState::Render()
     //--------------------------------------------------------------------------------
     if(CurrentGame->GetLvl() == 1 && !CurrentGame->IsMultiplayer())
         pCage->Render(*pEnlightenedShader);
+}
+void ScoreState::RenderStats() {
+
 }

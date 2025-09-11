@@ -34,6 +34,7 @@ protected:
 private:
 
     void ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned int DOWN, unsigned int LEFT, unsigned int RIGHT);
+    void RenderStats();
 
     // A pointer to the current active game (if any).
     PlayState* CurrentGame;
@@ -48,7 +49,7 @@ private:
     std::vector<GameObject*> solidsHansel;
     GameObject* pLevelsCompleted[2];
     GameObject* pFloor;
-    GameObject* pCage;
+    MovingObject* pCage;
     GameObject* pCandy;
     GameObject* pSlime;
 

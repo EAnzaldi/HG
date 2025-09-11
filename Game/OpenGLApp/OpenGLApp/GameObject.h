@@ -42,6 +42,9 @@ public:
 
     float Rotation;
     glm::vec3 Axis = GameObject::axisY;
+    bool usePivot = false;
+    glm::vec2 Pivot;
+
     float FlipX;
 
     bool RepeatWidth;

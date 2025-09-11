@@ -54,6 +54,8 @@ EndState* EndState::GetInstance(StateManager* manager, GLFWwindow* window, irrkl
 int oscillate = true;
 void EndState::EnterState()
 {
+    //glm::vec2 prova1 = glm::vec2(0.0f, 0.0f);
+    //glm::vec2 prova2 = glm::vec2(0.0f, pWitch->Size.y/2.0f);
     pWitch->SetRotation(5.0f, GameObject::axisZ, 0.2f);
     oscillate = true;
 

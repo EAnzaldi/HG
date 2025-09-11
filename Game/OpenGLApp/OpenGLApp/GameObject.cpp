@@ -28,10 +28,16 @@ void GameObject::Render(const Shader& shader) const
     // Posizione
     model_mat = glm::translate(model_mat, glm::vec3(this->Position, 0.0f));
 
-    // Rotazione
-
+    // Rotazione    
     float radians = glm::radians(this->Rotation);
-    model_mat = glm::rotate(model_mat, radians, Axis);
+    if(usePivot){       
+        model_mat = glm::translate(model_mat, glm::vec3(this->Pivot, 0.0f));
+        model_mat = glm::rotate(model_mat, radians, Axis);
+        model_mat = glm::translate(model_mat, glm::vec3(-this->Pivot, 0.0f));
+    }
+    else {
+        model_mat = glm::rotate(model_mat, radians, Axis);
+    }
 
     // Scalamento
     //model_mat = glm::scale(model_mat, this->Size);

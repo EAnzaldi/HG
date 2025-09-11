@@ -29,12 +29,19 @@ void MovingObject::Move(float deltaTime)
     }
 
 }
-void MovingObject::SetRotation(float rotation, glm::vec3 rotationAxis, float timeSec) {
+void MovingObject::SetRotation(float rotation, glm::vec3 rotationAxis, glm::vec2 pivot, float timeSec) {
     Axis = rotationAxis;
+    Pivot = pivot;
+    usePivot = true;
     targetRotation = rotation;
     rotationSpeed = rotation / timeSec;
-    //printf("targetRotation = %f\n", targetRotation);
-    //printf("Axis.x = %f, axis.y = %f, axis.z = %f\n", Axis.x, Axis.y, Axis.z);
+    printf("Pivot = %f %f", pivot.x, pivot.y);
+}
+void MovingObject::SetRotation(float rotation, glm::vec3 rotationAxis, float timeSec) {
+    Axis = rotationAxis;
+    usePivot = false;
+    targetRotation = rotation;
+    rotationSpeed = rotation / timeSec;
 }
 void MovingObject::Rotate(float deltatime) {
     // Ribaltamento del modello
@@ -209,6 +216,14 @@ void MovingObject::Render(const Shader& Shader) const
         glm::mat4 model_mat = glm::mat4(1.0f);
         model_mat = glm::translate(model_mat, glm::vec3((this->Position - glm::vec2(2.0f, 0.0f)), 0.0f));
         model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), Axis);
+        if (usePivot) {
+            model_mat = glm::translate(model_mat, glm::vec3(this->Pivot, 0.0f));
+            model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), Axis);
+            model_mat = glm::translate(model_mat, glm::vec3(-this->Pivot, 0.0f));
+        }
+        else {
+            model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), Axis);
+        }
         //model_mat = glm::scale(model_mat, this->Size);
         model_mat = glm::scale(model_mat, glm::vec3(FlipX * this->Size.x, this->Size.y, 1.0f));
 
@@ -220,7 +235,14 @@ void MovingObject::Render(const Shader& Shader) const
     {
         glm::mat4 model_mat = glm::mat4(1.0f);
         model_mat = glm::translate(model_mat, glm::vec3((this->Position + glm::vec2(2.0f, 0.0f)), 0.0f));
-        model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), Axis);
+        if (usePivot) {
+            model_mat = glm::translate(model_mat, glm::vec3(this->Pivot, 0.0f));
+            model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), Axis);
+            model_mat = glm::translate(model_mat, glm::vec3(-this->Pivot, 0.0f));
+        }
+        else {
+            model_mat = glm::rotate(model_mat, glm::radians(this->Rotation), Axis);
+        }
         //model_mat = glm::scale(model_mat, this->Size);
         model_mat = glm::scale(model_mat, glm::vec3(FlipX * this->Size.x, this->Size.y, 1.0f));
 

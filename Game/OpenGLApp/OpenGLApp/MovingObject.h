@@ -30,7 +30,8 @@ public:
 
     bool Oscillate(float deltatime);
 
-    void SetRotation(float targetRotation, glm::vec3 rotationAxis, float timeSec);
+    void SetRotation(float rotation, glm::vec3 rotationAxis, glm::vec2 pivot, float timeSec);
+    void SetRotation(float rotation, glm::vec3 rotationAxis, float timeSec);
 
     virtual void Render(const Shader& Shader) const;
 
