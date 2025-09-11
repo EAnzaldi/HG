@@ -187,11 +187,11 @@ void MovingObject::HandleCollisionWithSolid(GameObject* solidObject, Collision c
         case Collision::Left:   this->Position.x += overlapX;
                                 break;
         case Collision::Top:    this->Position.y -= overlapY;
-                                this->velocity.y = 0;
+                                //this->velocity.y = 0;
                                 break;
         case Collision::Bottom: this->Position.y += overlapY;
                                 this->isOnGround = true;
-                                this->velocity.y = 0;
+                                //this->velocity.y = 0;
                                 break;
         default: {}
     }

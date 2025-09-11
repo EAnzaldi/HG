@@ -33,8 +33,7 @@ Player::~Player()
 void Player::HandleJump(float deltaTime, irrklang::ISoundEngine* engine)
 {
     if (disableJump)
-        if(isOnGround)
-            return;
+       return;
     if (this->isOnGround)
     {
         this->isOnGround = false;
@@ -93,14 +92,21 @@ void Player::HandleCollisionWithSolid(GameObject* solidObject, Collision collisi
     }
     */
 
-MovingObject::HandleCollisionWithSolid(solidObject, collision);
+    MovingObject::HandleCollisionWithSolid(solidObject, collision);
 
-    if (collision == Collision::Left || collision == Collision::Right) {
-        this->velocity.x = 0;
+    switch (collision) {
+    case Collision::Right:  this->velocity.x = 0;
+        break;
+    case Collision::Left:   this->velocity.x = 0;
+        break;
+    case Collision::Top:    this->velocity.y = 0;
+        break;
+    case Collision::Bottom: this->velocity.y = 0;
+                            this->isPastJumpPeak = false;
+        break;
+    default: {}
     }
-    if (collision == Collision::Bottom) {
-        this->isPastJumpPeak = false;
-    }
+
 }
 bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
 {
@@ -112,17 +118,32 @@ bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
     if (collision == Collision::None)
         return false;
 
+    printf("Before velocity: %f %f", this->velocity.x, this->velocity.y);
+
+    MovingObject::HandleCollisionWithSolid(enemy, collision);
+
     if (collision == Collision::Bottom) {
         //std::cout << "Kill enemy" << std::endl;
         engine->play2D("resources/sounds/kill_slime.wav");
-        enemy->kill();
-        nKills++;
+        if (enemy->hit()) {//enemy dead
+            this->isOnGround = false;
+            nKills++;//velocità invariata se nemico morto
+        }
+        else {
+            this->velocity.y = -this->velocity.y; //altrimenti rimbalza
+            this->isPastJumpPeak = false;
+        }
     }
     else {
         engine->play2D("resources/sounds/damage.wav");
+        if (collision == Collision::Left || collision == Collision::Right) {
+            this->velocity.x = 0;
+        } else if (collision == Collision::Top) {
+            this->velocity.y = 0;
+        }
+        lives--; // Perde una vita
         if (lives > 1)
         {
-            lives--; // Perde una vita
             //std::cout << "Lives left: " << lives << std::endl;
             StartTempInvincibility(); // Inizia l'invincibilità
         }
@@ -133,7 +154,9 @@ bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
         }
     }
 
-    return isDead;
+    printf("After velocity: %f %f", this->velocity.x, this->velocity.y);
+
+    return true;
 }
 Candy* Player::CheckCollisionWithCandies(const std::vector<Candy*>& candies) {
     Candy* pCloser = nullptr;

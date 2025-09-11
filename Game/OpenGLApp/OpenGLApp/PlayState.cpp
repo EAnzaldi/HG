@@ -12,6 +12,8 @@
 
 #define SPAWN_PROB_C 100 //percentuale di spawn delle caramelle (bonus e malus)
 
+#define SPAWN_PROB_SUPER 50 //percentuale di spawn delle SuperSlimes
+
 #define FLAT 1
 
 bool PlayState::TeleportUnlocked = false;
@@ -96,13 +98,14 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     //pTexEnemy = new TextureObject("resources/textures/awesomeface.png");
     pTexSlime = new TextureObject("resources/textures/slime2-mod.png");
     //pTexBackground = new TextureObject("resources/textures/dark_wood_background2.png");
+    pTexSuperSlime = new TextureObject("resources/textures/superslime.png");
 
     pText = new TextObject(ft, "resources/fonts/8-bit-operator/8bitOperatorPlus8-Regular.ttf");
 
     // caricamento modelli blender
-    pCubeModel = new Model("resources/models/cubetto.obj");
+    //pCubeModel = new Model("resources/models/cubetto.obj");
     pCauldronModel = new Model("resources/models/cauldron.obj");
-    pSlimeModel = new Model("resources/models/slime2.obj");
+    //pSlimeModel = new Model("resources/models/slime2.obj");
     //pBackgroundModel = new Model("resources/models/background.obj");
 
     //caricamento modelli 2d
@@ -372,7 +375,6 @@ void PlayState::Reset()
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(100);
         
-        
     }
 
     /*
@@ -620,17 +622,24 @@ void PlayState::ProcessEvents()
         lastSpawnTime += deltaTime;
 
         if (lastSpawnTime >= spawnTime) {
-#if FLAT
-            if (CurrentLevel[Multiplayer] == 1)
-                pEnemies.emplace_back(new Enemy(posSpawn[spawnPlace], glm::vec3(0.13f * pTexSlime->getAspect(), 0.13f , 0.1f), pTexSlime, 0, velocities[spawnPlace], true));
-            else if (CurrentLevel[Multiplayer] == 2)
-                pEnemies.emplace_back(new Enemy(posSpawn2[spawnPlace], glm::vec3(0.13f * pTexSlime->getAspect(), 0.13f, 0.1f), pTexSlime, 0, velocities2[spawnPlace], true));
-#else
-            if (CurrentLevel[Multiplayer] == 1)
-                pEnemies.emplace_back(new Enemy(posSpawn[spawnPlace], glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, velocities[spawnPlace], true));
-            else if (CurrentLevel[Multiplayer] == 2)
-                pEnemies.emplace_back(new Enemy(posSpawn2[spawnPlace], glm::vec3(0.1f, 0.1f, 0.1f), pSlimeModel, pTexSlime, 0, velocities2[spawnPlace], true));
-#endif
+            Enemy* enemy;
+            if (CurrentLevel[Multiplayer] == 1) {
+                if (DoAction(SPAWN_PROB_SUPER)) {
+                    enemy = new Enemy(posSpawn[spawnPlace], glm::vec3(0.13f * pTexSuperSlime->getAspect(), 0.13f, 0.1f), pTexSuperSlime, 0, velocities[spawnPlace], true, EnemyType::SuperSlime);
+                }
+                else {
+                    enemy = new Enemy(posSpawn[spawnPlace], glm::vec3(0.13f * pTexSlime->getAspect(), 0.13f, 0.1f), pTexSlime, 0, velocities[spawnPlace], true, EnemyType::Slime);
+                }
+            }
+            else if (CurrentLevel[Multiplayer] == 2) {
+                if (DoAction(SPAWN_PROB_SUPER)) {
+                    enemy = new Enemy(posSpawn2[spawnPlace], glm::vec3(0.13f * pTexSuperSlime->getAspect(), 0.13f, 0.1f), pTexSuperSlime, 0, velocities2[spawnPlace], true, EnemyType::SuperSlime);
+                }
+                else {
+                    enemy = new Enemy(posSpawn2[spawnPlace], glm::vec3(0.13f * pTexSlime->getAspect(), 0.13f, 0.1f), pTexSlime, 0, velocities2[spawnPlace], true, EnemyType::Slime);
+                }
+            }
+            pEnemies.emplace_back(enemy);
             nEnemiesAlive++;
             lastSpawnTime = 0.0f;
             spawnTime = RandomInt(SPAWN_MIN_E, SPAWN_MAX_E);
@@ -643,16 +652,19 @@ void PlayState::ProcessEvents()
     }
 
     for (Enemy* pe : pEnemies) {
-        if (pe->IsDead() == false) {
-            if (pGretel->CheckEnemyCollision(pe, Engine) || (Multiplayer && pHansel->CheckEnemyCollision(pe, Engine))) {//Se un player muore
+        if (pe->IsDead())
+            continue;
+        if (pGretel->CheckEnemyCollision(pe, Engine) || (Multiplayer && pHansel->CheckEnemyCollision(pe, Engine))) {
+            if (pGretel->isDead || (Multiplayer && pHansel->isDead)) {//Se un player muore
                 Status[Multiplayer] = GameStatus::GameOver;
+                break;
             }
-            else if (pe->IsDead()) {//Se enemy muore
+            if (pe->IsDead()) {//Se enemy muore
                 nEnemiesAlive--;
                 nEnemiesKilled++;
                 CurrentScore += scoreEnemy;
                 //printf("Nemico morto a %f, %f\n", pe->Position.x, pe->Position.y);
-                if (CurrentLevel[Multiplayer]==1 && nEnemiesKilled == TOTENEM) {
+                if (CurrentLevel[Multiplayer] == 1 && nEnemiesKilled == TOTENEM) {
                     Status[Multiplayer] = GameStatus::Victory;
                 }
                 //spawn candy
@@ -675,17 +687,19 @@ void PlayState::ProcessEvents()
                     CandyType* type = pCandyTypes[rdindex];
                     TextureObject* texture = pCandiesMesh[rdindex];
                     pCandies.emplace_back(new Candy(glm::vec2(pixelX, pixelY), candySize, texture, 0, *type));
-                    #if DEBUG
+#if DEBUG
                     printf("Spawnata caramella di tipo %s\n", type->Print());
-                    #endif
+#endif
                 }
-
+                continue;
             }
-            else {
-                pe->Move(deltaTime);  // Aggiorna la posizione del nemico con controllo delle collisioni
-                pe->CheckCollisionWithSolids(platforms);
+            else if (pe->getLives()==1 && pe->type == EnemyType::SuperSlime){
+                pe->Texture = pTexSlime;
+                pe->type = EnemyType::Slime;
             }
         }
+        pe->Move(deltaTime);  // Aggiorna la posizione del nemico con controllo delle collisioni
+        pe->CheckCollisionWithSolids(platforms);
     }
 
     for (Candy* pc : pCandies) {
@@ -867,7 +881,7 @@ void PlayState::EnterState()
         return;
     }
         
-    //Mouse->Hide();
+    Mouse->Hide();
 
     // musica di sottofondo
     ost = Engine->play2D("resources/sounds/kim_lightyear_angel_eyes_piano_version.wav", true, false, true);

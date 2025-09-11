@@ -3,19 +3,28 @@
 #include "MovingObject.h"
 #include "GameObject.h"
 
+enum class EnemyType { Slime, SuperSlime };
+
 class Enemy : public MovingObject {
 public:
-    bool IsDead() { return Dead; }
-    void kill() { Dead = true; }
-  
+
+    EnemyType type;
+
+    bool IsDead() { return isDead; }
+    int hit() {
+        lives--;
+        if (lives <= 0)
+            isDead = true;
+        return isDead;
+    }
+    bool getLives() { return lives; };
+ 
     //Costruttore 3d
-    Enemy(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, glm::vec2 velocity, bool moveRight);
+    Enemy(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, glm::vec2 velocity, bool moveRight, EnemyType type);
     //Costruttore 2d
-    Enemy(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight);
+    Enemy(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight, EnemyType type);
 
     //void HandleCollisionWithSolid(GameObject* solidObject) override;
-
-    bool Dead = false;
 
     void Move(float deltaTime) override;
 
@@ -23,6 +32,9 @@ public:
     static void SpeedDown(float amount);
 
 private:
+
+    bool isDead = false;    //Enemy inizia vivo
+    int lives;
 
     void Flip();
     static float speedBonus;  

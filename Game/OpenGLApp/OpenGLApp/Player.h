@@ -31,7 +31,7 @@ class Player : public MovingObject
         float invincibilityTimer;    // Timer corrente per l'invincibilità
 
         bool isDead = false;    //Player inizia vivo
-        int lives;          //Player inizia con 3 vite
+        int lives;
 
         float baseJumpForce = 1.5f;         // Forza iniziale del salto
 

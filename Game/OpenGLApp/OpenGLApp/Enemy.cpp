@@ -1,15 +1,21 @@
 #include "Enemy.h"
 #include <glm/glm.hpp>  // Per il calcolo dei vettori
 
-Enemy::Enemy(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, glm::vec2 velocity, bool moveRight)
-    : MovingObject(position, size, model, repeatWidth, velocity, moveRight)
+Enemy::Enemy(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, glm::vec2 velocity, bool moveRight, EnemyType type)
+    : MovingObject(position, size, model, repeatWidth, velocity, moveRight), type(type)
 {
-
+    if (type == EnemyType::Slime)
+        lives = 1;
+    else if (type == EnemyType::SuperSlime)
+        lives = 2;
 }
-Enemy::Enemy(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight)
-    : MovingObject(position, size, texture, repeatWidth, velocity, moveRight)
+Enemy::Enemy(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight, EnemyType type)
+    : MovingObject(position, size, texture, repeatWidth, velocity, moveRight), type(type)
 {
-
+    if (type == EnemyType::Slime) 
+        lives = 1;
+    else if (type == EnemyType::SuperSlime)
+        lives = 2;
 }
 float Enemy::speedBonus = 1.0f;
 void Enemy::HandleCollisionWithSolid(GameObject* solidObject, Collision collision)
@@ -55,6 +61,10 @@ void Enemy::HandleCollisionWithSolid(GameObject* solidObject, Collision collisio
     if (collision == Collision::Left || collision == Collision::Right) {
         this->velocity.x = -this->velocity.x;//rimbalza il nemico che cambia direzione
     }
+    else if (collision == Collision::Top || collision == Collision::Bottom) {
+        this->velocity.y=0;
+    }
+
 }
 void Enemy::Move(float deltaTime)
 {

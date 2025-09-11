@@ -51,6 +51,7 @@ public:
 	TextureObject* pTexHansel;
 	TextureObject* pTexPlatforms;
 	TextureObject* pTexSlime;
+	TextureObject* pTexSuperSlime;
 
 	std::vector<CandyType*> pCandyTypes;
 
