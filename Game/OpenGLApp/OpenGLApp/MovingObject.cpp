@@ -86,18 +86,16 @@ void MovingObject::Rotate(float deltatime) {
     }
 
 }
-static const int nSwings = 3;
-int n = 0;
 bool MovingObject::Oscillate(float deltatime) {
-    if (n > nSwings) {
-        n = 0;
+    if (nSwings > totalSwings) {
+        nSwings = 0;
         return false;
     }
     if (std::abs(Rotation - targetRotation) < 0.1f) {
         targetRotation = -targetRotation;
-        if(n==nSwings-1)
+        if(nSwings==totalSwings-1)
             targetRotation=0.0f;    
-        n++;
+        nSwings++;
     }
     Rotate(deltatime);
     return true;

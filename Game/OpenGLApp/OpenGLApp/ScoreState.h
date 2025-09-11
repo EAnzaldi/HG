@@ -37,28 +37,39 @@ private:
     void RenderStats();
 
     // A pointer to the current active game (if any).
-    PlayState* CurrentGame;
+    PlayState* CurrentGame = nullptr;
 
-    TextObject* pTextNormal;
+    TextObject* pText = nullptr;
 
-    TextureObject* pLevelsCompletedTex[2];
+    TextureObject* pLvlsTex[2];
 
-    Model* pCageModel;
+    Model* pCageModel = nullptr;
 
     std::vector<GameObject*> solidsGretel;
     std::vector<GameObject*> solidsHansel;
-    GameObject* pLevelsCompleted[2];
-    GameObject* pFloor;
-    MovingObject* pCage;
-    GameObject* pCandy;
-    GameObject* pSlime;
+    GameObject* pLvls[2] = { nullptr, nullptr };
+    GameObject* pFloor = nullptr;
+    MovingObject* pCage = nullptr;
+    GameObject* pCandy = nullptr;
+    GameObject* pSlime = nullptr;
 
-    Player* pGretel;
-    Player* pHansel;
+    Player* pGretel = nullptr;
+    Player* pHansel = nullptr;
 
     // Gestione frame
     double lastFrame;
     double deltaTime;
+
+    glm::vec2 pivotCage;
+    glm::vec2 pivotHansel;
+
+    bool oscillate = false;
+    int nPauses = 0;
+    bool HanselFree = false;
+    bool cageFall = false;
+
+    const float timerDuration = 1.0f;
+    float timer = 0.0f;
 
     //Sound
     irrklang::ISound* ost;

@@ -1,6 +1,8 @@
 #include "ScoreState.h"
 #include "PlayState.h"
 
+#define NPAUSE 2
+
 bool DrawTeleportUnlocked = false;
 bool DrawMultiplayerUnlocked = false;
 
@@ -12,18 +14,41 @@ ScoreState::ScoreState(StateManager* manager, GLFWwindow* window, irrklang::ISou
         std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
     }
 
+    CurrentGame = PlayState::GetInstance(Manager, Window, Engine);
+
+    // Caricamento font
+    pText = new TextObject(ft, "resources/fonts/8-bit-operator/8bitOperatorPlus8-Regular.ttf");
+
+    // Caricamento textures
+    pLvlsTex[0] = new TextureObject("resources/textures/level_1_completed.png");
+    pLvlsTex[1] = new TextureObject("resources/textures/level_2_completed.png");
+
+    // Caricamento modelli blender
+    pCageModel = new Model("resources/models/Cage.obj");
+
+    // Caricamento oggetti
+    pLvls[0] = new GameObject(glm::vec2(SCR_WIDTH_F * 0.5f, SCR_HEIGHT_F * 0.85f), pLvlsTex[0]->getSize() * 1.06f, pLvlsTex[0], 0);
+    pLvls[1] = new GameObject(glm::vec2(SCR_WIDTH_F * 0.5f, SCR_HEIGHT_F * 0.85f), pLvlsTex[1]->getSize() * 1.06f, pLvlsTex[1], 0);
+    pCandy = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.07f * SCR_WIDTH_F / 2.0f, 0.07f * SCR_HEIGHT_F / 2.0f * getAspect(Window), 0.1f), (TextureObject*) nullptr, 0);
+    pSlime = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.13f * CurrentGame->pTexSlime->getAspect() * SCR_WIDTH_F / 2.0f, 0.13f * SCR_HEIGHT_F / 2.0f, 0.1f), CurrentGame->pTexSlime, 0);
+    pFloor = new GameObject(glm::vec2{ 0.0f, -0.95f }, glm::vec3{ 2.0f, 0.1f, 0.2f }, CurrentGame->pTexPlatforms, 1);
+    solidsHansel.emplace_back(pFloor);
+
+    pGretel = new Player(glm::vec2(-0.5f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * CurrentGame->pTexGretel->getAspect(), 0.1f), CurrentGame->pTexGretel, 0, PlayerName::Gretel, 3);
+    pHansel = new Player(glm::vec2(0.75f, 0.76f), glm::vec3(0.12f, 0.12f * getAspect(Window) * CurrentGame->pTexHansel->getAspect(), 0.1f), CurrentGame->pTexHansel, 0, PlayerName::Hansel, 3);
+
+    pCage = new MovingObject(glm::vec2(0.75f, 0.84f), glm::vec3(0.15f, 0.15f, 0.15f), pCageModel, 0, glm::vec2(0.0f, 0.0f), 0);
+    pivotCage = glm::vec2(0.0f, pCage->Size.y / 2.0f);
+    pivotHansel = pCage->Position + pivotCage - pHansel->Position;
+    pCage->SetRotation(4.0f, GameObject::axisZ, pivotCage, 0.5f);
+    pHansel->SetRotation(4.0f, GameObject::axisZ, pivotHansel, 0.5f);
+    pCage->totalSwings = pHansel->totalSwings = 3;
+
+    // Setup shader
     pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.5f));
     glm::mat4 view = pCamera->GetViewMatrix();
     pSpriteShader->use();
     pSpriteShader->setMat4("view", view);
-
-    pTextNormal = new TextObject(ft, "resources/fonts/8-bit-operator/8bitOperatorPlus8-Regular.ttf");
-
-    pLevelsCompletedTex[0] = new TextureObject("resources/textures/level_1_completed.png");
-    pLevelsCompletedTex[1] = new TextureObject("resources/textures/level_2_completed.png");
-
-    // caricamento modelli blender
-    pCageModel = new Model("resources/models/Cage.obj");
 
     //Shader per materiale metallico
     pEnlightenedShader->use();
@@ -40,15 +65,15 @@ ScoreState::ScoreState(StateManager* manager, GLFWwindow* window, irrklang::ISou
 
 ScoreState::~ScoreState()
 {
-    delete pTextNormal;
+    delete pText;
 
-    delete pLevelsCompletedTex[0];
-    delete pLevelsCompletedTex[1];
+    delete pLvlsTex[0];
+    delete pLvlsTex[1];
 
     delete pCageModel;
 
-    delete pLevelsCompleted[0];
-    delete pLevelsCompleted[1];
+    delete pLvls[0];
+    delete pLvls[1];
     delete pFloor;
     delete pCage;
     delete pCandy;
@@ -65,52 +90,41 @@ ScoreState* ScoreState::GetInstance(StateManager* manager, GLFWwindow* window, i
     static ScoreState Instance(manager, window, engine);
     return &Instance;
 }
-
 void ScoreState::EnterState()
-{
-    //int fbWidth, fbHeight;
-    //glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
-    if (CurrentGame == nullptr)
-        CurrentGame = PlayState::GetInstance(Manager, Window, Engine);
-    if (pCandy == nullptr)
-        pCandy = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.07f * SCR_WIDTH_F /2.0f, 0.07f * SCR_HEIGHT_F/2.0f * getAspect(Window), 0.1f), (TextureObject*) nullptr, 0);
-    if (pSlime == nullptr)
-        pSlime = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.13f * CurrentGame->pTexSlime->getAspect() * SCR_WIDTH_F / 2.0f, 0.13f * SCR_HEIGHT_F / 2.0f, 0.1f), CurrentGame->pTexSlime, 0);
-    int lvl = CurrentGame->CurrentLevel[CurrentGame->IsMultiplayer()] - 1;
-    if (pLevelsCompleted[lvl] == nullptr)
-        pLevelsCompleted[lvl] = new GameObject(glm::vec2(SCR_WIDTH_F *0.5f, SCR_HEIGHT_F *0.85f), pLevelsCompletedTex[lvl]->getSize() * 1.06f, pLevelsCompletedTex[lvl], 0);
-    if (pGretel == nullptr)
-        pGretel = new Player(glm::vec2(-0.5f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * CurrentGame->pTexGretel->getAspect(), 0.1f), CurrentGame->pTexGretel, 0, PlayerName::Gretel, 3);
-    else
-        pGretel->Position = glm::vec2(-0.5f, -0.85f);
-    if (pHansel == nullptr) {
-        //pHansel = new Player(glm::vec2(0.5f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * CurrentGame->pTexHansel->getAspect(), 0.1f), CurrentGame->pTexHansel, 0, PlayerName::Hansel, 3);
-        pHansel = new Player(glm::vec2(0.75f, 0.80f), glm::vec3(0.12f, 0.12f * getAspect(Window) * CurrentGame->pTexHansel->getAspect(), 0.1f), CurrentGame->pTexHansel, 0, PlayerName::Hansel, 3);
-    }
-    else
-        pHansel->Position = glm::vec2(0.5f, -0.85f);
-    if (pFloor == nullptr) {
-        pFloor = new GameObject(glm::vec2{ 0.0f, -0.95f }, glm::vec3{ 2.0f, 0.1f, 0.2f }, CurrentGame->pTexPlatforms, 1);
-        solidsHansel.emplace_back(pFloor);
-    }
-    if (pCage == nullptr) {
-        //pCage = new MovingObject(glm::vec2(0.5f, -0.72f), glm::vec3(0.1f, 0.1f, 0.1f), pCageModel, 0, glm::vec2(0.0f, 0.0f), 0);
-        pCage = new MovingObject(glm::vec2(0.75f, 0.89f), glm::vec3(0.1f, 0.1f, 0.1f), pCageModel, 0, glm::vec2(0.0f, 0.0f), 0);
-    }
+{       
     solidsGretel.clear();
     solidsGretel.emplace_back(pFloor);
-    if (CurrentGame->GetLvl() == 1 && !CurrentGame->IsMultiplayer()) {
-        solidsGretel.emplace_back(pCage);
-    }
 
-    //Unlock
-    if (!CurrentGame->IsMultiplayer()) {
-        if (!PlayState::TeleportUnlocked && CurrentGame->GetLvl() == 1) {
-            PlayState::TeleportUnlocked = DrawTeleportUnlocked = true;
-        }           
-        else if (!PlayState::MultiplayerUnlocked && CurrentGame->GetLvl() == 2) {
-            PlayState::MultiplayerUnlocked = DrawMultiplayerUnlocked = true;
-        }  
+    if (CurrentGame->GetLvl() == 1) {
+        if (CurrentGame->IsMultiplayer()) {
+            pGretel->Position = glm::vec2(-0.05f, -0.85f);
+            pHansel->Position = glm::vec2(0.05f, -0.85f);
+        }
+        else {
+            pGretel->Position = glm::vec2(-0.5f, -0.85f);
+            pHansel->Position = glm::vec2(0.75f, 0.76f);
+            solidsGretel.emplace_back(pCage);
+            //Unlock
+            if (!PlayState::TeleportUnlocked)
+                PlayState::TeleportUnlocked = DrawTeleportUnlocked = true;
+        }
+
+    }
+    else if (CurrentGame->GetLvl() >= 2) {
+        if (CurrentGame->IsMultiplayer()) {
+            pGretel->Position = glm::vec2(-0.1f, -0.85f);
+            pHansel->Position = glm::vec2(0.1f, -0.85f);
+        }
+        else {
+            pGretel->Position = glm::vec2(-0.5f, -0.85f);
+            pHansel->Position = glm::vec2(0.75f, 0.76f);
+            oscillate = true;
+            //Unlock
+            if (!PlayState::MultiplayerUnlocked && HanselFree) {
+                PlayState::MultiplayerUnlocked = DrawMultiplayerUnlocked = true;
+            }
+        }
+
     }
 
     // musica di sottofondo
@@ -153,22 +167,63 @@ void ScoreState::ProcessInput()
     }*/
 
     if (CurrentGame->GetLvl() == 1) {
-        pGretel->Move(deltaTime);
-        pGretel->CheckCollisionWithSolids(solidsGretel);
-        ProcessInputPlayer(pGretel, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_A, GLFW_KEY_D);
-        if (CurrentGame->IsMultiplayer()) 
+        if (CurrentGame->IsMultiplayer()) {
+            pGretel->Move(deltaTime);
+            pGretel->CheckCollisionWithSolids(solidsGretel);
+            ProcessInputPlayer(pGretel, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_A, GLFW_KEY_D);
             pHansel->Move(deltaTime);
-        pHansel->CheckCollisionWithSolids(solidsHansel);
-        if (CurrentGame->IsMultiplayer())
+            pHansel->CheckCollisionWithSolids(solidsHansel);
             ProcessInputPlayer(pHansel, GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_LEFT, GLFW_KEY_RIGHT);
-    } else if (CurrentGame->GetLvl() >= 2) {
-        if (CurrentGame->IsMultiplayer() == false) {
+        }
+        else {
+            pGretel->Move(deltaTime);
+            pGretel->CheckCollisionWithSolids(solidsGretel);
+            ProcessInputPlayer(pGretel, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_A, GLFW_KEY_D);
+        }
+
+    }
+    else if (CurrentGame->GetLvl() >= 2) {
+        if (CurrentGame->IsMultiplayer()) {
             pGretel->Move(deltaTime);
             pGretel->CheckCollisionWithSolids(solidsGretel);
             pHansel->Move(deltaTime);
             pHansel->CheckCollisionWithSolids(solidsHansel);
+        }
+        else {
+            pGretel->Move(deltaTime);
+            pGretel->CheckCollisionWithSolids(solidsGretel);
             ProcessInputPlayer(pGretel, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_A, GLFW_KEY_D);
-            ProcessInputPlayer(pHansel, GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_LEFT, GLFW_KEY_RIGHT);
+            if (cageFall || HanselFree) {
+                pHansel->Move(deltaTime);
+                pHansel->CheckCollisionWithSolids(solidsHansel);
+            }
+            if (cageFall) {
+                pCage->Move(deltaTime);
+                if (pCage->isOnGround) {
+                    HanselFree = true;
+                    cageFall = false;
+                }              
+            }
+            if (HanselFree)
+                ProcessInputPlayer(pHansel, GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_LEFT, GLFW_KEY_RIGHT);
+            else {
+                if (nPauses == NPAUSE)
+                    cageFall = true;
+                if (oscillate) {
+                    oscillate = pCage->Oscillate(deltaTime);
+                    oscillate = oscillate && pHansel->Oscillate(deltaTime);
+                    if (oscillate == false)
+                        timer = timerDuration;
+                }
+                else {
+                    timer-=deltaTime;
+                    if (timer <= 0.0f) {
+                        oscillate = true;
+                        //timer = timerDuration;
+                        nPauses++;
+                    }
+                }
+            }
         }
     }
 
@@ -222,8 +277,6 @@ void ScoreState::Render()
     //int fbWidth, fbHeight;
     //glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
 
-    glm::vec3 TextColor = { 255.0f, 255.0f, 255.0f };
-
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -232,72 +285,13 @@ void ScoreState::Render()
 
     glDisable(GL_DEPTH_TEST);
 
-    //Oggetti con coordinate NDC
+    //Oggetti con coordinate pixel
     //--------------------------------------------------------------------------------
-    float height = SCR_HEIGHT_F * 0.75f;
-    float text_width = SCR_WIDTH_F * 0.25;
-    float gretel_width = SCR_WIDTH_F * 0.55f;
-    float hansel_width = SCR_WIDTH_F * 0.75f;
-    float y_indent = SCR_HEIGHT_F /20.0f;
-
     ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::Pixels);
 
-    pLevelsCompleted[CurrentGame->CurrentLevel[CurrentGame->IsMultiplayer()] - 1]->Render(*pSpriteShader);
+    RenderStats();
 
-    pTextNormal->Render(*pTextShader, "STATS", text_width, height, 1.0f, TextColor, Alignment::Left);
-    
-    height -= y_indent;
-    pTextNormal->Render(*pTextShader, "Gretel", gretel_width, height, 1.0f, TextColor, Alignment::Right);
-    if(CurrentGame->IsMultiplayer())
-        pTextNormal->Render(*pTextShader, "Hansel", hansel_width, height, 1.0f, TextColor, Alignment::Right);
-
-    pSlime->Position = glm::vec2(text_width + pSlime->Size.x / 2.0f, height - pSlime->Size.y / 2.0f - y_indent / 2.0f);
-    pSlime->Render(*pSpriteShader);
-    pTextNormal->Render(*pTextShader, std::to_string(CurrentGame->GretelKills), gretel_width, height - pSlime->Size.y - y_indent / 3.0f, 1.0f, TextColor, Alignment::Right);
-    if (CurrentGame->IsMultiplayer()) {
-        pTextNormal->Render(*pTextShader, std::to_string(CurrentGame->HanselKills), hansel_width, height - pSlime->Size.y - y_indent / 3.0f, 1.0f, TextColor, Alignment::Right);
-    }
-    height -= (pSlime->Size.y + y_indent / 2.0f);
-
-    for (int i = 0; i < CurrentGame->pCandiesMesh.size(); i++) {
-        bool draw = false;
-        if (CurrentGame->GretelCandyStats[i] != 0) {
-            pTextNormal->Render(*pTextShader, std::to_string(CurrentGame->GretelCandyStats[i]), gretel_width, height - pCandy->Size.y - y_indent / 3.0f, 1.0f, TextColor, Alignment::Right);
-            draw = true;
-        }
-        if (CurrentGame->IsMultiplayer() && CurrentGame->HanselCandyStats[i] != 0) {
-            pTextNormal->Render(*pTextShader, std::to_string(CurrentGame->HanselCandyStats[i]), hansel_width, height - pCandy->Size.y - y_indent / 3.0f, 1.0f, TextColor, Alignment::Right);
-            draw = true;
-        }
-        if (draw) {
-            //if (i < CurrentGame->pCandiesMesh.size() - 1)
-            pCandy->Position = glm::vec2(text_width + pCandy->Size.x / 2.0f, height - pCandy->Size.y/2.0f - y_indent / 2.0f);
-            height -= (pCandy->Size.y + y_indent / 2.0f);
-            pCandy->Texture = CurrentGame->pCandiesMesh[i];
-            pCandy->Render(*pSpriteShader);
-        }
-
-    }
-
-    height -= y_indent;
-    std::string time = "TIME LEFT: " + std::to_string(CurrentGame->remainingTime);
-    pTextNormal->Render(*pTextShader, time, text_width, height, 1.0f, TextColor, Alignment::Left);
-
-    height -= y_indent;
-    std::string score = "SCORE: " + std::to_string(CurrentGame->CurrentScore);
-    pTextNormal->Render(*pTextShader, score, text_width, height, 1.0f, TextColor, Alignment::Left);
-
-    if (DrawTeleportUnlocked) {
-        height -= y_indent;
-        pTextNormal->Render(*pTextShader, std::string("TELEPORT CANDY UNLOCKED"), text_width, height, 1.0f, TextColor, Alignment::Left);
-    }
-
-    if (DrawMultiplayerUnlocked) {
-        height -= y_indent;
-        pTextNormal->Render(*pTextShader, std::string("MULTIPLAYER UNLOCKED"), text_width, height, 1.0f, TextColor, Alignment::Left);
-    }
-
-    //Oggetti con coordinate pixel
+    //Oggetti con coordinate NDC
     //--------------------------------------------------------------------------------
     ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::NDC);
 
@@ -309,11 +303,77 @@ void ScoreState::Render()
 
     glEnable(GL_DEPTH_TEST);
 
+    //glEnable(GL_MULTISAMPLE);
+
     //Oggetti 3D
     //--------------------------------------------------------------------------------
-    if(CurrentGame->GetLvl() == 1 && !CurrentGame->IsMultiplayer())
+    if (!CurrentGame->IsMultiplayer() && !HanselFree) {
         pCage->Render(*pEnlightenedShader);
+    }
+
+    //glDisable(GL_MULTISAMPLE);
 }
 void ScoreState::RenderStats() {
+    glm::vec3 TextColor = { 255.0f, 255.0f, 255.0f };
 
+    float height = SCR_HEIGHT_F * 0.75f;
+    float text_width = SCR_WIDTH_F * 0.25;
+    float gretel_width = SCR_WIDTH_F * 0.55f;
+    float hansel_width = SCR_WIDTH_F * 0.75f;
+    float y_indent = SCR_HEIGHT_F / 20.0f;
+
+    pLvls[CurrentGame->GetLvl() - 1]->Render(*pSpriteShader);
+
+    pText->Render(*pTextShader, "STATS", text_width, height, 1.0f, TextColor, Alignment::Left);
+
+    height -= y_indent;
+    pText->Render(*pTextShader, "Gretel", gretel_width, height, 1.0f, TextColor, Alignment::Right);
+    if (CurrentGame->IsMultiplayer())
+        pText->Render(*pTextShader, "Hansel", hansel_width, height, 1.0f, TextColor, Alignment::Right);
+
+    pSlime->Position = glm::vec2(text_width + pSlime->Size.x / 2.0f, height - pSlime->Size.y / 2.0f - y_indent / 2.0f);
+    pSlime->Render(*pSpriteShader);
+    pText->Render(*pTextShader, std::to_string(CurrentGame->GretelKills), gretel_width, height - pSlime->Size.y - y_indent / 3.0f, 1.0f, TextColor, Alignment::Right);
+    if (CurrentGame->IsMultiplayer()) {
+        pText->Render(*pTextShader, std::to_string(CurrentGame->HanselKills), hansel_width, height - pSlime->Size.y - y_indent / 3.0f, 1.0f, TextColor, Alignment::Right);
+    }
+    height -= (pSlime->Size.y + y_indent / 2.0f);
+
+    for (int i = 0; i < CurrentGame->pCandiesMesh.size(); i++) {
+        bool draw = false;
+        if (CurrentGame->GretelCandyStats[i] != 0) {
+            pText->Render(*pTextShader, std::to_string(CurrentGame->GretelCandyStats[i]), gretel_width, height - pCandy->Size.y - y_indent / 3.0f, 1.0f, TextColor, Alignment::Right);
+            draw = true;
+        }
+        if (CurrentGame->IsMultiplayer() && CurrentGame->HanselCandyStats[i] != 0) {
+            pText->Render(*pTextShader, std::to_string(CurrentGame->HanselCandyStats[i]), hansel_width, height - pCandy->Size.y - y_indent / 3.0f, 1.0f, TextColor, Alignment::Right);
+            draw = true;
+        }
+        if (draw) {
+            //if (i < CurrentGame->pCandiesMesh.size() - 1)
+            pCandy->Position = glm::vec2(text_width + pCandy->Size.x / 2.0f, height - pCandy->Size.y / 2.0f - y_indent / 2.0f);
+            height -= (pCandy->Size.y + y_indent / 2.0f);
+            pCandy->Texture = CurrentGame->pCandiesMesh[i];
+            pCandy->Render(*pSpriteShader);
+        }
+
+    }
+
+    height -= y_indent;
+    std::string time = "TIME LEFT: " + std::to_string(CurrentGame->remainingTime);
+    pText->Render(*pTextShader, time, text_width, height, 1.0f, TextColor, Alignment::Left);
+
+    height -= y_indent;
+    std::string score = "SCORE: " + std::to_string(CurrentGame->CurrentScore);
+    pText->Render(*pTextShader, score, text_width, height, 1.0f, TextColor, Alignment::Left);
+
+    if (DrawTeleportUnlocked) {
+        height -= y_indent;
+        pText->Render(*pTextShader, std::string("TELEPORT CANDY UNLOCKED"), text_width, height, 1.0f, TextColor, Alignment::Left);
+    }
+
+    if (DrawMultiplayerUnlocked) {
+        height -= y_indent;
+        pText->Render(*pTextShader, std::string("MULTIPLAYER UNLOCKED"), text_width, height, 1.0f, TextColor, Alignment::Left);
+    }
 }

@@ -20,8 +20,8 @@ public:
     }
 
     void Move(double xpos, double ypos) {
-        Position.x = xpos;
-        Position.y = ypos;
+        Position.x = (float) xpos;
+        Position.y = (float) ypos;
     }
 
     /*

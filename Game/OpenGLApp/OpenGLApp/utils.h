@@ -23,7 +23,7 @@ static float getAspect(GLFWwindow* window) {
 }
 
 // random generator
-const unsigned int seed = time(nullptr);
+const unsigned int seed = (unsigned int) time(nullptr);
 
 static void RandomSetup() {
     srand(seed);

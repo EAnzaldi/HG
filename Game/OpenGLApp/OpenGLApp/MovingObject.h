@@ -16,8 +16,13 @@ public:
 
     bool lastDirectionRight = true;  // Assume che inizialmente l'oggetto si muova a destra
 
+    //Rotazione
     float rotationSpeed = 620.0f;      // Velocità della rotazione
     float targetRotation = 0.0f;    // Angolo di rotazione di destinazione
+
+    //Oscillazione
+    int totalSwings = 0;
+    int nSwings = 0;
 
     //Costruttore 3d
     MovingObject(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, glm::vec2 velocity, bool moveRight);

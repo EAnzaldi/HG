@@ -50,6 +50,8 @@ private:
     TextureObject* pTexEnemy;
     GameObject* pEnemy;
 
+    bool oscillate;
+
     //Sound
     irrklang::ISound* ost;
 

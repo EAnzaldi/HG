@@ -51,12 +51,12 @@ EndState* EndState::GetInstance(StateManager* manager, GLFWwindow* window, irrkl
     static EndState Instance(manager, window, engine);
     return &Instance;
 }
-int oscillate = true;
 void EndState::EnterState()
 {
     //glm::vec2 prova1 = glm::vec2(0.0f, 0.0f);
     //glm::vec2 prova2 = glm::vec2(0.0f, pWitch->Size.y/2.0f);
     pWitch->SetRotation(5.0f, GameObject::axisZ, 0.2f);
+    pWitch->totalSwings = 3;
     oscillate = true;
 
     // musica di sottofondo (non loop)
@@ -86,6 +86,9 @@ void EndState::ProcessInput()
 void EndState::ProcessEvents() {
     if (oscillate) {
         oscillate = pWitch->Oscillate(deltaTime);
+    }
+    else {
+
     }
 }
 void EndState::MouseClick(double xpos, double ypos, int button, int action, int mods)
