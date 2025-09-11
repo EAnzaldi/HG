@@ -125,7 +125,8 @@ bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
     if (collision == Collision::Bottom) {
         //std::cout << "Kill enemy" << std::endl;
         engine->play2D("resources/sounds/kill_slime.wav");
-        if (enemy->hit()) {//enemy dead
+        enemy->hit();
+        if (enemy->IsDead()) {//enemy dead
             this->isOnGround = false;
             nKills++;//velocità invariata se nemico morto
         }
@@ -142,7 +143,7 @@ bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
             this->velocity.y = 0;
         }
         lives--; // Perde una vita
-        if (lives > 1)
+        if (lives >= 1)
         {
             //std::cout << "Lives left: " << lives << std::endl;
             StartTempInvincibility(); // Inizia l'invincibilità

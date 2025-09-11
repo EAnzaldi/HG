@@ -11,13 +11,13 @@ public:
     EnemyType type;
 
     bool IsDead() { return isDead; }
-    int hit() {
-        lives--;
+    void hit() {
+        if(lives>0)
+            lives--;
         if (lives <= 0)
-            isDead = true;
-        return isDead;
+            isDead = true;            
     }
-    bool getLives() { return lives; };
+    int getLives() { return lives; };
  
     //Costruttore 3d
     Enemy(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, glm::vec2 velocity, bool moveRight, EnemyType type);

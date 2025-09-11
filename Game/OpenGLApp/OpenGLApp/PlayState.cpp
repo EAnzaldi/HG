@@ -10,7 +10,7 @@
 #define SPAWN_MIN_E 3
 #define SPAWN_MAX_E 6
 
-#define SPAWN_PROB_C 100 //percentuale di spawn delle caramelle (bonus e malus)
+#define SPAWN_PROB_C 50 //percentuale di spawn delle caramelle (bonus e malus)
 
 #define SPAWN_PROB_SUPER 50 //percentuale di spawn delle SuperSlimes
 
@@ -347,34 +347,34 @@ void PlayState::Reset()
         pProbabilities.clear();
     if (TeleportUnlocked == false) {
         //NoJump, Speed, SpeedEnemy, Invincibility, Teleport
-/*
+
         pProbabilities.emplace_back(25);
         pProbabilities.emplace_back(25);
         pProbabilities.emplace_back(25);
         pProbabilities.emplace_back(25);
-        pProbabilities.emplace_back(0);
-        */
+        pProbabilities.emplace_back(0);// Teleport non sbloccata
+        /*
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(100);
-        
+        */
     }
     else {
-        /*
+        
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(16);// Teleport è più rara
-        */
+        /*
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(100);
-        
+        */
     }
 
     /*
@@ -693,7 +693,7 @@ void PlayState::ProcessEvents()
                 }
                 continue;
             }
-            else if (pe->getLives()==1 && pe->type == EnemyType::SuperSlime){
+            else if (pe->getLives() <= 1 && pe->type == EnemyType::SuperSlime) {
                 pe->Texture = pTexSlime;
                 pe->type = EnemyType::Slime;
             }
