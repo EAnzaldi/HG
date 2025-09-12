@@ -30,17 +30,17 @@ void MovingObject::Move(float deltaTime)
 
 }
 void MovingObject::SetRotation(float rotation, glm::vec3 rotationAxis, glm::vec2 pivot, float timeSec) {
-    Axis = rotationAxis;
     Pivot = pivot;
     usePivot = true;
-    targetRotation = rotation;
+    Axis = rotationAxis;
+    targetRotation = targetSwings = rotation;
     rotationSpeed = rotation / timeSec;
     printf("Pivot = %f %f", pivot.x, pivot.y);
 }
 void MovingObject::SetRotation(float rotation, glm::vec3 rotationAxis, float timeSec) {
-    Axis = rotationAxis;
     usePivot = false;
-    targetRotation = rotation;
+    Axis = rotationAxis;
+    targetRotation = targetSwings = rotation;
     rotationSpeed = rotation / timeSec;
 }
 void MovingObject::Rotate(float deltatime) {
@@ -88,7 +88,9 @@ void MovingObject::Rotate(float deltatime) {
 }
 bool MovingObject::Oscillate(float deltatime) {
     if (nSwings > totalSwings) {
+        //reset
         nSwings = 0;
+        targetRotation = targetSwings;
         return false;
     }
     if (std::abs(Rotation - targetRotation) < 0.1f) {

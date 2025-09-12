@@ -68,7 +68,7 @@ private:
     bool HanselFree = false;
     bool cageFall = false;
 
-    const float timerDuration = 1.0f;
+    const float timerDuration = 0.5f;
     float timer = 0.0f;
 
     //Sound

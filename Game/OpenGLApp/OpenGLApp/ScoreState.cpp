@@ -40,9 +40,11 @@ ScoreState::ScoreState(StateManager* manager, GLFWwindow* window, irrklang::ISou
     pCage = new MovingObject(glm::vec2(0.75f, 0.84f), glm::vec3(0.15f, 0.15f, 0.15f), pCageModel, 0, glm::vec2(0.0f, 0.0f), 0);
     pivotCage = glm::vec2(0.0f, pCage->Size.y / 2.0f);
     pivotHansel = pCage->Position + pivotCage - pHansel->Position;
-    pCage->SetRotation(4.0f, GameObject::axisZ, pivotCage, 0.5f);
-    pHansel->SetRotation(4.0f, GameObject::axisZ, pivotHansel, 0.5f);
-    pCage->totalSwings = pHansel->totalSwings = 3;
+    pCage->SetRotation(4.0f, GameObject::axisZ, pivotCage, 0.25f);
+    pHansel->SetRotation(4.0f, GameObject::axisZ, pivotHansel, 0.25f);
+    pCage->totalSwings = pHansel->totalSwings = 2;
+    pCage->isOnGround = false;
+    pHansel->isOnGround = false;
 
     // Setup shader
     pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.5f));
@@ -119,10 +121,7 @@ void ScoreState::EnterState()
             pGretel->Position = glm::vec2(-0.5f, -0.85f);
             pHansel->Position = glm::vec2(0.75f, 0.76f);
             oscillate = true;
-            //Unlock
-            if (!PlayState::MultiplayerUnlocked && HanselFree) {
-                PlayState::MultiplayerUnlocked = DrawMultiplayerUnlocked = true;
-            }
+            timer = timerDuration;
         }
 
     }
@@ -199,29 +198,35 @@ void ScoreState::ProcessInput()
             }
             if (cageFall) {
                 pCage->Move(deltaTime);
+                pCage->CheckCollisionWithSolids(solidsHansel);
                 if (pCage->isOnGround) {
+                    Engine->play2D("resources/sounds/cage_fall.wav");
                     HanselFree = true;
                     cageFall = false;
+                    if (!PlayState::MultiplayerUnlocked) {
+                        PlayState::MultiplayerUnlocked = DrawMultiplayerUnlocked = true;
+                    }
                 }              
             }
             if (HanselFree)
                 ProcessInputPlayer(pHansel, GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_LEFT, GLFW_KEY_RIGHT);
             else {
-                if (nPauses == NPAUSE)
-                    cageFall = true;
                 if (oscillate) {
-                    oscillate = pCage->Oscillate(deltaTime);
-                    oscillate = oscillate && pHansel->Oscillate(deltaTime);
-                    if (oscillate == false)
-                        timer = timerDuration;
+                    bool cageOscill = pCage->Oscillate(deltaTime);
+                    bool hanselOscill = pHansel->Oscillate(deltaTime);
+                    oscillate = cageOscill || hanselOscill;
                 }
                 else {
                     timer-=deltaTime;
                     if (timer <= 0.0f) {
                         oscillate = true;
-                        //timer = timerDuration;
+                        timer = timerDuration;
                         nPauses++;
                     }
+                }
+                if (nPauses >= NPAUSE) {
+                    cageFall = true;
+                    oscillate = false;
                 }
             }
         }

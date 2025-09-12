@@ -23,6 +23,7 @@ public:
     //Oscillazione
     int totalSwings = 0;
     int nSwings = 0;
+    float targetSwings;
 
     //Costruttore 3d
     MovingObject(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, glm::vec2 velocity, bool moveRight);
@@ -33,10 +34,10 @@ public:
 
     void Rotate(float deltatime);
 
-    bool Oscillate(float deltatime);
-
     void SetRotation(float rotation, glm::vec3 rotationAxis, glm::vec2 pivot, float timeSec);
     void SetRotation(float rotation, glm::vec3 rotationAxis, float timeSec);
+
+    bool Oscillate(float deltatime);
 
     virtual void Render(const Shader& Shader) const;
 
