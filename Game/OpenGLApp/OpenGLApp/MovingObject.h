@@ -14,10 +14,16 @@ public:
 
     glm::vec2 velocity;
 
+    glm::vec2 maxVelocityNPC = glm::vec2(0.25f, 0.75f);
+
     bool lastDirectionRight = true;  // Assume che inizialmente l'oggetto si muova a destra
 
+    //Effetto specchio uscendo dallo schermo lateralmente
+    //Disattivare per "uscita di scena"
+    bool pacman = true;
+
     //Rotazione
-    float rotationSpeed = 620.0f;      // Velocità della rotazione
+    float rotationSpeed = 620.0f;   // Velocità della rotazione
     float targetRotation = 0.0f;    // Angolo di rotazione di destinazione
 
     //Oscillazione

@@ -60,6 +60,7 @@ private:
     double lastFrame;
     double deltaTime;
 
+    //Animazione gabbia
     glm::vec2 pivotCage;
     glm::vec2 pivotHansel;
 
@@ -67,6 +68,10 @@ private:
     int nPauses = 0;
     bool HanselFree = false;
     bool cageFall = false;
+
+    //Animazione uscita
+    float xtarget = 1.1f;
+    bool end = false;
 
     const float timerDuration = 0.5f;
     float timer = 0.0f;

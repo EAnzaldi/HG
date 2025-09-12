@@ -19,6 +19,9 @@ void MovingObject::Move(float deltaTime)
 
     this->Position += this->velocity * deltaTime;
 
+    if (!pacman)
+        return;
+
     //Teletrasporto come pacman
     if (this->Position.x - this->Size.x / 2 >= 1.0f) {
         this->Position.x = -1.0f + this->Size.x / 2;
@@ -209,6 +212,9 @@ void MovingObject::HandleCollisionWithSolid(GameObject* solidObject, Collision c
 void MovingObject::Render(const Shader& Shader) const
 {
     GameObject::Render(Shader);
+
+    if (!pacman)
+        return;
 
     // Se l'oggetto si trova oltre il bordo a destra renderizzo la parte mancante a sinistra
     if (this->Position.x >= 1.0f - this->Size.x / 2)

@@ -97,6 +97,8 @@ void ScoreState::EnterState()
     solidsGretel.clear();
     solidsGretel.emplace_back(pFloor);
 
+    timer = timerDuration;
+
     if (CurrentGame->GetLvl() == 1) {
         if (CurrentGame->IsMultiplayer()) {
             pGretel->Position = glm::vec2(-0.05f, -0.85f);
@@ -114,14 +116,15 @@ void ScoreState::EnterState()
     }
     else if (CurrentGame->GetLvl() >= 2) {
         if (CurrentGame->IsMultiplayer()) {
-            pGretel->Position = glm::vec2(-0.1f, -0.85f);
-            pHansel->Position = glm::vec2(0.1f, -0.85f);
+            pGretel->Position = glm::vec2(0.1f, -0.85f);
+            pHansel->Position = glm::vec2(-0.1f, -0.85f);
+            pGretel->pacman = false;
+            pHansel->pacman = false;
         }
         else {
             pGretel->Position = glm::vec2(-0.5f, -0.85f);
             pHansel->Position = glm::vec2(0.75f, 0.76f);
             oscillate = true;
-            timer = timerDuration;
         }
 
     }
@@ -136,6 +139,9 @@ void ScoreState::LeaveState()
         DrawTeleportUnlocked = false;
     if (DrawMultiplayerUnlocked)
         DrawMultiplayerUnlocked = false;
+
+    pGretel->pacman = true;
+    pHansel->pacman = true;
 
     ost->stop();
 }
@@ -183,10 +189,29 @@ void ScoreState::ProcessInput()
     }
     else if (CurrentGame->GetLvl() >= 2) {
         if (CurrentGame->IsMultiplayer()) {
-            pGretel->Move(deltaTime);
-            pGretel->CheckCollisionWithSolids(solidsGretel);
-            pHansel->Move(deltaTime);
-            pHansel->CheckCollisionWithSolids(solidsHansel);
+            if (end)
+                return;
+            //piccolo delay iniziale
+            if (timer <= 0.0f) {
+                if (pGretel->velocity.x < pGretel->maxVelocityNPC.x)
+                    pGretel->velocity.x += 0.01f;
+                if (pHansel->velocity.x < pHansel->maxVelocityNPC.x)
+                    pHansel->velocity.x += 0.01f;
+            }
+            else
+                timer -= deltaTime;
+            bool GretelExit = pGretel->Position.x >= xtarget;
+            bool HanselExit = pHansel->Position.x >= xtarget;
+            if (!GretelExit) {
+                pGretel->Move(deltaTime);
+                pGretel->CheckCollisionWithSolids(solidsGretel);
+            }
+            if (!HanselExit) {
+                pHansel->Move(deltaTime);
+                pHansel->CheckCollisionWithSolids(solidsHansel);
+            }
+            if (GretelExit && HanselExit)
+                end = true;
         }
         else {
             pGretel->Move(deltaTime);
@@ -301,10 +326,8 @@ void ScoreState::Render()
     ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::NDC);
 
     pFloor->Render(*pSpriteShader);
-    if (CurrentGame->GetLvl() == 1 || (CurrentGame->GetLvl() >= 2 && !CurrentGame->IsMultiplayer())) {
-        pGretel->Render(*pSpriteShader);
-        pHansel->Render(*pSpriteShader);
-    }
+    pGretel->Render(*pSpriteShader);
+    pHansel->Render(*pSpriteShader);
 
     glEnable(GL_DEPTH_TEST);
 
