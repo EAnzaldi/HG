@@ -274,6 +274,11 @@ void PlayState::Reset()
     if (CurrentLevel[Multiplayer] > 2)
         return;
 
+    //Aggiorna lo stato delle modalità di gioco
+    Status[Multiplayer] = GameStatus::Playing;
+    if (Status[!Multiplayer] != GameStatus::None)
+        Status[!Multiplayer] = GameStatus::NotPlaying;
+
     glm::vec2 positions[8] = {
        {0.0f, -0.95f},//pavimento
        {-0.6f, -0.5f}, {0.6f, -0.5f},
@@ -876,7 +881,7 @@ void PlayState::MouseClick(double xpos, double ypos, int button, int action, int
 void PlayState::EnterState()
 {
     //End of the game
-    if (CurrentLevel[Multiplayer] == 3) {
+    if (Status[Multiplayer]==GameStatus::End) {
         ChangeState(ScoreState::GetInstance(Manager, Window, Engine));
         return;
     }

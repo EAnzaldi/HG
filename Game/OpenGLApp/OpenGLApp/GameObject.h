@@ -30,8 +30,8 @@ public:
 
     static FlatMesh* fmesh; //unica fmesh per tutti gli sprite
 
-    Model* model;
-    TextureObject* Texture;
+    Model* model = nullptr;
+    TextureObject* Texture = nullptr;
 
     glm::vec2 Position;
     glm::vec3 Size;
@@ -40,12 +40,12 @@ public:
     static const glm::vec3 axisY;
     static const glm::vec3 axisZ;
 
-    float Rotation;
+    float Rotation = 0.0f;
     glm::vec3 Axis = GameObject::axisY;
-    bool usePivot = false;
     glm::vec2 Pivot;
+    bool usePivot = false;
 
-    float FlipX;
+    float FlipX = 1.0f;
 
     bool RepeatWidth;
 

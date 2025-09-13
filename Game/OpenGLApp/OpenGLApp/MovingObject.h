@@ -29,7 +29,7 @@ public:
     //Oscillazione
     int totalSwings = 0;
     int nSwings = 0;
-    float targetSwings;
+    float targetSwings = 0;
 
     //Costruttore 3d
     MovingObject(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, glm::vec2 velocity, bool moveRight);

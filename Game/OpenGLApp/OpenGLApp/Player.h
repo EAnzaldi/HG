@@ -26,12 +26,12 @@ class Player : public MovingObject
         PlayerName name;
         const char* nameString;
 
-        bool isInvincible;           // Flag per indicare se il giocatore è invincibile
+        bool isInvincible = false;           // Flag per indicare se il giocatore è invincibile
         float invincibilityDuration; // Durata dell'invincibilità (in secondi)
         float invincibilityTimer;    // Timer corrente per l'invincibilità
 
         bool isDead = false;    //Player inizia vivo
-        int lives;
+        int lives = 0;
 
         float baseJumpForce = 1.5f;         // Forza iniziale del salto
 

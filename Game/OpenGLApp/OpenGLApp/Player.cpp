@@ -118,7 +118,7 @@ bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
     if (collision == Collision::None)
         return false;
 
-    printf("Before velocity: %f %f", this->velocity.x, this->velocity.y);
+    //printf("Before velocity: %f %f", this->velocity.x, this->velocity.y);
 
     MovingObject::HandleCollisionWithSolid(enemy, collision);
 
@@ -155,7 +155,7 @@ bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
         }
     }
 
-    printf("After velocity: %f %f", this->velocity.x, this->velocity.y);
+    //printf("After velocity: %f %f", this->velocity.x, this->velocity.y);
 
     return true;
 }

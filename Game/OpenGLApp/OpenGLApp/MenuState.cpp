@@ -348,7 +348,7 @@ void MenuState::SelectionChosen()
 
 	case RESUME:
 		if (CurrentGame->GetStatus() != GameStatus::None) {
-			if (CurrentGame->GetStatus() != GameStatus::Paused)
+			if (CurrentGame->GetStatus() != GameStatus::Paused && CurrentGame->GetStatus() != GameStatus::End)
 				CurrentGame->Reset();//Inizia nuovo livello
 			ChangeState(CurrentGame);
 		}

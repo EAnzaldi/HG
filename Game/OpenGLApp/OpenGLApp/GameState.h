@@ -12,7 +12,7 @@
 // forward declaration per evitare inclusioni circolari
 class StateManager;
 
-enum class GameStatus { None, Playing, Paused, GameOver, Victory, NotPlaying };
+enum class GameStatus { None, Playing, Paused, GameOver, Victory, NotPlaying, End };
 
 // Base class for the different states of the game.
 class GameState

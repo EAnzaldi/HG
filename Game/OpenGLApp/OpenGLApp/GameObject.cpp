@@ -7,13 +7,13 @@ const glm::vec3 GameObject::axisY = glm::vec3(0.0f, 1.0f, 0.0f);
 const glm::vec3 GameObject::axisZ = glm::vec3(0.0f, 0.0f, 1.0f);
 
 GameObject::GameObject(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth)
-    : Position(position), Size(size), Rotation(0.0f), model(model), Texture(nullptr), RepeatWidth(repeatWidth), FlipX(1.0f), Dimension(DimensionType::ThreeD)
+    : Position(position), Size(size), model(model), RepeatWidth(repeatWidth), Dimension(DimensionType::ThreeD)
 {
     // flag specifica se si voglia scalare la texture (consigliato=1 per piattaforme)
 }
 
 GameObject::GameObject(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth)
-    : Position(position), Size(size), Rotation(0.0f), model(nullptr), Texture(texture), RepeatWidth(repeatWidth), FlipX(1.0f), Dimension(DimensionType::TwoD)
+    : Position(position), Size(size), Texture(texture), RepeatWidth(repeatWidth), Dimension(DimensionType::TwoD)
 {
     if (!fmesh) fmesh = new FlatMesh();
 }

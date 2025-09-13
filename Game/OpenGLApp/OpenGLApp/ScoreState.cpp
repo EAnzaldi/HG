@@ -31,20 +31,10 @@ ScoreState::ScoreState(StateManager* manager, GLFWwindow* window, irrklang::ISou
     pLvls[1] = new GameObject(glm::vec2(SCR_WIDTH_F * 0.5f, SCR_HEIGHT_F * 0.85f), pLvlsTex[1]->getSize() * 1.06f, pLvlsTex[1], 0);
     pCandy = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.07f * SCR_WIDTH_F / 2.0f, 0.07f * SCR_HEIGHT_F / 2.0f * getAspect(Window), 0.1f), (TextureObject*) nullptr, 0);
     pSlime = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.13f * CurrentGame->pTexSlime->getAspect() * SCR_WIDTH_F / 2.0f, 0.13f * SCR_HEIGHT_F / 2.0f, 0.1f), CurrentGame->pTexSlime, 0);
-    pFloor = new GameObject(glm::vec2{ 0.0f, -0.95f }, glm::vec3{ 2.0f, 0.1f, 0.2f }, CurrentGame->pTexPlatforms, 1);
+    pFloor = new GameObject(glm::vec2(0.0f, -0.95f), glm::vec3{ 2.0f, 0.1f, 0.2f }, CurrentGame->pTexPlatforms, 1);
+
+    solidsGretel.emplace_back(pFloor);
     solidsHansel.emplace_back(pFloor);
-
-    pGretel = new Player(glm::vec2(-0.5f, -0.85f), glm::vec3(0.12f, 0.12f * getAspect(Window) * CurrentGame->pTexGretel->getAspect(), 0.1f), CurrentGame->pTexGretel, 0, PlayerName::Gretel, 3);
-    pHansel = new Player(glm::vec2(0.75f, 0.76f), glm::vec3(0.12f, 0.12f * getAspect(Window) * CurrentGame->pTexHansel->getAspect(), 0.1f), CurrentGame->pTexHansel, 0, PlayerName::Hansel, 3);
-
-    pCage = new MovingObject(glm::vec2(0.75f, 0.84f), glm::vec3(0.15f, 0.15f, 0.15f), pCageModel, 0, glm::vec2(0.0f, 0.0f), 0);
-    pivotCage = glm::vec2(0.0f, pCage->Size.y / 2.0f);
-    pivotHansel = pCage->Position + pivotCage - pHansel->Position;
-    pCage->SetRotation(4.0f, GameObject::axisZ, pivotCage, 0.25f);
-    pHansel->SetRotation(4.0f, GameObject::axisZ, pivotHansel, 0.25f);
-    pCage->totalSwings = pHansel->totalSwings = 2;
-    pCage->isOnGround = false;
-    pHansel->isOnGround = false;
 
     // Setup shader
     pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.5f));
@@ -81,8 +71,10 @@ ScoreState::~ScoreState()
     delete pCandy;
     delete pSlime;
 
-    delete pGretel;
-    delete pHansel;
+    if (pGretel != nullptr)
+        pGretel = nullptr;
+    if (pHansel != nullptr)
+        pHansel = nullptr;
 
     FT_Done_FreeType(ft);
 }
@@ -93,44 +85,63 @@ ScoreState* ScoreState::GetInstance(StateManager* manager, GLFWwindow* window, i
     return &Instance;
 }
 void ScoreState::EnterState()
-{       
-    solidsGretel.clear();
-    solidsGretel.emplace_back(pFloor);
+{   
+    // musica di sottofondo
+    ost = Engine->play2D("resources/sounds/tad_the_end_piano.mp3", true, false, true);
 
     timer = timerDuration;
+
+    if (CurrentGame->GetStatus() == GameStatus::End)
+        return;
+
+    pGretel = new Player(glm::vec2(0.0f, 0.0f), glm::vec3(0.12f, 0.12f * getAspect(Window) * CurrentGame->pTexGretel->getAspect(), 0.1f), CurrentGame->pTexGretel, 0, PlayerName::Gretel, 3);
+    pHansel = new Player(glm::vec2(0.0f, 0.0f), glm::vec3(0.12f, 0.12f * getAspect(Window) * CurrentGame->pTexHansel->getAspect(), 0.1f), CurrentGame->pTexHansel, 0, PlayerName::Hansel, 3);
+    pCage = new MovingObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.15f, 0.15f, 0.15f), pCageModel, 0, glm::vec2(0.0f, 0.0f), 0);
 
     if (CurrentGame->GetLvl() == 1) {
         if (CurrentGame->IsMultiplayer()) {
             pGretel->Position = glm::vec2(-0.05f, -0.85f);
-            pHansel->Position = glm::vec2(0.05f, -0.85f);
+            pHansel->Position = glm::vec2(0.05f, -0.85f);            
         }
         else {
             pGretel->Position = glm::vec2(-0.5f, -0.85f);
             pHansel->Position = glm::vec2(0.75f, 0.76f);
-            solidsGretel.emplace_back(pCage);
-            //Unlock
+            pCage->Position = glm::vec2(0.75f, 0.84f);
+            pCage->isOnGround = false;
+            pHansel->isOnGround = false;
             if (!PlayState::TeleportUnlocked)
                 PlayState::TeleportUnlocked = DrawTeleportUnlocked = true;
         }
 
     }
-    else if (CurrentGame->GetLvl() >= 2) {
+    else if (CurrentGame->GetLvl() == 2) {
         if (CurrentGame->IsMultiplayer()) {
             pGretel->Position = glm::vec2(0.1f, -0.85f);
             pHansel->Position = glm::vec2(-0.1f, -0.85f);
             pGretel->pacman = false;
             pHansel->pacman = false;
+            end = false;
         }
         else {
             pGretel->Position = glm::vec2(-0.5f, -0.85f);
             pHansel->Position = glm::vec2(0.75f, 0.76f);
+            pCage->Position = glm::vec2(0.75f, 0.84f);
+            pHansel->isOnGround = false;
+            pCage->isOnGround = false;
+            //Rotazione attorno al gancio della gabbia
+            pivotCage = glm::vec2(0.0f, pCage->Size.y / 2.0f);
+            pivotHansel = pCage->Position + pivotCage - pHansel->Position;
+            pCage->SetRotation(4.0f, GameObject::axisZ, pivotCage, 0.25f);
+            pHansel->SetRotation(4.0f, GameObject::axisZ, pivotHansel, 0.25f);
+            pCage->totalSwings = pHansel->totalSwings = 2;
+            //Reset parametri di sincronizzazione
+            nPauses = 0;
             oscillate = true;
+            HanselFree = false;
+            cageFall = false;
         }
 
     }
-
-    // musica di sottofondo
-    ost = Engine->play2D("resources/sounds/tad_the_end_piano.mp3", true, false, true);
 }
 
 void ScoreState::LeaveState()
@@ -140,8 +151,20 @@ void ScoreState::LeaveState()
     if (DrawMultiplayerUnlocked)
         DrawMultiplayerUnlocked = false;
 
-    pGretel->pacman = true;
-    pHansel->pacman = true;
+    if (CurrentGame->GetStatus() != GameStatus::End) {
+        if (pGretel != nullptr) {
+             pGretel;
+            pGretel = nullptr;
+        }
+        if (pHansel != nullptr) {
+            delete pHansel;
+            pHansel = nullptr;
+        }
+        if (pCage != nullptr) {
+            delete pCage;
+            pCage = nullptr;
+        }
+    }
 
     ost->stop();
 }
@@ -187,7 +210,7 @@ void ScoreState::ProcessInput()
         }
 
     }
-    else if (CurrentGame->GetLvl() >= 2) {
+    else if (CurrentGame->GetLvl() == 2) {
         if (CurrentGame->IsMultiplayer()) {
             if (end)
                 return;
@@ -288,14 +311,14 @@ void ScoreState::ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned i
 }
 void ScoreState::MouseClick(double xpos, double ypos, int button, int action, int mods)
 {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        if(CurrentGame->GetLvl() < 3 )
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) { 
+        if (CurrentGame->GetLvl() < 2) {
             CurrentGame->CurrentLevel[CurrentGame->IsMultiplayer()]++;
-        if (CurrentGame->CurrentLevel[CurrentGame->IsMultiplayer()] < 3) {
             ChangeState(CurrentGame);
             CurrentGame->Reset();//Inizia nuovo livello
         }
         else {
+            CurrentGame->Status[CurrentGame->IsMultiplayer()] = GameStatus::End;
             ChangeState(MenuState::GetInstance(Manager, Window, Engine));
         }
     }
@@ -335,7 +358,7 @@ void ScoreState::Render()
 
     //Oggetti 3D
     //--------------------------------------------------------------------------------
-    if (!CurrentGame->IsMultiplayer() && !HanselFree) {
+    if (!CurrentGame->IsMultiplayer() && (CurrentGame->GetLvl() == 1 || (CurrentGame->GetLvl() == 2 && !HanselFree))) {
         pCage->Render(*pEnlightenedShader);
     }
 

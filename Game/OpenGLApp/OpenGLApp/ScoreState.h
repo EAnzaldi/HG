@@ -57,14 +57,14 @@ private:
     Player* pHansel = nullptr;
 
     // Gestione frame
-    double lastFrame;
-    double deltaTime;
+    double lastFrame = 0.0f;
+    double deltaTime = 0.0f;
 
     //Animazione gabbia
-    glm::vec2 pivotCage;
-    glm::vec2 pivotHansel;
+    glm::vec2 pivotCage = glm::vec2(0.0f, 0.0f);
+    glm::vec2 pivotHansel = glm::vec2(0.0f, 0.0f);
 
-    bool oscillate = false;
+    bool oscillate = true;
     int nPauses = 0;
     bool HanselFree = false;
     bool cageFall = false;
@@ -77,7 +77,7 @@ private:
     float timer = 0.0f;
 
     //Sound
-    irrklang::ISound* ost;
+    irrklang::ISound* ost = nullptr;
 
     FT_Library ft;
 
