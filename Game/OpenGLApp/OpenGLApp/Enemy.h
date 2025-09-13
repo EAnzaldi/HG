@@ -24,8 +24,6 @@ public:
     //Costruttore 2d
     Enemy(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight, EnemyType type);
 
-    //void HandleCollisionWithSolid(GameObject* solidObject) override;
-
     void Move(float deltaTime) override;
 
     static void SpeedUp(float amount);

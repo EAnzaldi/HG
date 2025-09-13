@@ -82,7 +82,5 @@ private:
     irrklang::ISound* ost = nullptr;
 
     FT_Library ft;
-
-    Camera* pCamera;
 };
 

@@ -63,30 +63,10 @@ static glm::vec3 sizeCauldron = { 0.1f, 0.1f, 0.1f };*/
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
     : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), pGretel(nullptr), pHansel(nullptr)
 {
-    //int fbWidth, fbHeight;
-    //glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
-
-    pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.5f));
-
     // Initializza FreeType
     if (FT_Init_FreeType(&ft)) {
         std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
     }
-
-    /*
-    for (int i = 0; i < 8; i++) {
-        float x_ndc, y_ndc, x_pixel, y_pixel;
-        x_ndc = positions[i].x;
-        y_ndc = positions[i].y;
-        x_pixel = (x_ndc + 1.0f) * 0.5f * fbWidth;
-        y_pixel = fbHeight - ((y_ndc + 1.0f) * 0.5f * fbHeight);
-        positionsTest[i] = { x_pixel, y_pixel };
-        x_pixel = sizes[i].x * (fbWidth / 2.0f);
-        y_pixel = sizes[i].y * (fbHeight / 2.0f);
-        sizesTest[i] = { x_pixel, y_pixel, 0.1f };
-
-        //positionsTest[i] = { x_ndc, y_ndc };
-    }*/
 
     CurrentLevel[0] = CurrentLevel[1] = StartLevel;
     Status[0] = Status[1] = GameStatus::None;
@@ -146,74 +126,6 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     for (int i = 0; i < std::min(pCandiesMesh.size(), pCandyTypes.size()); i++)
         printf("%s\t%s\n", pCandyTypes[i]->Print(), pCandiesMesh[i]->Path);
     #endif
- 
-    /*
-    for (int i = 0; i < std::min(pCandiesMesh.size(), pCandyTypes.size()); i++) {
-        typeToTextureMap.emplace(pCandyTypes[i], pCandiesMesh[i]);
-    }
-   
-    for (auto& it : typeToTextureMap) {
-        CandyType* type = it.first;
-        TextureObject* texture = it.second;
-        printf("%s %d", texture->Path, type->effect);
-    }
-    printf("\n");*/
-
-    //pBackground = new GameObject(glm::vec2(0.0f, 0.0f), glm::vec3(1.5f, 1.5f, 1.5f), pTexBackground, 0);
-
-    glm::mat4 projection2 = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH_F), 0.0f, static_cast<float>(SCR_HEIGHT_F));//left, right, bottom, top
-
-    float left = -1.0f;   // Puoi modificare questi valori per adattarli alla tua scena
-    float right = 1.0f;
-    float bottom = -1.0f;
-    float top = 1.0f;
-
-    glm::mat4 projectionNDC = glm::ortho(left, right, bottom, top);
-    glm::mat4 projectionPixels = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH_F), 0.0f, static_cast<float>(SCR_HEIGHT_F));//left, right, bottom, top
-
-    glm::mat4 view = pCamera->GetViewMatrix();
-
-    // setup delle uniform delle shader che non cambieranno nel ciclo di rendering
-    // Shader base
-    pShader->use();
-    pShader->setMat4("projection", projectionNDC);
-    pShader->setMat4("view", view);
-
-    // Shader sprite
-    pSpriteShader->use();
-    pSpriteShader->setMat4("projection", projectionNDC);
-    pSpriteShader->setMat4("view", view);
-
-    //Shader per materiale metallico
-    pEnlightenedShader->use();
-    pEnlightenedShader->setMat4("projection", projectionNDC);
-    pEnlightenedShader->setMat4("view", view);
-
-    pEnlightenedShader->setVec3("viewPos", pCamera->Position);
-
-    
-    glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
-    glm::vec3 lightPosition(0.0f, -0.0f, 2.0f);
-    //glm::vec3 lightPosition(0.0f, -0.75f, 1.2f);
-
-   
-    ShaderManager::SetMaterial(*pEnlightenedShader, ShaderManager::Silver);
-    ShaderManager::SetLight(*pEnlightenedShader, lightPosition, lightColor);
-   
-    /*
-    // valori per materiale dorato
-    pEnlightenedShader->setVec3("material.ambient", glm::vec3(0.24725f, 0.1995f, 0.0745f));
-    pEnlightenedShader->setVec3("material.diffuse", glm::vec3(0.75164f, 0.60648f, 0.22648f));
-    pEnlightenedShader->setVec3("material.specular", glm::vec3(0.628281f, 0.555802f, 0.366065f));
-    pEnlightenedShader->setFloat("material.shininess", 128.0f * 0.4f);
-
-    // posizione fonte di luce
-    pEnlightenedShader->setVec3("light.position", lightPosition);
-
-    // parametri luce
-    pEnlightenedShader->setVec3("light.ambient", lightColor * glm::vec3(0.3f));
-    pEnlightenedShader->setVec3("light.diffuse", lightColor * glm::vec3(0.6f));
-    pEnlightenedShader->setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f)); */
 
     // cattura il tempo iniziale di gioco
     startTime = glfwGetTime();
@@ -804,6 +716,10 @@ void PlayState::EnterState()
     }
         
     Mouse->Hide();
+
+    //Shader per materiale metallico
+    ShaderManager::SetProjection(*pEnlightenedShader, Window, ProjectionType::NDC);
+    ShaderManager::SetMaterial(*pEnlightenedShader, ShaderManager::Silver);
 
     // musica di sottofondo
     ost = Engine->play2D("resources/sounds/kim_lightyear_angel_eyes_piano_version.wav", true, false, true);

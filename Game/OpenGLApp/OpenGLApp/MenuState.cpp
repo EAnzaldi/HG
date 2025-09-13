@@ -19,8 +19,6 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 
 	CurrentGame = PlayState::GetInstance(Manager, Window, Engine);
 
-	//int fbWidth, fbHeight;
-	//glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
 	pBackground = new TextureObject("resources/textures/background2.png");
 	pBackgroundObj = new GameObject(glm::vec2(SCR_WIDTH_F /2, SCR_HEIGHT_F/2), pBackground->getSize()/1.25f, pBackground, 0);
 
@@ -51,17 +49,6 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 	pMenuNoGame = new TextureObject("resources/textures/resume_game_dark.png");;
 	pMenuNoGameObj = new GameObject(glm::vec2(offset_x + pMenuNoGame->getWidth() / 2.5f, pos_center_y), pMenuNoGame->getSize() / 1.25f, pMenuNoGame, 0);;
 
-
-	//Cerco il centro del menu
-	/*
-	float pos_center_x=-1;
-	for (GameObject* pm : pMenuObj) {
-		float pos_x = pm->Position.x;
-		if (pos_x > pos_center_x) {
-			pos_center_x = pos_x;
-		}
-	}*/
-
 	//menu choice singleplayer-multiplayer
 	pMenuMod[0] = new TextureObject("resources/textures/gretel_only.png");
 	pMenuMod[1] = new TextureObject("resources/textures/gretel_with_hansel.png");
@@ -71,34 +58,6 @@ MenuState::MenuState(StateManager* manager, GLFWwindow* window, irrklang::ISound
 	pArrowObj[0] = new GameObject(glm::vec2(1200.0f, pos_center_y + space_y * 2), pArrow->getSize()/8.0f, pArrow, 0);
 	pArrowObj[1] = new GameObject(glm::vec2(1200.0f, pos_center_y + space_y * 2), pArrow->getSize()/8.0f, pArrow, 0);
 	pArrowObj[1]->FlipX = -1;
-
-	//pTest = new FlatMesh("resources/textures/awesomeface.png");
-	//pTestObj = new GameObject(glm::vec2(0.0f, 0.0f), pTest->getSize(), pTest, 0);
-
-    // setup delle uniform delle shader che non cambieranno nel ciclo di rendering
-	float left = -1.0f;   // Puoi modificare questi valori per adattarli alla tua scena
-	float right = 1.0f;
-	float bottom = -1.0f;
-	float top = 1.0f;
-
-	pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.5f));
-
-	glm::mat4 projectionNDC = glm::ortho(left, right, bottom, top);
-	/*glm::mat4 projection = glm::ortho(0.0f, SCR_WIDTH_F, 0.0f, SCR_HEIGHT_F);//left, right, bottom, top*/
-	glm::mat4 projectionPixels = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH_F), 0.0f, static_cast<float>(SCR_HEIGHT_F));//left, right, bottom, top
-
-	glm::mat4 view = pCamera->GetViewMatrix();
-
-	// setup delle uniform delle shader che non cambieranno nel ciclo di rendering
-	// Shader base
-	pShader->use();
-	pShader->setMat4("projection", projectionPixels);
-	pShader->setMat4("view", view);
-
-	pSpriteShader->use();
-	pSpriteShader->setMat4("projection", projectionPixels);
-	pSpriteShader->setMat4("view", view);
-
 }
 
 MenuState::~MenuState() {
@@ -306,6 +265,9 @@ void MenuState::EnterState()
 	// Checks whether there is a current game active
 	CurrentSelection = NEW;
 	canPressEnter = false;
+
+	// Shader base
+	ShaderManager::SetProjection(*pShader, Window, ProjectionType::Pixels);
 
 	// musica di sottofondo
 	ost = Engine->play2D("resources/sounds/ost.wav", true, false, true);

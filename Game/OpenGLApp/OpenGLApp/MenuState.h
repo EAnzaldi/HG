@@ -43,13 +43,10 @@ private:
 	// The player validated the current selection
 	void SelectionChosen();
 
-	// 
-	// of the current selected menu item
+	// Current selected menu item
 	int CurrentSelection;
 
-	//FlatMesh* fmesh; //unica mesh quadrata per sprite
-
-	// A pointer to the current active game (if any).
+	// A pointer to the current active game (if any)
 	PlayState* CurrentGame;
 
 	// The background image
@@ -69,21 +66,8 @@ private:
 	GameObject* pMenuModObj[2];
 	GameObject* pArrowObj[2];
 
-	/*
-	FlatMesh* pTest;
-	GameObject* pTestObj;
-	
-	TextureObject* pTitleTex;
-	Model* pTitleModel;
-	GameObject* pTitleObj;
-	TextObject* pTextNormal;
-	TextObject* pTitle;
-	*/
-
 	//Sound
 	irrklang::ISound* ost;
 
 	FT_Library ft;
-
-	Camera* pCamera;
 };

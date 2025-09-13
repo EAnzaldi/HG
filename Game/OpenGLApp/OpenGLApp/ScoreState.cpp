@@ -35,26 +35,6 @@ ScoreState::ScoreState(StateManager* manager, GLFWwindow* window, irrklang::ISou
 
     solidsGretel.emplace_back(pFloor);
     solidsHansel.emplace_back(pFloor);
-
-    // Setup shader
-    pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.5f));
-    glm::mat4 view = pCamera->GetViewMatrix();
-    pSpriteShader->use();
-    pSpriteShader->setMat4("view", view);
-    pShader->use();
-    pShader->setMat4("view", view);
-
-    //Shader per materiale metallico
-    pEnlightenedShader->use();
-    pEnlightenedShader->setMat4("view", view);
-    pEnlightenedShader->setVec3("viewPos", pCamera->Position);
-
-    glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
-    glm::vec3 lightPosition(0.0f, -0.0f, 2.0f);
-
-    ShaderManager::SetProjection(*pEnlightenedShader, Window, ProjectionType::NDC);
-    ShaderManager::SetMaterial(*pEnlightenedShader, ShaderManager::Silver);
-    ShaderManager::SetLight(*pEnlightenedShader, lightPosition, lightColor);
 }
 
 ScoreState::~ScoreState()
@@ -88,6 +68,10 @@ ScoreState* ScoreState::GetInstance(StateManager* manager, GLFWwindow* window, i
 }
 void ScoreState::EnterState()
 {   
+    //Shader per materiale metallico
+    ShaderManager::SetProjection(*pEnlightenedShader, Window, ProjectionType::NDC);
+    ShaderManager::SetMaterial(*pEnlightenedShader, ShaderManager::Silver);
+
     // musica di sottofondo
     ost = Engine->play2D("resources/sounds/tad_the_end_piano.mp3", true, false, true);
 

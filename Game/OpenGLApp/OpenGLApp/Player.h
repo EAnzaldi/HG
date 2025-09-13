@@ -56,8 +56,6 @@ class Player : public MovingObject
 
         bool CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine);   
 
-        //bool CheckCandyCollision(Candy* candy, irrklang::ISoundEngine* engine);
-
         Candy* CheckCollisionWithCandies(const std::vector<Candy*>& candies);
         std::string EatCandy(CandyType type, irrklang::ISoundEngine* engine);
 

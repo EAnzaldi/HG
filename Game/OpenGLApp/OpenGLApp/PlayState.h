@@ -125,8 +125,6 @@ private:
 
 	int nKeys;
 
-	Camera* pCamera;
-
 	FT_Library ft;
 
 	// Gestione frame

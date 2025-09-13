@@ -5,6 +5,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <irrKlang.h>
+
+#include "Camera.h"
 #include "ShaderManager.h"
 #include "MouseObject.h"
 #include "TextureObject.h"
@@ -45,8 +47,9 @@ public:
 	Shader* pShader;
 	Shader* pTextShader;
 	Shader* pEnlightenedShader;
-	//Shader* pEnlightenedTexturedShader;
 	Shader* pSpriteShader;
+
+
 
 protected:
 	// Helper function to switch to a new active state
@@ -58,4 +61,8 @@ protected:
 
 	MouseObject* Mouse;
 	//GameObject* Mouse;
+
+	static Camera* pCamera;
+	static const glm::vec3 lightColor;
+	static const glm::vec3 lightPosition;
 };

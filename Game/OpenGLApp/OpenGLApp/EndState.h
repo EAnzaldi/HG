@@ -57,8 +57,6 @@ private:
 
     FT_Library ft;
 
-    Camera* pCamera;
-
     // Gestione frame
     double lastFrame;
     double deltaTime;

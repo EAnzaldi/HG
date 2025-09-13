@@ -14,15 +14,6 @@ EndState::EndState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEn
 
     pText = new TextObject(ft, "resources/fonts/8-bit-operator/8bitOperatorPlus8-Regular.ttf");
 
-    pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.5f));
-    glm::mat4 view = pCamera->GetViewMatrix();
-
-    pSpriteShader->use();
-    pSpriteShader->setMat4("view", view);
-
-    pShader->use();
-    pShader->setMat4("view", view);
-
     //int fbWidth, fbHeight;
     //glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
     pBackgroundTex = new TextureObject("resources/textures/game_over3.png");
