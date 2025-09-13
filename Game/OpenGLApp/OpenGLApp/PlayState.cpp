@@ -264,34 +264,35 @@ void PlayState::Reset()
         pProbabilities.clear();
     if (TeleportUnlocked == false) {
         //NoJump, Speed, SpeedEnemy, Invincibility, Teleport
-
+        #if DB_TELEP
+        pProbabilities.emplace_back(0);
+        pProbabilities.emplace_back(0);
+        pProbabilities.emplace_back(0);
+        pProbabilities.emplace_back(0);
+        pProbabilities.emplace_back(100);
+        #else
         pProbabilities.emplace_back(25);
         pProbabilities.emplace_back(25);
         pProbabilities.emplace_back(25);
         pProbabilities.emplace_back(25);
         pProbabilities.emplace_back(0);// Teleport non sbloccata
-        /*
+        #endif
+    }
+    else {
+        
+        #if DB_TELEP
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(0);
         pProbabilities.emplace_back(100);
-        */
-    }
-    else {
-        
+        #else
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(21);
         pProbabilities.emplace_back(16);// Teleport è più rara
-        /*
-        pProbabilities.emplace_back(0);
-        pProbabilities.emplace_back(0);
-        pProbabilities.emplace_back(0);
-        pProbabilities.emplace_back(0);
-        pProbabilities.emplace_back(100);
-        */
+        #endif
     }
 
     /*
@@ -441,7 +442,7 @@ void PlayState::ProcessInput()
         ProcessInputPlayer(pHansel, GLFW_KEY_UP, GLFW_KEY_DOWN, GLFW_KEY_LEFT, GLFW_KEY_RIGHT);
         pHansel->Move(deltaTime);
         pHansel->CheckCollisionWithSolids(platforms);
-        if (nKeys < TOTKEYS && CurrentLevel[Multiplayer] == 2 && nKeys > 0 && pHansel->CheckCollision(pKeys[Multiplayer]) != MovingObject::Collision::None) {
+        if (nKeys < TOTKEYS && CurrentLevel[Multiplayer] == 2 && pHansel->CheckCollision(pKeys[Multiplayer]) != MovingObject::Collision::None) {
             Engine->play2D("resources/sounds/key_pickup.wav");
             nKeys++;
             if (nKeys == TOTKEYS)
