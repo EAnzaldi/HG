@@ -91,6 +91,11 @@ void ScoreState::EnterState()
 
     timer = timerDuration;
 
+    if (DrawTeleportUnlocked && (CurrentGame->GetLvl() != 1 || CurrentGame->IsMultiplayer()))
+        DrawTeleportUnlocked = false;
+    if (DrawMultiplayerUnlocked && (CurrentGame->GetLvl() != 2 || CurrentGame->IsMultiplayer()))
+        DrawMultiplayerUnlocked = false;
+
     if (CurrentGame->GetStatus() == GameStatus::End)
         return;
 
@@ -101,7 +106,8 @@ void ScoreState::EnterState()
     if (CurrentGame->GetLvl() == 1) {
         if (CurrentGame->IsMultiplayer()) {
             pGretel->Position = glm::vec2(-0.05f, -0.85f);
-            pHansel->Position = glm::vec2(0.05f, -0.85f);            
+            pHansel->Position = glm::vec2(0.05f, -0.85f);
+            end = true;
         }
         else {
             pGretel->Position = glm::vec2(-0.5f, -0.85f);
@@ -111,6 +117,7 @@ void ScoreState::EnterState()
             pHansel->isOnGround = false;
             if (!PlayState::TeleportUnlocked)
                 PlayState::TeleportUnlocked = DrawTeleportUnlocked = true;
+            end = true;
         }
 
     }
@@ -139,6 +146,7 @@ void ScoreState::EnterState()
             oscillate = true;
             HanselFree = false;
             cageFall = false;
+            end = false;
         }
 
     }
@@ -146,11 +154,6 @@ void ScoreState::EnterState()
 
 void ScoreState::LeaveState()
 {
-    if (DrawTeleportUnlocked)
-        DrawTeleportUnlocked = false;
-    if (DrawMultiplayerUnlocked)
-        DrawMultiplayerUnlocked = false;
-
     if (CurrentGame->GetStatus() != GameStatus::End) {
         if (pGretel != nullptr) {
              pGretel;
@@ -179,7 +182,7 @@ void ScoreState::ProcessInput()
 
     lastFrame = currentFrame;
 
-    if (glfwGetKey(Window, GLFW_KEY_ENTER) == GLFW_PRESS) {
+    if (end && glfwGetKey(Window, GLFW_KEY_ENTER) == GLFW_PRESS) {
         CurrentGame->CurrentLevel[CurrentGame->IsMultiplayer()]++;
         if (CurrentGame->CurrentLevel[CurrentGame->IsMultiplayer()] < 3) {
             ChangeState(CurrentGame);
@@ -254,6 +257,7 @@ void ScoreState::ProcessInput()
                     if (!PlayState::MultiplayerUnlocked) {
                         PlayState::MultiplayerUnlocked = DrawMultiplayerUnlocked = true;
                     }
+                    end = true;
                 }              
             }
             if (HanselFree)
@@ -311,7 +315,10 @@ void ScoreState::ProcessInputPlayer(Player* pPlayer, unsigned int UP, unsigned i
 }
 void ScoreState::MouseClick(double xpos, double ypos, int button, int action, int mods)
 {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) { 
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        //Assicurarsi di uscire in uno stato stabile
+        if (end == false)
+            return;
         if (CurrentGame->GetLvl() < 2) {
             CurrentGame->CurrentLevel[CurrentGame->IsMultiplayer()]++;
             ChangeState(CurrentGame);
@@ -320,7 +327,7 @@ void ScoreState::MouseClick(double xpos, double ypos, int button, int action, in
         else {
             CurrentGame->Status[CurrentGame->IsMultiplayer()] = GameStatus::End;
             ChangeState(MenuState::GetInstance(Manager, Window, Engine));
-        }
+        }        
     }
 
 }

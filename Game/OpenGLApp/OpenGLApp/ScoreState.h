@@ -71,6 +71,8 @@ private:
 
     //Animazione uscita
     float xtarget = 1.1f;
+    
+    //Segnala che si è in uno stato sicuro dell'animazione
     bool end = false;
 
     const float timerDuration = 0.5f;
