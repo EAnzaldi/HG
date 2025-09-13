@@ -1,21 +1,23 @@
 #include "GameObject.h"
 
-FlatMesh* GameObject::fmesh = nullptr;
-
 const glm::vec3 GameObject::axisX = glm::vec3(1.0f, 0.0f, 0.0f);
 const glm::vec3 GameObject::axisY = glm::vec3(0.0f, 1.0f, 0.0f);
 const glm::vec3 GameObject::axisZ = glm::vec3(0.0f, 0.0f, 1.0f);
 
-GameObject::GameObject(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth)
-    : Position(position), Size(size), model(model), RepeatWidth(repeatWidth), Dimension(DimensionType::ThreeD)
+GameObject::GameObject(glm::vec2 position, glm::vec3 size, Model* model)
+    : Position(position), Size(size), model(model), Dimension(DimensionType::ThreeD)
 {
-    // flag specifica se si voglia scalare la texture (consigliato=1 per piattaforme)
+
 }
 
 GameObject::GameObject(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth)
     : Position(position), Size(size), Texture(texture), RepeatWidth(repeatWidth), Dimension(DimensionType::TwoD)
 {
-    if (!fmesh) fmesh = new FlatMesh();
+    // flag specifica se si voglia scalare la texture (consigliato=1 per piattaforme)
+    if (RepeatWidth)
+        fmesh = new FlatMesh(size.x * 10.0f, 1.0f);
+    else
+        fmesh = new FlatMesh();
 }
 
 void GameObject::Render(const Shader& shader) const
@@ -61,11 +63,12 @@ void GameObject::Render3D(const Shader& shader) const
 
 void GameObject::Render2D(const Shader& shader) const
 {
+    /*
     if (RepeatWidth)
         shader.setVec2("textureReps", glm::vec2(Size.x * 10.0f, 1.0f));
     else
         shader.setVec2("textureReps", glm::vec2(1.0f, 1.0f));
-
+    */
     fmesh->Draw(shader, Texture->TextureID);
 }
 Hitbox GameObject::GetHitbox() const

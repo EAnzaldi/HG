@@ -20,7 +20,7 @@ public:
     int getLives() { return lives; };
  
     //Costruttore 3d
-    Enemy(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, glm::vec2 velocity, bool moveRight, EnemyType type);
+    Enemy(glm::vec2 position, glm::vec3 size, Model* model, glm::vec2 velocity, bool moveRight, EnemyType type);
     //Costruttore 2d
     Enemy(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight, EnemyType type);
 

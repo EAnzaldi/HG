@@ -18,23 +18,16 @@ public:
     //TextureObject texture;
 
     // constructor
-    //FlatMesh(const char* path);
     FlatMesh();
+    FlatMesh(float xrepeat, float yrepeat);
 
     // render the mesh
     void Draw(const Shader& shader, unsigned int textureID) const;
 
-    // get sprite size
-    //glm::vec3 getSize();
-    //float getWidth();
-    //float getHeigth();
+    void setupMesh(float xrepeat, float yrepeat);
 
 private:
     // render data 
-    static unsigned int VAO;
-    static unsigned int VBO;
-    static bool initialized;
-
-    // initializes all the buffer objects/arrays
-    static void setupMesh();
+    unsigned int VAO = 0;
+    unsigned int VBO = 0;
 };

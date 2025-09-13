@@ -16,8 +16,12 @@ EndState::EndState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEn
 
     pCamera = new Camera(glm::vec3(0.0f, 0.0f, 0.5f));
     glm::mat4 view = pCamera->GetViewMatrix();
+
     pSpriteShader->use();
     pSpriteShader->setMat4("view", view);
+
+    pShader->use();
+    pShader->setMat4("view", view);
 
     //int fbWidth, fbHeight;
     //glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
@@ -87,9 +91,6 @@ void EndState::ProcessEvents() {
     if (oscillate) {
         oscillate = pWitch->Oscillate(deltaTime);
     }
-    else {
-
-    }
 }
 void EndState::MouseClick(double xpos, double ypos, int button, int action, int mods)
 {
@@ -112,12 +113,12 @@ void EndState::Render()
 
     glDisable(GL_DEPTH_TEST);
 
-    ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::Pixels);
-    pBackground->Render(*pSpriteShader);
+    ShaderManager::SetProjection(*pShader, Window, ProjectionType::Pixels);
+    pBackground->Render(*pShader);
 
 
-    //ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::NDC);
-    pWitch->Render(*pSpriteShader);
+    //ShaderManager::SetProjection(*pShader, Window, ProjectionType::NDC);
+    pWitch->Render(*pShader);
 
     glEnable(GL_DEPTH_TEST);
 

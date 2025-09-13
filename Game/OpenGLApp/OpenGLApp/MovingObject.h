@@ -32,7 +32,7 @@ public:
     float targetSwings = 0;
 
     //Costruttore 3d
-    MovingObject(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, glm::vec2 velocity, bool moveRight);
+    MovingObject(glm::vec2 position, glm::vec3 size, Model* model, glm::vec2 velocity, bool moveRight);
     //Costruttore 2d
     MovingObject(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, glm::vec2 velocity, bool moveRight);
 

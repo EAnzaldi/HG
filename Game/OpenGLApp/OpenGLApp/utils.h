@@ -7,6 +7,8 @@
 
 //0 = no print, 1 = debug print
 #define DEBUG 0
+
+#define REPEAT 1
  
 // screen's settings
 //static const unsigned int SCR_WIDTH = 1600;

@@ -25,7 +25,9 @@ public:
     CandyType GetType() { return type; }
     EffectType GetEffect() { return type.effect; }
 
-    Candy(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, CandyType type);
+    Candy(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool 
+        
+        Width, CandyType type);
 
     void Move(float deltaTime) override;
     void Render(const Shader& Shader) const override;

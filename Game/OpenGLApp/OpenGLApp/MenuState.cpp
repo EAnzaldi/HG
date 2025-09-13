@@ -242,22 +242,22 @@ void MenuState::Render()
 	//pTitle->Render(*pTextShader, "Hansel + Gretel", SCR_WIDTH / 8, 1000.0f, 3.0f, TitleColor);
 	//pTitleObj->Render(*pShader);
 
-	pBackgroundObj->Render(*pSpriteShader);
+	pBackgroundObj->Render(*pShader);
 
 	glDisable(GL_DEPTH_TEST);//evita di considerare la profondità delle sprite
 
 	if (PlayState::MultiplayerUnlocked) {
-		pMenuModObj[CurrentGame->IsMultiplayer()]->Render(*pSpriteShader);
-		pArrowObj[CurrentGame->IsMultiplayer()]->Render(*pSpriteShader);
+		pMenuModObj[CurrentGame->IsMultiplayer()]->Render(*pShader);
+		pArrowObj[CurrentGame->IsMultiplayer()]->Render(*pShader);
 	}
 
 	for (int i = 0; i < 3; i++)
 		if (i == 1 && CurrentGame->GetStatus() == GameStatus::None)
-			pMenuNoGameObj->Render(*pSpriteShader);
+			pMenuNoGameObj->Render(*pShader);
 		else if(CurrentSelection!=i)
-			pMenuObj[i]->Render(*pSpriteShader);
+			pMenuObj[i]->Render(*pShader);
 		else
-			pMenuSelObj[i]->Render(*pSpriteShader);
+			pMenuSelObj[i]->Render(*pShader);
 
 	//pTestObj->RenderFlat(*pSpriteShader);
 

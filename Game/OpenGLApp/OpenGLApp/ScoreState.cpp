@@ -41,6 +41,8 @@ ScoreState::ScoreState(StateManager* manager, GLFWwindow* window, irrklang::ISou
     glm::mat4 view = pCamera->GetViewMatrix();
     pSpriteShader->use();
     pSpriteShader->setMat4("view", view);
+    pShader->use();
+    pShader->setMat4("view", view);
 
     //Shader per materiale metallico
     pEnlightenedShader->use();
@@ -101,7 +103,7 @@ void ScoreState::EnterState()
 
     pGretel = new Player(glm::vec2(0.0f, 0.0f), glm::vec3(0.12f, 0.12f * getAspect(Window) * CurrentGame->pTexGretel->getAspect(), 0.1f), CurrentGame->pTexGretel, 0, PlayerName::Gretel, 3);
     pHansel = new Player(glm::vec2(0.0f, 0.0f), glm::vec3(0.12f, 0.12f * getAspect(Window) * CurrentGame->pTexHansel->getAspect(), 0.1f), CurrentGame->pTexHansel, 0, PlayerName::Hansel, 3);
-    pCage = new MovingObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.15f, 0.15f, 0.15f), pCageModel, 0, glm::vec2(0.0f, 0.0f), 0);
+    pCage = new MovingObject(glm::vec2(0.0f, 0.0f), glm::vec3(0.15f, 0.15f, 0.15f), pCageModel, glm::vec2(0.0f, 0.0f), 0);
 
     if (CurrentGame->GetLvl() == 1) {
         if (CurrentGame->IsMultiplayer()) {
@@ -347,17 +349,17 @@ void ScoreState::Render()
 
     //Oggetti con coordinate pixel
     //--------------------------------------------------------------------------------
-    ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::Pixels);
+    ShaderManager::SetProjection(*pShader, Window, ProjectionType::Pixels);
 
     RenderStats();
 
     //Oggetti con coordinate NDC
     //--------------------------------------------------------------------------------
-    ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::NDC);
+    ShaderManager::SetProjection(*pShader, Window, ProjectionType::NDC);
 
-    pFloor->Render(*pSpriteShader);
-    pGretel->Render(*pSpriteShader);
-    pHansel->Render(*pSpriteShader);
+    pFloor->Render(*pShader);
+    pGretel->Render(*pShader);
+    pHansel->Render(*pShader);
 
     glEnable(GL_DEPTH_TEST);
 
@@ -380,7 +382,7 @@ void ScoreState::RenderStats() {
     float hansel_width = SCR_WIDTH_F * 0.75f;
     float y_indent = SCR_HEIGHT_F / 20.0f;
 
-    pLvls[CurrentGame->GetLvl() - 1]->Render(*pSpriteShader);
+    pLvls[CurrentGame->GetLvl() - 1]->Render(*pShader);
 
     pText->Render(*pTextShader, "STATS", text_width, height, 1.0f, TextColor, Alignment::Left);
 
@@ -390,7 +392,7 @@ void ScoreState::RenderStats() {
         pText->Render(*pTextShader, "Hansel", hansel_width, height, 1.0f, TextColor, Alignment::Right);
 
     pSlime->Position = glm::vec2(text_width + pSlime->Size.x / 2.0f, height - pSlime->Size.y / 2.0f - y_indent / 2.0f);
-    pSlime->Render(*pSpriteShader);
+    pSlime->Render(*pShader);
     pText->Render(*pTextShader, std::to_string(CurrentGame->GretelKills), gretel_width, height - pSlime->Size.y - y_indent / 3.0f, 1.0f, TextColor, Alignment::Right);
     if (CurrentGame->IsMultiplayer()) {
         pText->Render(*pTextShader, std::to_string(CurrentGame->HanselKills), hansel_width, height - pSlime->Size.y - y_indent / 3.0f, 1.0f, TextColor, Alignment::Right);
@@ -412,7 +414,7 @@ void ScoreState::RenderStats() {
             pCandy->Position = glm::vec2(text_width + pCandy->Size.x / 2.0f, height - pCandy->Size.y / 2.0f - y_indent / 2.0f);
             height -= (pCandy->Size.y + y_indent / 2.0f);
             pCandy->Texture = CurrentGame->pCandiesMesh[i];
-            pCandy->Render(*pSpriteShader);
+            pCandy->Render(*pShader);
         }
 
     }

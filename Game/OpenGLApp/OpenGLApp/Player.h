@@ -45,7 +45,7 @@ class Player : public MovingObject
         std::vector<ActiveEffect*> pAEffects = {};
 
         //Costruttore 3d
-        Player(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, PlayerName name, int lives);
+        Player(glm::vec2 position, glm::vec3 size, Model* model, PlayerName name, int lives);
         //Costruttore 2d
         Player(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth, PlayerName name, int lives);
 

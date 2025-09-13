@@ -176,7 +176,7 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     // setup delle uniform delle shader che non cambieranno nel ciclo di rendering
     // Shader base
     pShader->use();
-    pShader->setMat4("projection", projectionPixels);
+    pShader->setMat4("projection", projectionNDC);
     pShader->setMat4("view", view);
 
     // Shader sprite
@@ -401,16 +401,12 @@ void PlayState::Reset()
         // passo nullptr come texture per ora
         for (int i = 0; i < 2; i++)
         {
-            pCauldrons.emplace_back(new GameObject(posCauldron[i], sizeCauldron, pCauldronModel, 0));
+            pCauldrons.emplace_back(new GameObject(posCauldron[i], sizeCauldron, pCauldronModel));
         }
 
         for (int i = 0; i < 8; ++i)
         {
-#if FLAT
             platforms.emplace_back(new GameObject(positions[i], sizes[i], pTexPlatforms, 1));
-#else
-            platforms.emplace_back(new GameObject(positions[i], sizes[i], pCubeModel, 1));
-#endif
         }
         /*
         float l = fbWidth / 20;
@@ -424,7 +420,7 @@ void PlayState::Reset()
     else if (CurrentLevel[Multiplayer] == 2) {
         for (int i = 0; i < 3; i++)
         {
-            pCauldrons.emplace_back(new GameObject(posCauldron2[i], sizeCauldron, pCauldronModel, 0));
+            pCauldrons.emplace_back(new GameObject(posCauldron2[i], sizeCauldron, pCauldronModel));
         }
         for (int i = 0; i < 6; ++i)
         {
@@ -758,85 +754,6 @@ void PlayState::UpdateTime(long currentTime)
 {
 
 }
-
-void PlayState::Render()
-{
-    //Aggiunte le seguenti due righe per gestire correttamente la trasparenza
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glDisable(GL_DEPTH_TEST);
-
-    //Oggetti con coordinate NDC
-    //--------------------------------------------------------------------------------
-
-    ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::NDC);
-
-    //pBackground->Render(*pShader);
-    /*
-    for (const GameObject& object : tests)
-    {
-        object.RenderFlat(*pSpriteShader);
-    }*/
-
-    for (const GameObject* pp : platforms)
-#if FLAT
-        pp->Render(*pSpriteShader);
-#else
-        pp->Render(*pShader);
-#endif
-
-    // disattiva depth buffer quando si disegnano oggetti trasparenti (interferisce con blending)
-    //glDepthMask(GL_FALSE);
-
-    if (CurrentLevel[Multiplayer] == 2)
-        pKeys[Multiplayer]->Render(*pSpriteShader);
-
-    if (!pCandies.empty()) {
-        for (Candy* pc : pCandies) {
-            if (!pc->IsEaten()) {
-                pc->Render(*pSpriteShader);
-            }
-        }
-    }
-  
-    if (!pEnemies.empty()) {
-        for (Enemy* pe : pEnemies) {
-            if (!pe->IsDead()) {
-  #if FLAT
-                pe->Render(*pSpriteShader);
-#else
-                pe->Render(*pShader);
-#endif
-                //printf("Renderizzo nemico %d, morto? %d\n", i + 1, pEnemies[i]->IsDead());
-            }
-        }
-    }
-
-    if(!pGretel->isDead)
-        pGretel->Render(*pSpriteShader);
-    if(Multiplayer && !pHansel->isDead)
-        pHansel->Render(*pSpriteShader);
-
-    if (Player::teleport) {
-        //Mouse->Move();
-        Mouse->Render(*pShader);
-    }
-
-    //glDepthMask(GL_TRUE); // riattiva depth buffer
-    glEnable(GL_DEPTH_TEST);
-
-    //Oggetti 3D
-    //--------------------------------------------------------------------------------
-
-    for (GameObject* pc : pCauldrons)
-        pc->Render(*pEnlightenedShader);
-
-    RenderStats();
-}
 void PlayState::MouseMoving(double xpos, double ypos)
 {
     if (!isEnding && Player::teleport)
@@ -908,7 +825,81 @@ void PlayState::LeaveState() {
     if(Status[Multiplayer] == GameStatus::Paused)
         startPauseTime = glfwGetTime();
 }
+void PlayState::Render()
+{
+    //Aggiunte le seguenti due righe per gestire correttamente la trasparenza
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glDisable(GL_DEPTH_TEST);
+
+    //Oggetti con coordinate NDC
+    //--------------------------------------------------------------------------------
+
+    ShaderManager::SetProjection(*pShader, Window, ProjectionType::NDC);
+
+    //pBackground->Render(*pShader);
+    /*
+    for (const GameObject& object : tests)
+    {
+        object.RenderFlat(*pSpriteShader);
+    }*/
+
+    for (const GameObject* pp : platforms)
+        pp->Render(*pShader);
+
+    // disattiva depth buffer quando si disegnano oggetti trasparenti (interferisce con blending)
+    //glDepthMask(GL_FALSE);
+
+    if (CurrentLevel[Multiplayer] == 2)
+        pKeys[Multiplayer]->Render(*pShader);
+
+    if (!pCandies.empty()) {
+        for (Candy* pc : pCandies) {
+            if (!pc->IsEaten()) {
+                pc->Render(*pShader);
+            }
+        }
+    }
+
+    if (!pEnemies.empty()) {
+        for (Enemy* pe : pEnemies) {
+            if (!pe->IsDead()) {
+                pe->Render(*pShader);
+                //printf("Renderizzo nemico %d, morto? %d\n", i + 1, pEnemies[i]->IsDead());
+            }
+        }
+    }
+
+    if (!pGretel->isDead)
+        pGretel->Render(*pShader);
+    if (Multiplayer && !pHansel->isDead)
+        pHansel->Render(*pShader);
+
+    //Oggetti con coordinate pixel
+    //--------------------------------------------------------------------------------
+    ShaderManager::SetProjection(*pShader, Window, ProjectionType::Pixels);
+
+    if (Player::teleport) {
+        //Mouse->Move();
+        Mouse->Render(*pShader);
+    }
+
+    //Oggetti 3D
+    //--------------------------------------------------------------------------------
+    
+    RenderStats();
+
+    //glDepthMask(GL_TRUE); // riattiva depth buffer
+    glEnable(GL_DEPTH_TEST);
+
+    for (GameObject* pc : pCauldrons)
+        pc->Render(*pEnlightenedShader);
+
+}
 void PlayState::RenderStats() {
     //int fbWidth, fbHeight;
     //glfwGetFramebufferSize(Window, &fbWidth, &fbHeight);
@@ -925,17 +916,13 @@ void PlayState::RenderStats() {
         }
     }
 
-    //Oggetti con coordinate pixel
-    //--------------------------------------------------------------------------------
-    ShaderManager::SetProjection(*pSpriteShader, Window, ProjectionType::Pixels);
-
     float xstart = pHearts[0]->Position.x;
     //float xspace = 10.0f;
     float xspace = SCR_WIDTH_F * 0.01;
 
     for (int i = 0; i < pGretel->lives; i++) {
         pHearts[0]->Position.x = pHearts[0]->Position.x + pHearts[0]->Size.x + xspace;
-        pHearts[0]->Render(*pSpriteShader);
+        pHearts[0]->Render(*pShader);
     }
     pHearts[0]->Position.x = xstart;
 
@@ -943,7 +930,7 @@ void PlayState::RenderStats() {
         xstart = pHearts[1]->Position.x;
         for (int i = 0; i < pHansel->lives; i++) {
             pHearts[1]->Position.x = pHearts[1]->Position.x + pHearts[1]->Size.x + xspace;
-            pHearts[1]->Render(*pSpriteShader);
+            pHearts[1]->Render(*pShader);
         }
         pHearts[1]->Position.x = xstart;
     }
@@ -988,7 +975,7 @@ void PlayState::RenderStats() {
 
     if (CurrentLevel[Multiplayer] == 1) {
         pSlimeUI->Position = glm::vec2(SCR_WIDTH_F * 0.6f - pSlimeUI->Size.x / 2.0f, 895.0f);
-        pSlimeUI->Render(*pSpriteShader);
+        pSlimeUI->Render(*pShader);
         snprintf(buf, 100, "%d/%d", nEnemiesKilled, TOTENEM);
         std::string enemies = buf;
         //pText->Render(*pTextShader, enemies, pSlimeUI->Position.x + pSlimeUI->Size.x / 2.0f + 15.0f, 880.0f, 0.9f, color, Alignment::Left);
@@ -996,7 +983,7 @@ void PlayState::RenderStats() {
     }
     else if (CurrentLevel[Multiplayer] >= 2) {
         pKeysUI[Multiplayer]->Position = glm::vec2(SCR_WIDTH_F * 0.6f - pKeysUI[Multiplayer]->Size.x / 2.0f, 895.0f);
-        pKeysUI[Multiplayer]->Render(*pSpriteShader);
+        pKeysUI[Multiplayer]->Render(*pShader);
         snprintf(buf, 100, "%d/%d", nKeys, TOTKEYS);
         std::string keys = buf;
         //pText->Render(*pTextShader, keys, pKeysUI[Multiplayer]->Position.x + pKeysUI[Multiplayer]->Size.x / 2.0f + 15.0f, 880.0f, 0.9f, color, Alignment::Left);

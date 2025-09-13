@@ -5,6 +5,7 @@
 class MouseObject {
 public:
     MouseObject(GLFWwindow* window, TextureObject* texture, glm::vec3 size) : Window(window), Texture(texture), Size(size) {
+        fmesh = new FlatMesh();
         Position.x = 0.0f;
         Position.y = 0.0f;
     };
@@ -16,7 +17,7 @@ public:
         model_mat = glm::scale(model_mat, glm::vec3(Size.x, Size.y, 1.0f));
         shader.setMat4("model", model_mat);
 
-        GameObject::fmesh->Draw(shader, Texture->TextureID);
+        fmesh->Draw(shader, Texture->TextureID);
     }
 
     void Move(double xpos, double ypos) {
@@ -45,6 +46,7 @@ public:
 
 private:
     GLFWwindow* Window;
+    FlatMesh* fmesh;
     TextureObject* Texture;
     glm::vec2 Position;
     glm::vec3 Size;

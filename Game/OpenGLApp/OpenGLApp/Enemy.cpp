@@ -1,8 +1,8 @@
 #include "Enemy.h"
 #include <glm/glm.hpp>  // Per il calcolo dei vettori
 
-Enemy::Enemy(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth, glm::vec2 velocity, bool moveRight, EnemyType type)
-    : MovingObject(position, size, model, repeatWidth, velocity, moveRight), type(type)
+Enemy::Enemy(glm::vec2 position, glm::vec3 size, Model* model, glm::vec2 velocity, bool moveRight, EnemyType type)
+    : MovingObject(position, size, model, velocity, moveRight), type(type)
 {
     if (type == EnemyType::Slime)
         lives = 1;

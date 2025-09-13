@@ -10,10 +10,10 @@
 
 #include "stb_image.h"
 #include "shader_s.h"
-#include "TextureObject.h"
 #include "model.h"
-#include "FlatMesh.h"
 #include "utils.h"
+#include "TextureObject.h"
+#include "FlatMesh.h"
 
 struct Hitbox 
 {
@@ -28,10 +28,10 @@ class GameObject
 public:
     DimensionType Dimension;
 
-    static FlatMesh* fmesh; //unica fmesh per tutti gli sprite
+    FlatMesh* fmesh = nullptr; //mesh sprite
+    TextureObject* Texture = nullptr; //texture sprite
 
-    Model* model = nullptr;
-    TextureObject* Texture = nullptr;
+    Model* model = nullptr; //mesh modelli blender
 
     glm::vec2 Position;
     glm::vec3 Size;
@@ -42,15 +42,15 @@ public:
 
     float Rotation = 0.0f;
     glm::vec3 Axis = GameObject::axisY;
-    glm::vec2 Pivot;
+    glm::vec2 Pivot = glm::vec2(0.0f, 0.0f);
     bool usePivot = false;
 
     float FlipX = 1.0f;
 
-    bool RepeatWidth;
+    bool RepeatWidth = false;
 
     //Costruttore 3d
-    GameObject(glm::vec2 position, glm::vec3 size, Model* model, bool repeatWidth);
+    GameObject(glm::vec2 position, glm::vec3 size, Model* model);
     //Costruttore 2d
     GameObject(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth);
 
