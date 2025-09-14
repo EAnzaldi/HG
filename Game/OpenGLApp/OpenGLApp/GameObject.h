@@ -53,6 +53,8 @@ public:
     GameObject(glm::vec2 position, glm::vec3 size, Model* model);
     //Costruttore 2d
     GameObject(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth);
+    //Distruttore
+    ~GameObject();
 
     void Render(const Shader& shader) const;
 

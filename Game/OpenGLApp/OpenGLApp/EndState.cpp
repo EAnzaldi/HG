@@ -99,14 +99,13 @@ void EndState::Render()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    //glClearColor(0.2f, 0.3f, 0.5f, 1.0f);
+    glClearColor(7.0f / 255.0f, 28.0f / 255.0f, 44.0f / 255.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glDisable(GL_DEPTH_TEST);
 
     ShaderManager::SetProjection(*pShader, Window, ProjectionType::Pixels);
     pBackground->Render(*pShader);
-
 
     //ShaderManager::SetProjection(*pShader, Window, ProjectionType::NDC);
     pWitch->Render(*pShader);

@@ -12,7 +12,7 @@
 
 #define SPAWN_PROB_C 50 //percentuale di spawn delle caramelle (bonus e malus)
 
-#define SPAWN_PROB_SUPER 50 //percentuale di spawn delle SuperSlimes
+#define SPAWN_PROB_SUPER 30 //percentuale di spawn delle SuperSlimes
 
 #define FLAT 1
 
@@ -29,36 +29,6 @@ static glm::vec2 velocities2[3] = { velocity, -velocity, -velocity };
 
 //std::queue<std::string> q;
 std::deque<std::tuple<std::string, float>> q;
-/*
-static glm::vec2 positions[8] = {
-   {0.0f, -0.95f},//pavimento
-   {-0.6f, -0.5f}, {0.6f, -0.5f},
-   {-0.85f, -0.1f}, {0.85f, -0.1f},
-   {0.0f, 0.0f},
-   {-0.6f, 0.5f}, {0.6f, 0.5f}
-};
-static glm::vec3 sizes[8] = {
-    {2.0f, 0.1f, 0.2f},
-    {0.8f, 0.1f, 0.2f}, {0.8f, 0.1f, 0.2f},
-    {0.3f, 0.1f, 0.2f}, {0.3f, 0.1f, 0.2f},
-    {1.0f, 0.1f, 0.2f},
-    {0.8f, 0.1f, 0.2f}, {0.8f, 0.1f, 0.2f}
-};
-static glm::vec2 positions2[6] = {
-   {0.0f, -0.95f},//pavimento
-   {-0.2f, -0.5f}, {0.8f, -0.5f},
-   {-0.8f, -0.1f}, {0.2f, -0.1f},
-   {0.0f, 0.5f}//soffitto
-};
-static glm::vec3 sizes2[6] = {
-    {2.0f, 0.1f, 0.2f},
-    {0.4f, 0.1f, 0.2f}, {0.4f, 0.1f, 0.2f},
-    {0.4f, 0.1f, 0.2f}, {0.4f, 0.1f, 0.2f},
-    {2.0f, 0.1f, 0.2f}
-};
-static glm::vec2 posCauldron[2] = { {0.89f, 0.64f}, {-0.89f, 0.64f} };
-static glm::vec2 posCauldron2[3] = { {-0.89f, 0.04f}, {0.29f, 0.04f}, {0.89f, -0.36f} };
-static glm::vec3 sizeCauldron = { 0.1f, 0.1f, 0.1f };*/
 
 PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISoundEngine* engine)
     : GameState(manager, window, engine), lastFrame(0.0f), deltaTime(0.0f), pGretel(nullptr), pHansel(nullptr)
@@ -93,11 +63,16 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pHeartsTex[1] = new TextureObject("resources/textures/golden_heart.png");
     pKeysTex[0] = new TextureObject("resources/textures/key1.png");
     pKeysTex[1] = new TextureObject("resources/textures/key2.png");
-    pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_pink.png"));
-    pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_green.png"));
-    pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_blue.png"));
-    pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_orange.png"));
-    pCandiesMesh.emplace_back(new TextureObject("resources/textures/candy_violet.png"));
+
+    //caricamento texture caramelle singleplayer
+    pCandiesMesh[0].emplace_back(new TextureObject("resources/textures/candy_pink.png"));
+    pCandiesMesh[0].emplace_back(new TextureObject("resources/textures/candy_green.png"));
+    pCandiesMesh[0].emplace_back(new TextureObject("resources/textures/candy_blue.png"));
+    pCandiesMesh[0].emplace_back(new TextureObject("resources/textures/candy_orange.png"));
+    pCandiesMesh[0].emplace_back(new TextureObject("resources/textures/candy_violet.png"));
+    //caricamento texture caramelle multiplayer
+    for (TextureObject* m : pCandiesMesh[0])
+        pCandiesMesh[1].emplace_back(m);
 
     //Creazione oggetti UI
     pHearts[0] = new GameObject(glm::vec2(SCR_WIDTH_F * 0.05f, 895.0f), pHeartsTex[0]->getSize() / 9.0f, pHeartsTex[0], 0);
@@ -118,15 +93,6 @@ PlayState::PlayState(StateManager* manager, GLFWwindow* window, irrklang::ISound
     pCandyTypes.emplace_back(new CandyType(EffectType::Invincibility, 5.0f));
     pCandyTypes.emplace_back(new CandyType(EffectType::Teleport));
 
-    //Associazione run-time tra texture ed effetto della caramella
-    std::shuffle(pCandiesMesh.begin(), pCandiesMesh.end(), rd);
-
-    #if DEBUG
-    printf("TAB CARAMELLE\n");
-    for (int i = 0; i < std::min(pCandiesMesh.size(), pCandyTypes.size()); i++)
-        printf("%s\t%s\n", pCandyTypes[i]->Print(), pCandiesMesh[i]->Path);
-    #endif
-
     // cattura il tempo iniziale di gioco
     startTime = glfwGetTime();
 }
@@ -138,7 +104,7 @@ PlayState::~PlayState()
     delete pTexPlatforms;
     delete pTexSlime;
 
-    for (TextureObject* p : pCandiesMesh)
+    for (TextureObject* p : pCandiesMesh[0])
         delete p;
     for (CandyType* p : pCandyTypes)
         delete p;
@@ -180,46 +146,60 @@ PlayState* PlayState::GetInstance(StateManager* manager, GLFWwindow* window, irr
     static PlayState Instance(manager, window, engine);
     return &Instance;
 }
+void PlayState::ResetGame()
+{   
+    CurrentLevel[Multiplayer] = StartLevel;
 
-void PlayState::Reset()
+    //Associazione run-time tra texture ed effetto della caramella
+    std::shuffle(pCandiesMesh[Multiplayer].begin(), pCandiesMesh[Multiplayer].end(), rd);
+
+    #if DEBUG
+    printf("TAB CARAMELLE %d\n", Multiplayer);
+    for (int i = 0; i < std::min(pCandiesMesh[Multiplayer].size(), pCandyTypes.size()); i++)
+        printf("%s\t%s\n", pCandyTypes[i]->Print(), pCandiesMesh[Multiplayer][i]->Path);
+    #endif
+
+    ResetLevel();
+};
+void PlayState::ResetLevel()
 {
     if (CurrentLevel[Multiplayer] > 2)
         return;
 
-    //Aggiorna lo stato delle modalità di gioco
-    Status[Multiplayer] = GameStatus::Playing;
-    if (Status[!Multiplayer] != GameStatus::None)
-        Status[!Multiplayer] = GameStatus::NotPlaying;
-
-    glm::vec2 positions[8] = {
-       {0.0f, -0.95f},//pavimento
-       {-0.6f, -0.5f}, {0.6f, -0.5f},
-       {-0.85f, -0.1f}, {0.85f, -0.1f},
-       {0.0f, 0.0f},
-       {-0.6f, 0.5f}, {0.6f, 0.5f}
+    const glm::vec2 positions[8] = {
+   {0.0f, -0.95f},//pavimento
+   {-0.6f, -0.5f}, {0.6f, -0.5f},
+   {-0.85f, -0.1f}, {0.85f, -0.1f},
+   {0.0f, 0.0f},
+   {-0.6f, 0.5f}, {0.6f, 0.5f}
     };
-    glm::vec3 sizes[8] = {
+    const glm::vec3 sizes[8] = {
         {2.0f, 0.1f, 0.2f},
         {0.8f, 0.1f, 0.2f}, {0.8f, 0.1f, 0.2f},
         {0.3f, 0.1f, 0.2f}, {0.3f, 0.1f, 0.2f},
         {1.0f, 0.1f, 0.2f},
         {0.8f, 0.1f, 0.2f}, {0.8f, 0.1f, 0.2f}
     };
-    glm::vec2 positions2[6] = {
+    const glm::vec2 positions2[6] = {
        {0.0f, -0.95f},//pavimento
        {-0.2f, -0.5f}, {0.8f, -0.5f},
        {-0.8f, -0.1f}, {0.2f, -0.1f},
        {0.0f, 0.5f}//soffitto
     };
-    glm::vec3 sizes2[6] = {
+    const glm::vec3 sizes2[6] = {
         {2.0f, 0.1f, 0.2f},
         {0.4f, 0.1f, 0.2f}, {0.4f, 0.1f, 0.2f},
         {0.4f, 0.1f, 0.2f}, {0.4f, 0.1f, 0.2f},
         {2.0f, 0.1f, 0.2f}
     };
-    glm::vec2 posCauldron[2] = { {0.89f, 0.64f}, {-0.89f, 0.64f} };
-    glm::vec2 posCauldron2[3] = { {-0.89f, 0.04f}, {0.29f, 0.04f}, {0.89f, -0.36f} };
-    glm::vec3 sizeCauldron = { 0.1f, 0.1f, 0.1f };
+    const glm::vec2 posCauldron[2] = { {0.89f, 0.64f}, {-0.89f, 0.64f} };
+    const glm::vec2 posCauldron2[3] = { {-0.89f, 0.04f}, {0.29f, 0.04f}, {0.89f, -0.36f} };
+    const glm::vec3 sizeCauldron = { 0.1f, 0.1f, 0.1f };
+
+    //Aggiorna lo stato delle modalità di gioco
+    Status[Multiplayer] = GameStatus::Playing;
+    if (Status[!Multiplayer] != GameStatus::None)
+        Status[!Multiplayer] = GameStatus::NotPlaying;
     
     CurrentScore = 0;
 
@@ -532,41 +512,12 @@ void PlayState::ProcessEvents()
         return;
     }
 
-    if (pEnemies.size() < TOTENEM) {
-        lastSpawnTime += deltaTime;
-
-        if (lastSpawnTime >= spawnTime) {
-            Enemy* enemy;
-            if (CurrentLevel[Multiplayer] == 1) {
-                if (DoAction(SPAWN_PROB_SUPER)) {
-                    enemy = new Enemy(posSpawn[spawnPlace], glm::vec3(0.13f * pTexSuperSlime->getAspect(), 0.13f, 0.1f), pTexSuperSlime, 0, velocities[spawnPlace], true, EnemyType::SuperSlime);
-                }
-                else {
-                    enemy = new Enemy(posSpawn[spawnPlace], glm::vec3(0.13f * pTexSlime->getAspect(), 0.13f, 0.1f), pTexSlime, 0, velocities[spawnPlace], true, EnemyType::Slime);
-                }
-            }
-            else if (CurrentLevel[Multiplayer] == 2) {
-                if (DoAction(SPAWN_PROB_SUPER)) {
-                    enemy = new Enemy(posSpawn2[spawnPlace], glm::vec3(0.13f * pTexSuperSlime->getAspect(), 0.13f, 0.1f), pTexSuperSlime, 0, velocities2[spawnPlace], true, EnemyType::SuperSlime);
-                }
-                else {
-                    enemy = new Enemy(posSpawn2[spawnPlace], glm::vec3(0.13f * pTexSlime->getAspect(), 0.13f, 0.1f), pTexSlime, 0, velocities2[spawnPlace], true, EnemyType::Slime);
-                }
-            }
-            pEnemies.emplace_back(enemy);
-            nEnemiesAlive++;
-            lastSpawnTime = 0.0f;
-            spawnTime = RandomInt(SPAWN_MIN_E, SPAWN_MAX_E);
-            spawnPlace = RandomInt(0, pCauldrons.size() - 1);
-            Engine->play2D("resources/sounds/bubbles.wav");
-            #if DEBUG
-            printf("Prossimo spawn tra %d s nel calderone %d\n", spawnTime, spawnPlace);
-            #endif
-        }
+    if (CurrentLevel[Multiplayer] == 2 || pEnemies.size() < TOTENEM) {
+        SpawnEnemy();
     }
 
     for (Enemy* pe : pEnemies) {
-        if (pe->IsDead())
+        if (pe->IsDead())//error
             continue;
         if (pGretel->CheckEnemyCollision(pe, Engine) || (Multiplayer && pHansel->CheckEnemyCollision(pe, Engine))) {
             if (pGretel->isDead || (Multiplayer && pHansel->isDead)) {//Se un player muore
@@ -581,30 +532,7 @@ void PlayState::ProcessEvents()
                 if (CurrentLevel[Multiplayer] == 1 && nEnemiesKilled == TOTENEM) {
                     Status[Multiplayer] = GameStatus::Victory;
                 }
-                //spawn candy
-                if (DoAction(SPAWN_PROB_C)) {
-                    //Coordinate pixel
-                    //float pixelX = (pe->Position.x + 1.0f) * 0.5f * fbWidth;
-                    //float pixelY = (pe->Position.y + 1.0f) * 0.5f * fbHeight;
-                    //float scale = 0.05f;
-                    /*
-                    pixelY-=pe->Size.y;
-                    pCandies.emplace_back(new GameObject(glm::vec2(pixelX, pixelY+pCandiesMesh[0]->getHeigth()*scale/2), pCandiesMesh[0]->getSize()*scale, pCandiesMesh[0], 0));
-                    */
-                    //pCandies.emplace_back(new Candy(glm::vec2(pixelX, pixelY), pCandiesMesh[0]->getSize() * scale, pCandiesMesh[0], 0));
-                    //Coordinate NDC
-                    float pixelX = pe->Position.x;
-                    float pixelY = pe->Position.y;
-                    //Estrazione della pillola con probabilità pesate di pProbabilities
-                    std::discrete_distribution<> distCandies(pProbabilities.begin(), pProbabilities.end());
-                    int rdindex = distCandies(gen);
-                    CandyType* type = pCandyTypes[rdindex];
-                    TextureObject* texture = pCandiesMesh[rdindex];
-                    pCandies.emplace_back(new Candy(glm::vec2(pixelX, pixelY), candySize, texture, 0, *type));
-#if DEBUG
-                    printf("Spawnata caramella di tipo %s\n", type->Print());
-#endif
-                }
+                SpawnCandy(pe->Position);
                 continue;
             }
             else if (pe->getLives() <= 1 && pe->type == EnemyType::SuperSlime) {
@@ -625,6 +553,52 @@ void PlayState::ProcessEvents()
 
     CheckEndGame();
 }
+void PlayState::SpawnEnemy() {
+    lastSpawnTime += deltaTime;
+
+    if (lastSpawnTime >= spawnTime) {
+        Enemy* enemy;
+        if (CurrentLevel[Multiplayer] == 1) {
+            if (DoAction(SPAWN_PROB_SUPER)) {
+                enemy = new Enemy(posSpawn[spawnPlace], glm::vec3(0.13f * pTexSuperSlime->getAspect(), 0.13f, 0.1f), pTexSuperSlime, 0, velocities[spawnPlace], true, EnemyType::SuperSlime);
+    }
+            else {
+                enemy = new Enemy(posSpawn[spawnPlace], glm::vec3(0.13f * pTexSlime->getAspect(), 0.13f, 0.1f), pTexSlime, 0, velocities[spawnPlace], true, EnemyType::Slime);
+            }
+}
+        else if (CurrentLevel[Multiplayer] == 2) {
+            if (DoAction(SPAWN_PROB_SUPER)) {
+                enemy = new Enemy(posSpawn2[spawnPlace], glm::vec3(0.13f * pTexSuperSlime->getAspect(), 0.13f, 0.1f), pTexSuperSlime, 0, velocities2[spawnPlace], true, EnemyType::SuperSlime);
+            }
+            else {
+                enemy = new Enemy(posSpawn2[spawnPlace], glm::vec3(0.13f * pTexSlime->getAspect(), 0.13f, 0.1f), pTexSlime, 0, velocities2[spawnPlace], true, EnemyType::Slime);
+            }
+        }
+        pEnemies.emplace_back(enemy);
+        nEnemiesAlive++;
+        lastSpawnTime = 0.0f;
+        spawnTime = RandomInt(SPAWN_MIN_E, SPAWN_MAX_E);
+        spawnPlace = RandomInt(0, pCauldrons.size() - 1);
+        Engine->play2D("resources/sounds/bubbles.wav");
+#if DEBUG
+        printf("Prossimo spawn tra %d s nel calderone %d\n", spawnTime, spawnPlace);
+#endif
+        }
+}
+void PlayState::SpawnCandy(glm::vec2 position) {
+    //spawn candy
+    if (DoAction(SPAWN_PROB_C)) {
+        //Estrazione della pillola con probabilità pesate di pProbabilities
+        std::discrete_distribution<> distCandies(pProbabilities.begin(), pProbabilities.end());
+        int rdindex = distCandies(gen);
+        CandyType* type = pCandyTypes[rdindex];
+        TextureObject* texture = pCandiesMesh[Multiplayer][rdindex];
+        pCandies.emplace_back(new Candy(position, candySize, texture, 0, *type));
+#if DEBUG
+        printf("Spawnata caramella di tipo %s\n", type->Print());
+#endif
+    }
+}
 void PlayState::CheckEndGame() {
     if (!isEnding){
         if (Status[Multiplayer] == GameStatus::GameOver || Status[Multiplayer] == GameStatus::Victory) {
@@ -635,6 +609,7 @@ void PlayState::CheckEndGame() {
             if(Multiplayer)
                 pHansel->Stop(deltaTime);
             CurrentScore += remainingTime * scoreTime;
+            Player::teleport = false;
             isEnding = true;
         }
         return;

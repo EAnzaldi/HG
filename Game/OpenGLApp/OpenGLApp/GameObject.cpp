@@ -9,7 +9,6 @@ GameObject::GameObject(glm::vec2 position, glm::vec3 size, Model* model)
 {
 
 }
-
 GameObject::GameObject(glm::vec2 position, glm::vec3 size, TextureObject* texture, bool repeatWidth)
     : Position(position), Size(size), Texture(texture), RepeatWidth(repeatWidth), Dimension(DimensionType::TwoD)
 {
@@ -19,7 +18,10 @@ GameObject::GameObject(glm::vec2 position, glm::vec3 size, TextureObject* textur
     else
         fmesh = new FlatMesh();
 }
-
+GameObject::~GameObject() {
+    if (fmesh != nullptr)
+        delete fmesh;
+}
 void GameObject::Render(const Shader& shader) const
 {
     shader.use();

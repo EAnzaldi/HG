@@ -8,7 +8,7 @@
 //0 = no print, 1 = debug print
 #define DEBUG 0
 
-#define DB_TELEP 1
+#define DB_TELEP 0
  
 // screen's settings
 //static const unsigned int SCR_WIDTH = 1600;

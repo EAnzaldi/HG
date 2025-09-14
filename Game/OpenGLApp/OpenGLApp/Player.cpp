@@ -110,12 +110,12 @@ void Player::HandleCollisionWithSolid(GameObject* solidObject, Collision collisi
 }
 bool Player::CheckEnemyCollision(Enemy* enemy, irrklang::ISoundEngine* engine)
 {
-    if (isInvincible)
-        return false;
-
     Collision collision = CheckCollision(enemy);
 
     if (collision == Collision::None)
+        return false;
+
+    if (isInvincible && collision != Collision::Bottom)
         return false;
 
     //printf("Before velocity: %f %f", this->velocity.x, this->velocity.y);

@@ -172,7 +172,7 @@ void ScoreState::ProcessInput()
         CurrentGame->CurrentLevel[CurrentGame->IsMultiplayer()]++;
         if (CurrentGame->CurrentLevel[CurrentGame->IsMultiplayer()] < 3) {
             ChangeState(CurrentGame);
-            CurrentGame->Reset();//Inizia nuovo livello
+            CurrentGame->ResetLevel();//Inizia nuovo livello
         } else {
             ChangeState(MenuState::GetInstance(Manager, Window, Engine));
         }
@@ -226,7 +226,7 @@ void ScoreState::ProcessInput()
                 end = true;
         }
         else {
-            pGretel->Move(deltaTime);
+            pGretel->Move(deltaTime);//errore
             pGretel->CheckCollisionWithSolids(solidsGretel);
             ProcessInputPlayer(pGretel, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_A, GLFW_KEY_D);
             if (cageFall || HanselFree) {
@@ -308,7 +308,7 @@ void ScoreState::MouseClick(double xpos, double ypos, int button, int action, in
         if (CurrentGame->GetLvl() < 2) {
             CurrentGame->CurrentLevel[CurrentGame->IsMultiplayer()]++;
             ChangeState(CurrentGame);
-            CurrentGame->Reset();//Inizia nuovo livello
+            CurrentGame->ResetLevel();//Inizia nuovo livello
         }
         else {
             CurrentGame->Status[CurrentGame->IsMultiplayer()] = GameStatus::End;
@@ -383,7 +383,7 @@ void ScoreState::RenderStats() {
     }
     height -= (pSlime->Size.y + y_indent / 2.0f);
 
-    for (int i = 0; i < CurrentGame->pCandiesMesh.size(); i++) {
+    for (int i = 0; i < CurrentGame->pCandiesMesh[CurrentGame->IsMultiplayer()].size(); i++) {
         bool draw = false;
         if (CurrentGame->GretelCandyStats[i] != 0) {
             pText->Render(*pTextShader, std::to_string(CurrentGame->GretelCandyStats[i]), gretel_width, height - pCandy->Size.y - y_indent / 3.0f, 1.0f, TextColor, Alignment::Right);
@@ -397,7 +397,7 @@ void ScoreState::RenderStats() {
             //if (i < CurrentGame->pCandiesMesh.size() - 1)
             pCandy->Position = glm::vec2(text_width + pCandy->Size.x / 2.0f, height - pCandy->Size.y / 2.0f - y_indent / 2.0f);
             height -= (pCandy->Size.y + y_indent / 2.0f);
-            pCandy->Texture = CurrentGame->pCandiesMesh[i];
+            pCandy->Texture = CurrentGame->pCandiesMesh[CurrentGame->IsMultiplayer()][i];
             pCandy->Render(*pShader);
         }
 
